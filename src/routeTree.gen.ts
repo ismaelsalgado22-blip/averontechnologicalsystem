@@ -15,6 +15,7 @@ import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedEquipamentosRouteImport } from './routes/_authenticated/equipamentos'
 import { Route as AuthenticatedEstoqueRouteImport } from './routes/_authenticated/estoque'
+import { Route as AuthenticatedGarantiasRouteImport } from './routes/_authenticated/garantias'
 import { Route as AuthenticatedLaudosRouteImport } from './routes/_authenticated/laudos'
 import { Route as AuthenticatedOrcamentosRouteImport } from './routes/_authenticated/orcamentos'
 import { Route as AuthenticatedOrdensRouteImport } from './routes/_authenticated/ordens'
@@ -50,6 +51,11 @@ const AuthenticatedEquipamentosRoute =
 const AuthenticatedEstoqueRoute = AuthenticatedEstoqueRouteImport.update({
   id: '/estoque',
   path: '/estoque',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedGarantiasRoute = AuthenticatedGarantiasRouteImport.update({
+  id: '/garantias',
+  path: '/garantias',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedLaudosRoute = AuthenticatedLaudosRouteImport.update({
@@ -90,6 +96,7 @@ export interface FileRoutesByFullPath {
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/equipamentos': typeof AuthenticatedEquipamentosRoute
   '/estoque': typeof AuthenticatedEstoqueRoute
+  '/garantias': typeof AuthenticatedGarantiasRoute
   '/laudos': typeof AuthenticatedLaudosRoute
   '/orcamentos': typeof AuthenticatedOrcamentosRoute
   '/ordens': typeof AuthenticatedOrdensRoute
@@ -103,6 +110,7 @@ export interface FileRoutesByTo {
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/equipamentos': typeof AuthenticatedEquipamentosRoute
   '/estoque': typeof AuthenticatedEstoqueRoute
+  '/garantias': typeof AuthenticatedGarantiasRoute
   '/laudos': typeof AuthenticatedLaudosRoute
   '/orcamentos': typeof AuthenticatedOrcamentosRoute
   '/ordens': typeof AuthenticatedOrdensRoute
@@ -118,6 +126,7 @@ export interface FileRoutesById {
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/equipamentos': typeof AuthenticatedEquipamentosRoute
   '/_authenticated/estoque': typeof AuthenticatedEstoqueRoute
+  '/_authenticated/garantias': typeof AuthenticatedGarantiasRoute
   '/_authenticated/laudos': typeof AuthenticatedLaudosRoute
   '/_authenticated/orcamentos': typeof AuthenticatedOrcamentosRoute
   '/_authenticated/ordens': typeof AuthenticatedOrdensRoute
@@ -133,6 +142,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/equipamentos'
     | '/estoque'
+    | '/garantias'
     | '/laudos'
     | '/orcamentos'
     | '/ordens'
@@ -146,6 +156,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/equipamentos'
     | '/estoque'
+    | '/garantias'
     | '/laudos'
     | '/orcamentos'
     | '/ordens'
@@ -160,6 +171,7 @@ export interface FileRouteTypes {
     | '/_authenticated/dashboard'
     | '/_authenticated/equipamentos'
     | '/_authenticated/estoque'
+    | '/_authenticated/garantias'
     | '/_authenticated/laudos'
     | '/_authenticated/orcamentos'
     | '/_authenticated/ordens'
@@ -218,6 +230,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedEstoqueRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/garantias': {
+      id: '/_authenticated/garantias'
+      path: '/garantias'
+      fullPath: '/garantias'
+      preLoaderRoute: typeof AuthenticatedGarantiasRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/laudos': {
       id: '/_authenticated/laudos'
       path: '/laudos'
@@ -267,6 +286,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
   AuthenticatedEquipamentosRoute: typeof AuthenticatedEquipamentosRoute
   AuthenticatedEstoqueRoute: typeof AuthenticatedEstoqueRoute
+  AuthenticatedGarantiasRoute: typeof AuthenticatedGarantiasRoute
   AuthenticatedLaudosRoute: typeof AuthenticatedLaudosRoute
   AuthenticatedOrcamentosRoute: typeof AuthenticatedOrcamentosRoute
   AuthenticatedOrdensRoute: typeof AuthenticatedOrdensRoute
@@ -279,6 +299,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
   AuthenticatedEquipamentosRoute: AuthenticatedEquipamentosRoute,
   AuthenticatedEstoqueRoute: AuthenticatedEstoqueRoute,
+  AuthenticatedGarantiasRoute: AuthenticatedGarantiasRoute,
   AuthenticatedLaudosRoute: AuthenticatedLaudosRoute,
   AuthenticatedOrcamentosRoute: AuthenticatedOrcamentosRoute,
   AuthenticatedOrdensRoute: AuthenticatedOrdensRoute,
