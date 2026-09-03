@@ -328,10 +328,10 @@ function BudgetsPage() {
                   phone={b.clients?.whatsapp ?? b.clients?.phone}
                   template="orcamento"
                   vars={{
-                    cliente: b.clients?.name,
-                    numero: b.number,
-                    total: brl(b.total),
-                    validade: b.valid_until ? dateBR(b.valid_until) : undefined,
+                    nome: b.clients?.name,
+                    documento: b.number,
+                    valor: brl(b.total),
+                    data: b.valid_until ? dateBR(b.valid_until) : undefined,
                     equipamento: b.equipment ? `${b.equipment.type} ${b.equipment.brand ?? ""}` : undefined,
                   }}
                 />
