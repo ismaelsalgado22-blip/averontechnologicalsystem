@@ -340,13 +340,12 @@ function OrdersPage() {
                 </Button>
                 <WhatsAppButton
                   phone={o.clients?.whatsapp ?? o.clients?.phone}
-                  template="conclusao"
+                  template="concluido"
                   vars={{
-                    cliente: o.clients?.name,
-                    numero: o.number,
-                    total: brl(o.total),
+                    nome: o.clients?.name,
+                    documento: o.number,
+                    valor: brl(o.total),
                     equipamento: o.equipment ? `${o.equipment.type} ${o.equipment.brand ?? ""}` : undefined,
-                    servico: o.executed_service ?? undefined,
                   }}
                 />
               </div>
