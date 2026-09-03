@@ -76,7 +76,7 @@ function SchedulePage() {
   });
   const { data: equipment } = useQuery({
     queryKey: ["equipment", "all"],
-    queryFn: async () => (await supabase.from("equipment").select("id, client_id, type, brand").data ?? []) as any,
+    queryFn: async () => (await supabase.from("equipment").select("id, client_id, type, brand")).data ?? [],
   });
 
   const create = useMutation({
