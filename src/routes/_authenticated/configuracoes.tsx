@@ -77,10 +77,10 @@ function SettingsPage() {
 
   const save = useMutation({
     mutationFn: async () => {
-      if (!form.name?.trim()) throw new Error("Informe o nome da empresa");
+      if (!form["name"]?.trim()) throw new Error("Informe o nome da empresa");
       const payload = Object.fromEntries(FIELDS.map(([k]) => [k, form[k]?.trim() || null]));
-      payload.name = form.name.trim();
-      payload.tagline = form.tagline?.trim() || "Refrigeração Comercial e Industrial";
+      payload.name = form["name"].trim();
+      payload.tagline = form["tagline"]?.trim() || "Refrigeração Comercial e Industrial";
       const { error } = rowId
         ? await supabase.from("company_settings").update(payload as any).eq("id", rowId)
         : await supabase.from("company_settings").insert(payload as any);

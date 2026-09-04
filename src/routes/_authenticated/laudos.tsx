@@ -109,11 +109,11 @@ function ReportsPage() {
 
   const save = useMutation({
     mutationFn: async () => {
-      if (!form.client_id) throw new Error("Selecione o cliente");
+      if (!form["client_id"]) throw new Error("Selecione o cliente");
       const payload: any = Object.fromEntries(
         Object.entries(form).map(([k, v]) => [k, v === "" ? null : v]),
       );
-      payload.inspection_date = form.inspection_date;
+      payload.inspection_date = form["inspection_date"];
       payload.photos = photos;
       const { error } = editId
         ? await supabase.from("technical_reports").update(payload).eq("id", editId)
@@ -151,7 +151,7 @@ function ReportsPage() {
   }, [reports, q]);
 
   const set = (k: string, v: string) => setForm((f) => ({ ...f, [k]: v }));
-  const clientEquip = (equipment ?? []).filter((e: any) => e.client_id === form.client_id);
+  const clientEquip = (equipment ?? []).filter((e: any) => e.client_id === form["client_id"]);
 
   return (
     <div className="space-y-5">
@@ -245,7 +245,7 @@ function ReportsPage() {
             <div className="grid gap-3 sm:grid-cols-2">
               <Field label="Cliente *">
                 <Select
-                  value={form.client_id}
+                  value={form["client_id"]}
                   onValueChange={(v) => setForm((f) => ({ ...f, client_id: v, equipment_id: "" }))}
                 >
                   <SelectTrigger>
@@ -261,7 +261,7 @@ function ReportsPage() {
                 </Select>
               </Field>
               <Field label="Equipamento">
-                <Select value={form.equipment_id ?? ""} onValueChange={(v) => set("equipment_id", v)}>
+                <Select value={form["equipment_id"] ?? ""} onValueChange={(v) => set("equipment_id", v)}>
                   <SelectTrigger>
                     <SelectValue placeholder="Selecione" />
                   </SelectTrigger>
@@ -277,16 +277,16 @@ function ReportsPage() {
               <Field label="Data da inspeção">
                 <Input
                   type="date"
-                  value={form.inspection_date}
+                  value={form["inspection_date"]}
                   onChange={(e) => set("inspection_date", e.target.value)}
                 />
               </Field>
               <Field label="Local">
-                <Input value={form.location} maxLength={140} onChange={(e) => set("location", e.target.value)} />
+                <Input value={form["location"]} maxLength={140} onChange={(e) => set("location", e.target.value)} />
               </Field>
               <Field label="Técnico responsável">
                 <Input
-                  value={form.technician_name}
+                  value={form["technician_name"]}
                   maxLength={120}
                   onChange={(e) => set("technician_name", e.target.value)}
                 />
@@ -327,11 +327,11 @@ function ReportsPage() {
             </div>
 
             <Field label="Diagnóstico">
-              <Textarea value={form.diagnosis} rows={3} maxLength={1500} onChange={(e) => set("diagnosis", e.target.value)} />
+              <Textarea value={form["diagnosis"]} rows={3} maxLength={1500} onChange={(e) => set("diagnosis", e.target.value)} />
             </Field>
             <Field label="Causa provável">
               <Textarea
-                value={form.probable_cause}
+                value={form["probable_cause"]}
                 rows={2}
                 maxLength={1000}
                 onChange={(e) => set("probable_cause", e.target.value)}
@@ -339,7 +339,7 @@ function ReportsPage() {
             </Field>
             <Field label="Recomendação técnica">
               <Textarea
-                value={form.recommendation}
+                value={form["recommendation"]}
                 rows={3}
                 maxLength={1500}
                 onChange={(e) => set("recommendation", e.target.value)}
@@ -347,7 +347,7 @@ function ReportsPage() {
             </Field>
             <Field label="Serviço recomendado">
               <Input
-                value={form.recommended_service}
+                value={form["recommended_service"]}
                 maxLength={200}
                 onChange={(e) => set("recommended_service", e.target.value)}
               />
