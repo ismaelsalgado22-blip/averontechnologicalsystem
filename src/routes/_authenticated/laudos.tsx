@@ -245,7 +245,7 @@ function ReportsPage() {
             <div className="grid gap-3 sm:grid-cols-2">
               <Field label="Cliente *">
                 <Select
-                  value={form["client_id"]}
+                  value={form["client_id"] ?? ""}
                   onValueChange={(v) => setForm((f) => ({ ...f, client_id: v, equipment_id: "" }))}
                 >
                   <SelectTrigger>
