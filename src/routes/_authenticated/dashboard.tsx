@@ -255,8 +255,7 @@ function Dashboard() {
             {(data?.recentOrders ?? []).map((o: any) => (
               <Link
                 key={o.id}
-                to="/ordens/$id"
-                params={{ id: o.id }}
+                to="/ordens"
                 className="flex items-center justify-between gap-3 py-2.5 text-sm hover:text-primary"
               >
                 <span className="min-w-0">

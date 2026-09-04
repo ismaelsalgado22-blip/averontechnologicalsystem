@@ -178,7 +178,7 @@ function ClientDetail() {
                     label={BUDGET_STATUS[b.status]?.label ?? b.status}
                     tone={BUDGET_STATUS[b.status]?.tone ?? ""}
                   />
-                  <Link to="/orcamentos/$id" params={{ id: b.id }} className="text-xs font-semibold text-primary">
+                  <Link to="/orcamentos" className="text-xs font-semibold text-primary">
                     Abrir
                   </Link>
                 </div>
@@ -197,7 +197,7 @@ function ClientDetail() {
               right={
                 <div className="flex items-center gap-2">
                   <StatusPill label={WO_STATUS[o.status]?.label ?? o.status} tone={WO_STATUS[o.status]?.tone ?? ""} />
-                  <Link to="/ordens/$id" params={{ id: o.id }} className="text-xs font-semibold text-primary">
+                  <Link to="/ordens" className="text-xs font-semibold text-primary">
                     Abrir
                   </Link>
                 </div>
@@ -214,7 +214,7 @@ function ClientDetail() {
               title={r.number}
               subtitle={`Inspeção em ${dateBR(r.inspection_date)} • ${r.technician_name ?? ""}`}
               right={
-                <Link to="/laudos/$id" params={{ id: r.id }} className="text-xs font-semibold text-primary">
+                <Link to="/laudos" className="text-xs font-semibold text-primary">
                   Abrir
                 </Link>
               }
