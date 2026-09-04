@@ -85,7 +85,7 @@ function EquipmentPage() {
   const save = useMutation({
     mutationFn: async () => {
       const parsed = schema.safeParse(form);
-      if (!parsed.success) throw new Error(parsed.error.issues[0].message);
+      if (!parsed.success) throw new Error(parsed.error.issues[0]?.message ?? "Dados inválidos");
       const payload: any = Object.fromEntries(
         Object.entries(form).map(([k, v]) => [k, v === "" ? null : v]),
       );

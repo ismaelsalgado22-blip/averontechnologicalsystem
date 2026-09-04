@@ -55,8 +55,8 @@ function AuthPage() {
     e.preventDefault();
     const em = emailSchema.safeParse(email);
     const pw = passSchema.safeParse(password);
-    if (!em.success) { toast.error(em.error.issues[0].message); return; }
-    if (!pw.success) { toast.error(pw.error.issues[0].message); return; }
+    if (!em.success) { toast.error(em.error.issues[0]?.message ?? "Dados inválidos"); return; }
+    if (!pw.success) { toast.error(pw.error.issues[0]?.message ?? "Dados inválidos"); return; }
     setLoading(true);
     const { error } = await supabase.auth.signInWithPassword({ email: em.data, password: pw.data });
     setLoading(false);
@@ -69,9 +69,9 @@ function AuthPage() {
     const em = emailSchema.safeParse(email);
     const pw = passSchema.safeParse(password);
     const nm = z.string().trim().min(3, { message: "Informe seu nome completo" }).max(120).safeParse(name);
-    if (!nm.success) { toast.error(nm.error.issues[0].message); return; }
-    if (!em.success) { toast.error(em.error.issues[0].message); return; }
-    if (!pw.success) { toast.error(pw.error.issues[0].message); return; }
+    if (!nm.success) { toast.error(nm.error.issues[0]?.message ?? "Dados inválidos"); return; }
+    if (!em.success) { toast.error(em.error.issues[0]?.message ?? "Dados inválidos"); return; }
+    if (!pw.success) { toast.error(pw.error.issues[0]?.message ?? "Dados inválidos"); return; }
     setLoading(true);
     const { data, error } = await supabase.auth.signUp({
       email: em.data,
