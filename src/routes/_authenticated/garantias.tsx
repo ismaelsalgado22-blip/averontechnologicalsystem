@@ -235,7 +235,7 @@ function WarrantiesPage() {
                 </Select>
               </Field>
               <Field label="Equipamento">
-                <Select value={form.equipment_id} onValueChange={(v) => set("equipment_id", v)}>
+                <Select value={form.equipment_id ?? ""} onValueChange={(v) => set("equipment_id", v)}>
                   <SelectTrigger>
                     <SelectValue placeholder="Selecione" />
                   </SelectTrigger>
@@ -275,7 +275,7 @@ function WarrantiesPage() {
                 <Input type="date" value={form.start_date} onChange={(e) => set("start_date", e.target.value)} />
               </Field>
               <Field label="Prazo (dias)">
-                <Select value={form.days} onValueChange={(v) => set("days", v)}>
+                <Select value={form.days ?? ""} onValueChange={(v) => set("days", v)}>
                   <SelectTrigger>
                     <SelectValue />
                   </SelectTrigger>

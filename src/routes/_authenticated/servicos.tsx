@@ -195,7 +195,7 @@ function ServicesPage() {
             </Field>
             <div className="grid gap-3 sm:grid-cols-2">
               <Field label="Categoria *">
-                <Select value={form.category} onValueChange={(v) => set("category", v)}>
+                <Select value={form.category ?? ""} onValueChange={(v) => set("category", v)}>
                   <SelectTrigger>
                     <SelectValue />
                   </SelectTrigger>

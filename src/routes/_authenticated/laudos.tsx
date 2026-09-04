@@ -261,7 +261,7 @@ function ReportsPage() {
                 </Select>
               </Field>
               <Field label="Equipamento">
-                <Select value={form.equipment_id} onValueChange={(v) => set("equipment_id", v)}>
+                <Select value={form.equipment_id ?? ""} onValueChange={(v) => set("equipment_id", v)}>
                   <SelectTrigger>
                     <SelectValue placeholder="Selecione" />
                   </SelectTrigger>
@@ -298,7 +298,7 @@ function ReportsPage() {
               <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
                 {CHECK_FIELDS.map(([k, label]) => (
                   <Field key={k} label={label}>
-                    <Select value={form[k]} onValueChange={(v) => set(k, v)}>
+                    <Select value={form[k] ?? ""} onValueChange={(v) => set(k, v)}>
                       <SelectTrigger>
                         <SelectValue placeholder="Avaliar" />
                       </SelectTrigger>

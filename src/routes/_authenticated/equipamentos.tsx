@@ -204,7 +204,7 @@ function EquipmentPage() {
           <div className="space-y-4">
             <div className="grid gap-3 sm:grid-cols-2">
               <Field label="Cliente *">
-                <Select value={form.client_id} onValueChange={(v) => set("client_id", v)}>
+                <Select value={form.client_id ?? ""} onValueChange={(v) => set("client_id", v)}>
                   <SelectTrigger>
                     <SelectValue placeholder="Selecione o cliente" />
                   </SelectTrigger>
@@ -218,7 +218,7 @@ function EquipmentPage() {
                 </Select>
               </Field>
               <Field label="Tipo de equipamento *">
-                <Select value={form.type} onValueChange={(v) => set("type", v)}>
+                <Select value={form.type ?? ""} onValueChange={(v) => set("type", v)}>
                   <SelectTrigger>
                     <SelectValue />
                   </SelectTrigger>

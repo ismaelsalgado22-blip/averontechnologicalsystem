@@ -175,7 +175,7 @@ function SchedulePage() {
                       </p>
                     </div>
                     <div className="flex flex-wrap items-center gap-2">
-                      <Select value={a.status} onValueChange={(value) => changeStatus.mutate({ id: a.id, value })}>
+                      <Select value={a.status ?? ""} onValueChange={(value) => changeStatus.mutate({ id: a.id, value })}>
                         <SelectTrigger className="h-8 w-36 text-xs">
                           <SelectValue />
                         </SelectTrigger>
@@ -238,7 +238,7 @@ function SchedulePage() {
                 </Select>
               </Field>
               <Field label="Equipamento">
-                <Select value={form.equipment_id} onValueChange={(v) => set("equipment_id", v)}>
+                <Select value={form.equipment_id ?? ""} onValueChange={(v) => set("equipment_id", v)}>
                   <SelectTrigger>
                     <SelectValue placeholder="Selecione" />
                   </SelectTrigger>
@@ -275,7 +275,7 @@ function SchedulePage() {
                 />
               </Field>
               <Field label="Status">
-                <Select value={form.status} onValueChange={(v) => set("status", v)}>
+                <Select value={form.status ?? ""} onValueChange={(v) => set("status", v)}>
                   <SelectTrigger>
                     <SelectValue />
                   </SelectTrigger>

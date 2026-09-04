@@ -306,7 +306,7 @@ function StockPage() {
               <Input value={form.code} maxLength={60} onChange={(e) => set("code", e.target.value)} />
             </Field>
             <Field label="Categoria">
-              <Select value={form.category} onValueChange={(v) => set("category", v)}>
+              <Select value={form.category ?? ""} onValueChange={(v) => set("category", v)}>
                 <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>
@@ -356,7 +356,7 @@ function StockPage() {
           </DialogHeader>
           <div className="grid gap-3">
             <Field label="Tipo">
-              <Select value={move.kind} onValueChange={(v) => setMove((m) => ({ ...m, kind: v }))}>
+              <Select value={move.kind ?? ""} onValueChange={(v) => setMove((m) => ({ ...m, kind: v }))}>
                 <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>

@@ -265,7 +265,7 @@ function BudgetsPage() {
             maxLength={80}
           />
         </div>
-        <Select value={status} onValueChange={setStatus}>
+        <Select value={status ?? ""} onValueChange={setStatus}>
           <SelectTrigger className="sm:w-56">
             <SelectValue />
           </SelectTrigger>
@@ -308,7 +308,7 @@ function BudgetsPage() {
                 </div>
               </div>
               <div className="mt-3 flex flex-wrap items-center gap-2">
-                <Select value={b.status} onValueChange={(value) => changeStatus.mutate({ id: b.id, value })}>
+                <Select value={b.status ?? ""} onValueChange={(value) => changeStatus.mutate({ id: b.id, value })}>
                   <SelectTrigger className="h-8 w-44 text-xs">
                     <SelectValue />
                   </SelectTrigger>
@@ -353,7 +353,7 @@ function BudgetsPage() {
           <div className="space-y-4">
             <div className="grid gap-3 sm:grid-cols-2">
               <Field label="Cliente *">
-                <Select value={form.client_id} onValueChange={(v) => setForm((f) => ({ ...f, client_id: v, equipment_id: "" }))}>
+                <Select value={form.client_id ?? ""} onValueChange={(v) => setForm((f) => ({ ...f, client_id: v, equipment_id: "" }))}>
                   <SelectTrigger>
                     <SelectValue placeholder="Selecione" />
                   </SelectTrigger>
@@ -367,7 +367,7 @@ function BudgetsPage() {
                 </Select>
               </Field>
               <Field label="Equipamento">
-                <Select value={form.equipment_id} onValueChange={(v) => set("equipment_id", v)}>
+                <Select value={form.equipment_id ?? ""} onValueChange={(v) => set("equipment_id", v)}>
                   <SelectTrigger>
                     <SelectValue placeholder={clientEquip.length ? "Selecione" : "Nenhum equipamento do cliente"} />
                   </SelectTrigger>
