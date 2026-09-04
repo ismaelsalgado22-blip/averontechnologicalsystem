@@ -34,12 +34,36 @@ export const Route = createFileRoute("/auth")({
 const emailSchema = z.string().trim().email({ message: "E-mail inválido" }).max(255);
 const passSchema = z.string().min(6, { message: "A senha deve ter pelo menos 6 caracteres" }).max(72);
 
+function authErrorPt(message: string) {
+  const m = message.toLowerCase();
+  if (m.includes("weak") || m.includes("pwned"))
+    return "Senha muito comum. Escolha uma senha mais forte.";
+  if (m.includes("already registered") || m.includes("already been registered"))
+    return "Este e-mail já tem conta. Use a aba Entrar.";
+  if (m.includes("email not confirmed")) return "Confirme seu e-mail antes de entrar.";
+  if (m.includes("invalid login")) return "E-mail ou senha incorretos.";
+  if (m.includes("signups not allowed")) return "Criação de contas desativada.";
+  if (m.includes("rate limit") || m.includes("too many"))
+    return "Muitas tentativas. Aguarde alguns minutos.";
+  return message;
+}
+
 function AuthPage() {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
+  const [feedback, setFeedback] = useState<{ kind: "error" | "ok"; text: string } | null>(null);
+
+  const fail = (text: string) => {
+    setFeedback({ kind: "error", text });
+    toast.error(text);
+  };
+  const ok = (text: string) => {
+    setFeedback({ kind: "ok", text });
+    toast.success(text);
+  };
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
