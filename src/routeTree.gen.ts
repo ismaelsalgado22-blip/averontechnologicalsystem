@@ -12,9 +12,13 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as AuthRouteImport } from './routes/auth'
+import { Route as ValidarGarantiaRouteImport } from './routes/validar-garantia'
+import { Route as AuthenticatedAgendaRouteImport } from './routes/_authenticated/agenda'
+import { Route as AuthenticatedConfiguracoesRouteImport } from './routes/_authenticated/configuracoes'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedEquipamentosRouteImport } from './routes/_authenticated/equipamentos'
 import { Route as AuthenticatedEstoqueRouteImport } from './routes/_authenticated/estoque'
+import { Route as AuthenticatedFinanceiroRouteImport } from './routes/_authenticated/financeiro'
 import { Route as AuthenticatedGarantiasRouteImport } from './routes/_authenticated/garantias'
 import { Route as AuthenticatedLaudosRouteImport } from './routes/_authenticated/laudos'
 import { Route as AuthenticatedOrcamentosRouteImport } from './routes/_authenticated/orcamentos'
@@ -37,6 +41,22 @@ const AuthRoute = AuthRouteImport.update({
   path: '/auth',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ValidarGarantiaRoute = ValidarGarantiaRouteImport.update({
+  id: '/validar-garantia',
+  path: '/validar-garantia',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedAgendaRoute = AuthenticatedAgendaRouteImport.update({
+  id: '/agenda',
+  path: '/agenda',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedConfiguracoesRoute =
+  AuthenticatedConfiguracoesRouteImport.update({
+    id: '/configuracoes',
+    path: '/configuracoes',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
   id: '/dashboard',
   path: '/dashboard',
@@ -51,6 +71,11 @@ const AuthenticatedEquipamentosRoute =
 const AuthenticatedEstoqueRoute = AuthenticatedEstoqueRouteImport.update({
   id: '/estoque',
   path: '/estoque',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedFinanceiroRoute = AuthenticatedFinanceiroRouteImport.update({
+  id: '/financeiro',
+  path: '/financeiro',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedGarantiasRoute = AuthenticatedGarantiasRouteImport.update({
@@ -93,9 +118,13 @@ const AuthenticatedClientesIdRoute = AuthenticatedClientesIdRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/validar-garantia': typeof ValidarGarantiaRoute
+  '/agenda': typeof AuthenticatedAgendaRoute
+  '/configuracoes': typeof AuthenticatedConfiguracoesRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/equipamentos': typeof AuthenticatedEquipamentosRoute
   '/estoque': typeof AuthenticatedEstoqueRoute
+  '/financeiro': typeof AuthenticatedFinanceiroRoute
   '/garantias': typeof AuthenticatedGarantiasRoute
   '/laudos': typeof AuthenticatedLaudosRoute
   '/orcamentos': typeof AuthenticatedOrcamentosRoute
@@ -107,9 +136,13 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/validar-garantia': typeof ValidarGarantiaRoute
+  '/agenda': typeof AuthenticatedAgendaRoute
+  '/configuracoes': typeof AuthenticatedConfiguracoesRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/equipamentos': typeof AuthenticatedEquipamentosRoute
   '/estoque': typeof AuthenticatedEstoqueRoute
+  '/financeiro': typeof AuthenticatedFinanceiroRoute
   '/garantias': typeof AuthenticatedGarantiasRoute
   '/laudos': typeof AuthenticatedLaudosRoute
   '/orcamentos': typeof AuthenticatedOrcamentosRoute
@@ -123,9 +156,13 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/auth': typeof AuthRoute
+  '/validar-garantia': typeof ValidarGarantiaRoute
+  '/_authenticated/agenda': typeof AuthenticatedAgendaRoute
+  '/_authenticated/configuracoes': typeof AuthenticatedConfiguracoesRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/equipamentos': typeof AuthenticatedEquipamentosRoute
   '/_authenticated/estoque': typeof AuthenticatedEstoqueRoute
+  '/_authenticated/financeiro': typeof AuthenticatedFinanceiroRoute
   '/_authenticated/garantias': typeof AuthenticatedGarantiasRoute
   '/_authenticated/laudos': typeof AuthenticatedLaudosRoute
   '/_authenticated/orcamentos': typeof AuthenticatedOrcamentosRoute
@@ -139,9 +176,13 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/auth'
+    | '/validar-garantia'
+    | '/agenda'
+    | '/configuracoes'
     | '/dashboard'
     | '/equipamentos'
     | '/estoque'
+    | '/financeiro'
     | '/garantias'
     | '/laudos'
     | '/orcamentos'
@@ -153,9 +194,13 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/auth'
+    | '/validar-garantia'
+    | '/agenda'
+    | '/configuracoes'
     | '/dashboard'
     | '/equipamentos'
     | '/estoque'
+    | '/financeiro'
     | '/garantias'
     | '/laudos'
     | '/orcamentos'
@@ -168,9 +213,13 @@ export interface FileRouteTypes {
     | '/'
     | '/_authenticated'
     | '/auth'
+    | '/validar-garantia'
+    | '/_authenticated/agenda'
+    | '/_authenticated/configuracoes'
     | '/_authenticated/dashboard'
     | '/_authenticated/equipamentos'
     | '/_authenticated/estoque'
+    | '/_authenticated/financeiro'
     | '/_authenticated/garantias'
     | '/_authenticated/laudos'
     | '/_authenticated/orcamentos'
@@ -184,6 +233,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AuthRoute: typeof AuthRoute
+  ValidarGarantiaRoute: typeof ValidarGarantiaRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -209,6 +259,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/validar-garantia': {
+      id: '/validar-garantia'
+      path: '/validar-garantia'
+      fullPath: '/validar-garantia'
+      preLoaderRoute: typeof ValidarGarantiaRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated/agenda': {
+      id: '/_authenticated/agenda'
+      path: '/agenda'
+      fullPath: '/agenda'
+      preLoaderRoute: typeof AuthenticatedAgendaRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/configuracoes': {
+      id: '/_authenticated/configuracoes'
+      path: '/configuracoes'
+      fullPath: '/configuracoes'
+      preLoaderRoute: typeof AuthenticatedConfiguracoesRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/dashboard': {
       id: '/_authenticated/dashboard'
       path: '/dashboard'
@@ -228,6 +299,13 @@ declare module '@tanstack/react-router' {
       path: '/estoque'
       fullPath: '/estoque'
       preLoaderRoute: typeof AuthenticatedEstoqueRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/financeiro': {
+      id: '/_authenticated/financeiro'
+      path: '/financeiro'
+      fullPath: '/financeiro'
+      preLoaderRoute: typeof AuthenticatedFinanceiroRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/garantias': {
@@ -283,9 +361,12 @@ declare module '@tanstack/react-router' {
 }
 
 interface AuthenticatedRouteRouteChildren {
+  AuthenticatedAgendaRoute: typeof AuthenticatedAgendaRoute
+  AuthenticatedConfiguracoesRoute: typeof AuthenticatedConfiguracoesRoute
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
   AuthenticatedEquipamentosRoute: typeof AuthenticatedEquipamentosRoute
   AuthenticatedEstoqueRoute: typeof AuthenticatedEstoqueRoute
+  AuthenticatedFinanceiroRoute: typeof AuthenticatedFinanceiroRoute
   AuthenticatedGarantiasRoute: typeof AuthenticatedGarantiasRoute
   AuthenticatedLaudosRoute: typeof AuthenticatedLaudosRoute
   AuthenticatedOrcamentosRoute: typeof AuthenticatedOrcamentosRoute
@@ -296,9 +377,12 @@ interface AuthenticatedRouteRouteChildren {
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedAgendaRoute: AuthenticatedAgendaRoute,
+  AuthenticatedConfiguracoesRoute: AuthenticatedConfiguracoesRoute,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
   AuthenticatedEquipamentosRoute: AuthenticatedEquipamentosRoute,
   AuthenticatedEstoqueRoute: AuthenticatedEstoqueRoute,
+  AuthenticatedFinanceiroRoute: AuthenticatedFinanceiroRoute,
   AuthenticatedGarantiasRoute: AuthenticatedGarantiasRoute,
   AuthenticatedLaudosRoute: AuthenticatedLaudosRoute,
   AuthenticatedOrcamentosRoute: AuthenticatedOrcamentosRoute,
@@ -315,6 +399,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AuthRoute: AuthRoute,
+  ValidarGarantiaRoute: ValidarGarantiaRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
