@@ -54,6 +54,16 @@ function AuthPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
+  const [feedback, setFeedback] = useState<{ kind: "error" | "ok"; text: string } | null>(null);
+
+  const fail = (text: string) => {
+    setFeedback({ kind: "error", text });
+    toast.error(text);
+  };
+  const ok = (text: string) => {
+    setFeedback({ kind: "ok", text });
+    toast.success(text);
+  };
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
