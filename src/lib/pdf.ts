@@ -144,10 +144,10 @@ function itemsTable(
   doc.rect(M, y, w, 7, "F");
   doc.setFontSize(8);
   doc.setFont("helvetica", "bold");
-  doc.text("DESCRIÇÃO", cols[0] + 2, y + 4.8);
-  doc.text("QTD", cols[1], y + 4.8);
-  doc.text("V. UNIT.", cols[2], y + 4.8);
-  doc.text("TOTAL", cols[3] - 2, y + 4.8, { align: "right" });
+  doc.text("DESCRIÇÃO", cols[0]! + 2, y + 4.8);
+  doc.text("QTD", cols[1]!, y + 4.8);
+  doc.text("V. UNIT.", cols[2]!, y + 4.8);
+  doc.text("TOTAL", cols[3]! - 2, y + 4.8, { align: "right" });
   doc.setFont("helvetica", "normal");
   let yy = y + 7;
   rows.forEach((r, i) => {
@@ -158,10 +158,10 @@ function itemsTable(
       doc.rect(M, yy, w, hRow, "F");
     }
     doc.setFontSize(8.5);
-    doc.text(lines, cols[0] + 2, yy + 4.5);
-    doc.text(String(Number(r.quantity)), cols[1], yy + 4.5);
-    doc.text(brl(r.unit_price), cols[2], yy + 4.5);
-    doc.text(brl(r.total), cols[3] - 2, yy + 4.5, { align: "right" });
+    doc.text(lines, cols[0]! + 2, yy + 4.5);
+    doc.text(String(Number(r.quantity)), cols[1]!, yy + 4.5);
+    doc.text(brl(r.unit_price), cols[2]!, yy + 4.5);
+    doc.text(brl(r.total), cols[3]! - 2, yy + 4.5, { align: "right" });
     yy += hRow;
   });
   doc.setDrawColor(210, 216, 226);
