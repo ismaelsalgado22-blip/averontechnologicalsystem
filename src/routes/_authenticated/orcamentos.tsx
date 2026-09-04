@@ -331,8 +331,8 @@ function BudgetsPage() {
                     nome: b.clients?.name,
                     documento: b.number,
                     valor: brl(b.total),
-                    data: b.valid_until ? dateBR(b.valid_until) : undefined,
-                    equipamento: b.equipment ? `${b.equipment.type} ${b.equipment.brand ?? ""}` : undefined,
+                    data: b.valid_until ? dateBR(b.valid_until) : "",
+                    equipamento: b.equipment ? `${b.equipment.type} ${b.equipment.brand ?? ""}` : "",
                   }}
                 />
                 <Button size="sm" variant="outline" onClick={() => convert.mutate(b)} disabled={convert.isPending}>

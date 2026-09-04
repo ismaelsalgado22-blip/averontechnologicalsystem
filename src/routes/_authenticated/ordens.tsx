@@ -345,7 +345,7 @@ function OrdersPage() {
                     nome: o.clients?.name,
                     documento: o.number,
                     valor: brl(o.total),
-                    equipamento: o.equipment ? `${o.equipment.type} ${o.equipment.brand ?? ""}` : undefined,
+                    equipamento: o.equipment ? `${o.equipment.type} ${o.equipment.brand ?? ""}` : "",
                   }}
                 />
               </div>

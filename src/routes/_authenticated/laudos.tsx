@@ -226,7 +226,7 @@ function ReportsPage() {
                     vars={{
                       nome: r.clients?.name,
                       documento: r.number,
-                      equipamento: r.equipment ? `${r.equipment.type} ${r.equipment.brand ?? ""}` : undefined,
+                      equipamento: r.equipment ? `${r.equipment.type} ${r.equipment.brand ?? ""}` : "",
                     }}
                   />
                 </div>

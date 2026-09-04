@@ -171,7 +171,7 @@ function SchedulePage() {
                         {a.technician_name ? ` • ${a.technician_name}` : ""}
                       </p>
                       <p className="text-xs text-muted-foreground">
-                        {a.address ?? [a.clients?.address, a.clients?.city].filter(Boolean).join(", ") || "Endereço não informado"}
+                        {a.address ?? ([a.clients?.address, a.clients?.city].filter(Boolean).join(", ") || "Endereço não informado")}
                       </p>
                     </div>
                     <div className="flex flex-wrap items-center gap-2">
