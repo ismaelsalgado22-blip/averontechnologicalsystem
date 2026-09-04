@@ -274,7 +274,7 @@ function OrdersPage() {
             maxLength={80}
           />
         </div>
-        <Select value={status} onValueChange={setStatus}>
+        <Select value={status ?? ""} onValueChange={setStatus}>
           <SelectTrigger className="sm:w-56">
             <SelectValue />
           </SelectTrigger>
@@ -319,7 +319,7 @@ function OrdersPage() {
                 </div>
               </div>
               <div className="mt-3 flex flex-wrap items-center gap-2">
-                <Select value={o.status} onValueChange={(value) => changeStatus.mutate({ id: o.id, value })}>
+                <Select value={o.status ?? ""} onValueChange={(value) => changeStatus.mutate({ id: o.id, value })}>
                   <SelectTrigger className="h-8 w-44 text-xs">
                     <SelectValue />
                   </SelectTrigger>
@@ -345,7 +345,7 @@ function OrdersPage() {
                     nome: o.clients?.name,
                     documento: o.number,
                     valor: brl(o.total),
-                    equipamento: o.equipment ? `${o.equipment.type} ${o.equipment.brand ?? ""}` : undefined,
+                    equipamento: o.equipment ? `${o.equipment.type} ${o.equipment.brand ?? ""}` : "",
                   }}
                 />
               </div>
@@ -379,7 +379,7 @@ function OrdersPage() {
                 </Select>
               </Field>
               <Field label="Equipamento">
-                <Select value={form.equipment_id} onValueChange={(v) => set("equipment_id", v)}>
+                <Select value={form.equipment_id ?? ""} onValueChange={(v) => set("equipment_id", v)}>
                   <SelectTrigger>
                     <SelectValue placeholder="Selecione" />
                   </SelectTrigger>
@@ -399,7 +399,7 @@ function OrdersPage() {
                 <Input type="time" value={form.service_time} onChange={(e) => set("service_time", e.target.value)} />
               </Field>
               <Field label="Tipo de atendimento">
-                <Select value={form.service_type} onValueChange={(v) => set("service_type", v)}>
+                <Select value={form.service_type ?? ""} onValueChange={(v) => set("service_type", v)}>
                   <SelectTrigger>
                     <SelectValue />
                   </SelectTrigger>
@@ -420,7 +420,7 @@ function OrdersPage() {
                 />
               </Field>
               <Field label="Status">
-                <Select value={form.status} onValueChange={(v) => set("status", v)}>
+                <Select value={form.status ?? ""} onValueChange={(v) => set("status", v)}>
                   <SelectTrigger>
                     <SelectValue />
                   </SelectTrigger>

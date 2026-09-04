@@ -171,11 +171,11 @@ function SchedulePage() {
                         {a.technician_name ? ` • ${a.technician_name}` : ""}
                       </p>
                       <p className="text-xs text-muted-foreground">
-                        {a.address ?? [a.clients?.address, a.clients?.city].filter(Boolean).join(", ") || "Endereço não informado"}
+                        {a.address ?? ([a.clients?.address, a.clients?.city].filter(Boolean).join(", ") || "Endereço não informado")}
                       </p>
                     </div>
                     <div className="flex flex-wrap items-center gap-2">
-                      <Select value={a.status} onValueChange={(value) => changeStatus.mutate({ id: a.id, value })}>
+                      <Select value={a.status ?? ""} onValueChange={(value) => changeStatus.mutate({ id: a.id, value })}>
                         <SelectTrigger className="h-8 w-36 text-xs">
                           <SelectValue />
                         </SelectTrigger>
@@ -238,7 +238,7 @@ function SchedulePage() {
                 </Select>
               </Field>
               <Field label="Equipamento">
-                <Select value={form.equipment_id} onValueChange={(v) => set("equipment_id", v)}>
+                <Select value={form.equipment_id ?? ""} onValueChange={(v) => set("equipment_id", v)}>
                   <SelectTrigger>
                     <SelectValue placeholder="Selecione" />
                   </SelectTrigger>
@@ -275,7 +275,7 @@ function SchedulePage() {
                 />
               </Field>
               <Field label="Status">
-                <Select value={form.status} onValueChange={(v) => set("status", v)}>
+                <Select value={form.status ?? ""} onValueChange={(v) => set("status", v)}>
                   <SelectTrigger>
                     <SelectValue />
                   </SelectTrigger>

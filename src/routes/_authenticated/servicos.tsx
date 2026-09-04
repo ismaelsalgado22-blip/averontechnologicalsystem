@@ -36,7 +36,7 @@ export const Route = createFileRoute("/_authenticated/servicos")({
 
 const empty = {
   name: "",
-  category: SERVICE_CATEGORIES[0],
+  category: SERVICE_CATEGORIES[0]!,
   description: "",
   labor_price: "0",
   estimated_time: "",
@@ -68,7 +68,7 @@ function ServicesPage() {
           category: z.string().trim().min(2).max(80),
         })
         .safeParse(form);
-      if (!parsed.success) throw new Error(parsed.error.issues[0].message);
+      if (!parsed.success) throw new Error(parsed.error.issues[0]?.message ?? "Dados inválidos");
       const payload = {
         name: form.name.trim(),
         category: form.category,
@@ -195,7 +195,7 @@ function ServicesPage() {
             </Field>
             <div className="grid gap-3 sm:grid-cols-2">
               <Field label="Categoria *">
-                <Select value={form.category} onValueChange={(v) => set("category", v)}>
+                <Select value={form.category ?? ""} onValueChange={(v) => set("category", v)}>
                   <SelectTrigger>
                     <SelectValue />
                   </SelectTrigger>

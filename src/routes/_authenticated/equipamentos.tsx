@@ -85,7 +85,7 @@ function EquipmentPage() {
   const save = useMutation({
     mutationFn: async () => {
       const parsed = schema.safeParse(form);
-      if (!parsed.success) throw new Error(parsed.error.issues[0].message);
+      if (!parsed.success) throw new Error(parsed.error.issues[0]?.message ?? "Dados inválidos");
       const payload: any = Object.fromEntries(
         Object.entries(form).map(([k, v]) => [k, v === "" ? null : v]),
       );
@@ -204,7 +204,7 @@ function EquipmentPage() {
           <div className="space-y-4">
             <div className="grid gap-3 sm:grid-cols-2">
               <Field label="Cliente *">
-                <Select value={form.client_id} onValueChange={(v) => set("client_id", v)}>
+                <Select value={form.client_id ?? ""} onValueChange={(v) => set("client_id", v)}>
                   <SelectTrigger>
                     <SelectValue placeholder="Selecione o cliente" />
                   </SelectTrigger>
@@ -218,7 +218,7 @@ function EquipmentPage() {
                 </Select>
               </Field>
               <Field label="Tipo de equipamento *">
-                <Select value={form.type} onValueChange={(v) => set("type", v)}>
+                <Select value={form.type ?? ""} onValueChange={(v) => set("type", v)}>
                   <SelectTrigger>
                     <SelectValue />
                   </SelectTrigger>

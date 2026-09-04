@@ -55,12 +55,12 @@ function AuthPage() {
     e.preventDefault();
     const em = emailSchema.safeParse(email);
     const pw = passSchema.safeParse(password);
-    if (!em.success) return toast.error(em.error.issues[0].message);
-    if (!pw.success) return toast.error(pw.error.issues[0].message);
+    if (!em.success) { toast.error(em.error.issues[0]?.message ?? "Dados inválidos"); return; }
+    if (!pw.success) { toast.error(pw.error.issues[0]?.message ?? "Dados inválidos"); return; }
     setLoading(true);
     const { error } = await supabase.auth.signInWithPassword({ email: em.data, password: pw.data });
     setLoading(false);
-    if (error) return toast.error("E-mail ou senha incorretos");
+    if (error) { toast.error("E-mail ou senha incorretos"); return; }
     toast.success("Bem-vindo de volta!");
   };
 
@@ -69,9 +69,9 @@ function AuthPage() {
     const em = emailSchema.safeParse(email);
     const pw = passSchema.safeParse(password);
     const nm = z.string().trim().min(3, { message: "Informe seu nome completo" }).max(120).safeParse(name);
-    if (!nm.success) return toast.error(nm.error.issues[0].message);
-    if (!em.success) return toast.error(em.error.issues[0].message);
-    if (!pw.success) return toast.error(pw.error.issues[0].message);
+    if (!nm.success) { toast.error(nm.error.issues[0]?.message ?? "Dados inválidos"); return; }
+    if (!em.success) { toast.error(em.error.issues[0]?.message ?? "Dados inválidos"); return; }
+    if (!pw.success) { toast.error(pw.error.issues[0]?.message ?? "Dados inválidos"); return; }
     setLoading(true);
     const { data, error } = await supabase.auth.signUp({
       email: em.data,
@@ -79,7 +79,7 @@ function AuthPage() {
       options: { data: { full_name: nm.data }, emailRedirectTo: window.location.origin },
     });
     setLoading(false);
-    if (error) return toast.error(error.message);
+    if (error) { toast.error(error.message); return; }
     if (!data.session) toast.success("Conta criada! Confirme seu e-mail para entrar.");
   };
 
@@ -90,7 +90,7 @@ function AuthPage() {
     });
     if (result.error) {
       setLoading(false);
-      return toast.error("Não foi possível entrar com o Google");
+      { toast.error("Não foi possível entrar com o Google"); return; }
     }
     if (result.redirected) return;
     setLoading(false);

@@ -195,7 +195,7 @@ function ClientsPage() {
   const create = useMutation({
     mutationFn: async () => {
       const parsed = schema.safeParse(form);
-      if (!parsed.success) throw new Error(parsed.error.issues[0].message);
+      if (!parsed.success) throw new Error(parsed.error.issues[0]?.message ?? "Dados inválidos");
       const payload = Object.fromEntries(
         Object.entries(parsed.data).map(([k, v]) => [k, v === "" ? null : v]),
       );

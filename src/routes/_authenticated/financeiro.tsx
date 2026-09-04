@@ -163,7 +163,7 @@ function FinancePage() {
         </div>
       </div>
 
-      <Select value={status} onValueChange={setStatus}>
+      <Select value={status ?? ""} onValueChange={setStatus}>
         <SelectTrigger className="sm:w-56">
           <SelectValue />
         </SelectTrigger>
@@ -285,7 +285,7 @@ function FinancePage() {
                 <Input type="date" value={form.due_date} onChange={(e) => set("due_date", e.target.value)} />
               </Field>
               <Field label="Forma de pagamento">
-                <Select value={form.method} onValueChange={(v) => set("method", v)}>
+                <Select value={form.method ?? ""} onValueChange={(v) => set("method", v)}>
                   <SelectTrigger>
                     <SelectValue />
                   </SelectTrigger>
@@ -306,7 +306,7 @@ function FinancePage() {
                 />
               </Field>
               <Field label="Status">
-                <Select value={form.status} onValueChange={(v) => set("status", v)}>
+                <Select value={form.status ?? ""} onValueChange={(v) => set("status", v)}>
                   <SelectTrigger>
                     <SelectValue />
                   </SelectTrigger>

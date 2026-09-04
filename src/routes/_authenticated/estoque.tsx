@@ -35,7 +35,7 @@ export const Route = createFileRoute("/_authenticated/estoque")({
 const empty = {
   name: "",
   code: "",
-  category: PRODUCT_CATEGORIES[0],
+  category: PRODUCT_CATEGORIES[0]!,
   unit: "un",
   stock: "0",
   min_stock: "0",
@@ -79,7 +79,7 @@ function StockPage() {
       const parsed = z
         .object({ name: z.string().trim().min(2, "Informe o nome da peça").max(140) })
         .safeParse(form);
-      if (!parsed.success) throw new Error(parsed.error.issues[0].message);
+      if (!parsed.success) throw new Error(parsed.error.issues[0]?.message ?? "Dados inválidos");
       const payload = {
         name: form.name.trim(),
         code: form.code || null,
@@ -248,7 +248,7 @@ function StockPage() {
                             setForm({
                               name: p.name,
                               code: p.code ?? "",
-                              category: p.category ?? PRODUCT_CATEGORIES[0],
+                              category: p.category ?? PRODUCT_CATEGORIES[0]!,
                               unit: p.unit,
                               stock: String(p.stock),
                               min_stock: String(p.min_stock),
@@ -306,7 +306,7 @@ function StockPage() {
               <Input value={form.code} maxLength={60} onChange={(e) => set("code", e.target.value)} />
             </Field>
             <Field label="Categoria">
-              <Select value={form.category} onValueChange={(v) => set("category", v)}>
+              <Select value={form.category ?? ""} onValueChange={(v) => set("category", v)}>
                 <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>
@@ -356,7 +356,7 @@ function StockPage() {
           </DialogHeader>
           <div className="grid gap-3">
             <Field label="Tipo">
-              <Select value={move.kind} onValueChange={(v) => setMove((m) => ({ ...m, kind: v }))}>
+              <Select value={move.kind ?? ""} onValueChange={(v) => setMove((m) => ({ ...m, kind: v }))}>
                 <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>

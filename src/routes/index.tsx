@@ -71,7 +71,7 @@ function Landing() {
               <Link to="/auth">Entrar no sistema</Link>
             </Button>
             <Button asChild size="lg" variant="outline">
-              <Link to="/garantia">Validar garantia</Link>
+              <Link to="/validar-garantia">Validar garantia</Link>
             </Button>
           </div>
         </div>
