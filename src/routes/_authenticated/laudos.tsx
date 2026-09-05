@@ -22,6 +22,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { dateBR, today } from "@/lib/format";
 import { reportPdf } from "@/lib/pdf";
 import { useCompany, FALLBACK_COMPANY } from "@/hooks/use-company";
+import { DeleteButton } from "@/components/delete-button";
 
 export const Route = createFileRoute("/_authenticated/laudos")({
   head: () => ({
@@ -220,6 +221,14 @@ function ReportsPage() {
                     <FileDown className="size-4" />
                     PDF
                   </Button>
+                  <DeleteButton
+                    table="technical_reports"
+                    id={r.id}
+                    what="Laudo técnico"
+                    name={r.number}
+                    invalidate={["technical_reports", "dashboard"]}
+                    withLabel
+                  />
                   <WhatsAppButton
                     phone={r.clients?.whatsapp ?? r.clients?.phone}
                     template="laudo"

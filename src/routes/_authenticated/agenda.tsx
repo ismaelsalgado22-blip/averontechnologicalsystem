@@ -19,6 +19,7 @@ import {
 } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { dateBR, dateTimeBR, today } from "@/lib/format";
+import { DeleteButton } from "@/components/delete-button";
 
 export const Route = createFileRoute("/_authenticated/agenda")({
   head: () => ({
@@ -195,6 +196,13 @@ function SchedulePage() {
                           data: dateBR(a.scheduled_at),
                           horario: String(a.scheduled_at).slice(11, 16),
                         }}
+                      />
+                      <DeleteButton
+                        table="appointments"
+                        id={a.id}
+                        what="Agendamento"
+                        name={a.title}
+                        invalidate={["appointments", "dashboard"]}
                       />
                     </div>
                   </div>

@@ -23,6 +23,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { WO_STATUS, brl, dateBR, num, today } from "@/lib/format";
 import { workOrderPdf } from "@/lib/pdf";
 import { useCompany, FALLBACK_COMPANY } from "@/hooks/use-company";
+import { DeleteButton } from "@/components/delete-button";
 
 export const Route = createFileRoute("/_authenticated/ordens")({
   head: () => ({
@@ -347,6 +348,14 @@ function OrdersPage() {
                     valor: brl(o.total),
                     equipamento: o.equipment ? `${o.equipment.type} ${o.equipment.brand ?? ""}` : "",
                   }}
+                />
+                <DeleteButton
+                  table="work_orders"
+                  id={o.id}
+                  what="Ordem de serviço"
+                  name={o.number}
+                  invalidate={["work_orders", "dashboard", "payments"]}
+                  withLabel
                 />
               </div>
             </div>

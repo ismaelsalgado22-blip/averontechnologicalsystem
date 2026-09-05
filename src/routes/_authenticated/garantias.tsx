@@ -21,6 +21,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { dateBR, today, warrantyState } from "@/lib/format";
 import { warrantyPdf } from "@/lib/pdf";
 import { useCompany, FALLBACK_COMPANY } from "@/hooks/use-company";
+import { DeleteButton } from "@/components/delete-button";
 
 export const Route = createFileRoute("/_authenticated/garantias")({
   head: () => ({
@@ -201,6 +202,14 @@ function WarrantiesPage() {
                       phone={w.clients?.whatsapp ?? w.clients?.phone}
                       template="garantia"
                       vars={{ nome: w.clients?.name, documento: w.number, data: dateBR(w.end_date) }}
+                    />
+                    <DeleteButton
+                      table="warranties"
+                      id={w.id}
+                      what="Garantia"
+                      name={w.number}
+                      invalidate={["warranties", "dashboard"]}
+                      withLabel
                     />
                   </div>
                 </div>
