@@ -17,6 +17,7 @@ import {
 } from "@/components/ui/dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { BUDGET_STATUS, WO_STATUS, brl, dateBR, dateTimeBR, warrantyState } from "@/lib/format";
+import { DeleteButton } from "@/components/delete-button";
 
 export const Route = createFileRoute("/_authenticated/clientes/$id")({
   head: () => ({
@@ -115,6 +116,15 @@ function ClientDetail() {
               <Pencil className="size-4" />
               Editar
             </Button>
+            <DeleteButton
+              table="clients"
+              id={c.id}
+              what="Cliente"
+              name={c.name}
+              invalidate={["clients", "dashboard"]}
+              onDeleted={() => navigate({ to: "/clientes" })}
+              withLabel
+            />
           </>
         }
       />

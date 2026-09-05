@@ -18,6 +18,7 @@ import {
 } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { PAY_METHODS, PAY_METHOD_LABEL, PAY_STATUS, brl, dateBR, num, today } from "@/lib/format";
+import { DeleteButton } from "@/components/delete-button";
 
 export const Route = createFileRoute("/_authenticated/financeiro")({
   head: () => ({
@@ -214,12 +215,21 @@ function FinancePage() {
                       <StatusPill label={st?.label ?? p.status} tone={st?.tone ?? ""} />
                     </td>
                     <td className="px-4 py-3 text-right">
-                      {p.status !== "pago" && p.status !== "cancelado" && (
-                        <Button size="sm" variant="secondary" onClick={() => markPaid.mutate(p.id)}>
-                          <CheckCircle2 className="size-4" />
-                          Receber
-                        </Button>
-                      )}
+                      <div className="flex items-center justify-end gap-1">
+                        {p.status !== "pago" && p.status !== "cancelado" && (
+                          <Button size="sm" variant="secondary" onClick={() => markPaid.mutate(p.id)}>
+                            <CheckCircle2 className="size-4" />
+                            Receber
+                          </Button>
+                        )}
+                        <DeleteButton
+                          table="payments"
+                          id={p.id}
+                          what="Lançamento"
+                          name={p.description ?? undefined}
+                          invalidate={["payments", "dashboard"]}
+                        />
+                      </div>
                     </td>
                   </tr>
                 );

@@ -18,6 +18,7 @@ import {
 } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { PRODUCT_CATEGORIES, brl, dateTimeBR, num } from "@/lib/format";
+import { DeleteButton } from "@/components/delete-button";
 
 export const Route = createFileRoute("/_authenticated/estoque")({
   head: () => ({
@@ -262,6 +263,13 @@ function StockPage() {
                         >
                           <Pencil className="size-4" />
                         </Button>
+                        <DeleteButton
+                          table="products"
+                          id={p.id}
+                          what="Peça"
+                          name={p.name}
+                          invalidate={["products", "inventory_movements"]}
+                        />
                       </div>
                     </td>
                   </tr>

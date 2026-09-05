@@ -21,6 +21,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { BUDGET_STATUS, addDays, brl, dateBR, num, today } from "@/lib/format";
 import { budgetPdf } from "@/lib/pdf";
 import { useCompany, FALLBACK_COMPANY } from "@/hooks/use-company";
+import { DeleteButton } from "@/components/delete-button";
 
 export const Route = createFileRoute("/_authenticated/orcamentos")({
   head: () => ({
@@ -339,6 +340,14 @@ function BudgetsPage() {
                   <Wrench className="size-4" />
                   Gerar OS
                 </Button>
+                <DeleteButton
+                  table="budgets"
+                  id={b.id}
+                  what="Orçamento"
+                  name={b.number}
+                  invalidate={["budgets", "dashboard"]}
+                  withLabel
+                />
               </div>
             </div>
           ))}

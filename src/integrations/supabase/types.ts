@@ -23,6 +23,7 @@ export type Database = {
           entity: string
           entity_id: string | null
           id: string
+          owner_id: string
           user_id: string | null
         }
         Insert: {
@@ -33,6 +34,7 @@ export type Database = {
           entity: string
           entity_id?: string | null
           id?: string
+          owner_id?: string
           user_id?: string | null
         }
         Update: {
@@ -43,6 +45,7 @@ export type Database = {
           entity?: string
           entity_id?: string | null
           id?: string
+          owner_id?: string
           user_id?: string | null
         }
         Relationships: [
@@ -64,6 +67,7 @@ export type Database = {
           equipment_id: string | null
           id: string
           notes: string | null
+          owner_id: string
           scheduled_at: string
           status: string
           technician_name: string | null
@@ -79,6 +83,7 @@ export type Database = {
           equipment_id?: string | null
           id?: string
           notes?: string | null
+          owner_id?: string
           scheduled_at?: string
           status?: string
           technician_name?: string | null
@@ -94,6 +99,7 @@ export type Database = {
           equipment_id?: string | null
           id?: string
           notes?: string | null
+          owner_id?: string
           scheduled_at?: string
           status?: string
           technician_name?: string | null
@@ -132,6 +138,7 @@ export type Database = {
           description: string
           id: string
           kind: string
+          owner_id: string
           product_id: string | null
           quantity: number
           service_id: string | null
@@ -144,6 +151,7 @@ export type Database = {
           description: string
           id?: string
           kind?: string
+          owner_id?: string
           product_id?: string | null
           quantity?: number
           service_id?: string | null
@@ -156,6 +164,7 @@ export type Database = {
           description?: string
           id?: string
           kind?: string
+          owner_id?: string
           product_id?: string | null
           quantity?: number
           service_id?: string | null
@@ -200,6 +209,7 @@ export type Database = {
           labor_total: number
           notes: string | null
           number: string | null
+          owner_id: string
           payment_conditions: string | null
           problem_description: string | null
           status: Database["public"]["Enums"]["budget_status"]
@@ -221,6 +231,7 @@ export type Database = {
           labor_total?: number
           notes?: string | null
           number?: string | null
+          owner_id?: string
           payment_conditions?: string | null
           problem_description?: string | null
           status?: Database["public"]["Enums"]["budget_status"]
@@ -242,6 +253,7 @@ export type Database = {
           labor_total?: number
           notes?: string | null
           number?: string | null
+          owner_id?: string
           payment_conditions?: string | null
           problem_description?: string | null
           status?: Database["public"]["Enums"]["budget_status"]
@@ -283,6 +295,7 @@ export type Database = {
           name: string
           notes: string | null
           number: string | null
+          owner_id: string
           phone: string | null
           state: string | null
           state_registration: string | null
@@ -306,6 +319,7 @@ export type Database = {
           name: string
           notes?: string | null
           number?: string | null
+          owner_id?: string
           phone?: string | null
           state?: string | null
           state_registration?: string | null
@@ -329,6 +343,7 @@ export type Database = {
           name?: string
           notes?: string | null
           number?: string | null
+          owner_id?: string
           phone?: string | null
           state?: string | null
           state_registration?: string | null
@@ -352,6 +367,7 @@ export type Database = {
           instagram: string | null
           logo_url: string | null
           name: string
+          owner_id: string
           payment_conditions: string | null
           phone: string | null
           state: string | null
@@ -372,6 +388,7 @@ export type Database = {
           instagram?: string | null
           logo_url?: string | null
           name?: string
+          owner_id?: string
           payment_conditions?: string | null
           phone?: string | null
           state?: string | null
@@ -392,6 +409,7 @@ export type Database = {
           instagram?: string | null
           logo_url?: string | null
           name?: string
+          owner_id?: string
           payment_conditions?: string | null
           phone?: string | null
           state?: string | null
@@ -405,16 +423,19 @@ export type Database = {
       doc_counters: {
         Row: {
           last_value: number
+          owner_id: string
           prefix: string
           year: number
         }
         Insert: {
           last_value?: number
+          owner_id: string
           prefix: string
           year: number
         }
         Update: {
           last_value?: number
+          owner_id?: string
           prefix?: string
           year?: number
         }
@@ -427,6 +448,7 @@ export type Database = {
           equipment_id: string | null
           id: string
           kind: string
+          owner_id: string
           reference_id: string | null
           title: string
           url: string | null
@@ -437,6 +459,7 @@ export type Database = {
           equipment_id?: string | null
           id?: string
           kind: string
+          owner_id?: string
           reference_id?: string | null
           title: string
           url?: string | null
@@ -447,6 +470,7 @@ export type Database = {
           equipment_id?: string | null
           id?: string
           kind?: string
+          owner_id?: string
           reference_id?: string | null
           title?: string
           url?: string | null
@@ -482,6 +506,7 @@ export type Database = {
           install_location: string | null
           model: string | null
           notes: string | null
+          owner_id: string
           photos: string[]
           refrigerant: string | null
           refrigerant_amount: string | null
@@ -503,6 +528,7 @@ export type Database = {
           install_location?: string | null
           model?: string | null
           notes?: string | null
+          owner_id?: string
           photos?: string[]
           refrigerant?: string | null
           refrigerant_amount?: string | null
@@ -524,6 +550,7 @@ export type Database = {
           install_location?: string | null
           model?: string | null
           notes?: string | null
+          owner_id?: string
           photos?: string[]
           refrigerant?: string | null
           refrigerant_amount?: string | null
@@ -548,6 +575,7 @@ export type Database = {
           created_by: string | null
           id: string
           kind: string
+          owner_id: string
           product_id: string
           quantity: number
           reason: string | null
@@ -558,6 +586,7 @@ export type Database = {
           created_by?: string | null
           id?: string
           kind?: string
+          owner_id?: string
           product_id: string
           quantity: number
           reason?: string | null
@@ -568,6 +597,7 @@ export type Database = {
           created_by?: string | null
           id?: string
           kind?: string
+          owner_id?: string
           product_id?: string
           quantity?: number
           reason?: string | null
@@ -595,6 +625,7 @@ export type Database = {
           installments: number
           method: Database["public"]["Enums"]["payment_method"]
           notes: string | null
+          owner_id: string
           paid_at: string | null
           status: Database["public"]["Enums"]["payment_status"]
           updated_at: string
@@ -611,6 +642,7 @@ export type Database = {
           installments?: number
           method?: Database["public"]["Enums"]["payment_method"]
           notes?: string | null
+          owner_id?: string
           paid_at?: string | null
           status?: Database["public"]["Enums"]["payment_status"]
           updated_at?: string
@@ -627,6 +659,7 @@ export type Database = {
           installments?: number
           method?: Database["public"]["Enums"]["payment_method"]
           notes?: string | null
+          owner_id?: string
           paid_at?: string | null
           status?: Database["public"]["Enums"]["payment_status"]
           updated_at?: string
@@ -665,6 +698,7 @@ export type Database = {
           id: string
           min_stock: number
           name: string
+          owner_id: string
           price: number
           stock: number
           supplier: string | null
@@ -679,6 +713,7 @@ export type Database = {
           id?: string
           min_stock?: number
           name: string
+          owner_id?: string
           price?: number
           stock?: number
           supplier?: string | null
@@ -693,6 +728,7 @@ export type Database = {
           id?: string
           min_stock?: number
           name?: string
+          owner_id?: string
           price?: number
           stock?: number
           supplier?: string | null
@@ -742,6 +778,7 @@ export type Database = {
           labor_price: number
           name: string
           notes: string | null
+          owner_id: string
           updated_at: string
         }
         Insert: {
@@ -754,6 +791,7 @@ export type Database = {
           labor_price?: number
           name: string
           notes?: string | null
+          owner_id?: string
           updated_at?: string
         }
         Update: {
@@ -766,6 +804,7 @@ export type Database = {
           labor_price?: number
           name?: string
           notes?: string | null
+          owner_id?: string
           updated_at?: string
         }
         Relationships: []
@@ -792,6 +831,7 @@ export type Database = {
           insulation: string | null
           location: string | null
           number: string | null
+          owner_id: string
           photos: string[]
           piping: string | null
           pressures: string | null
@@ -829,6 +869,7 @@ export type Database = {
           insulation?: string | null
           location?: string | null
           number?: string | null
+          owner_id?: string
           photos?: string[]
           piping?: string | null
           pressures?: string | null
@@ -866,6 +907,7 @@ export type Database = {
           insulation?: string | null
           location?: string | null
           number?: string | null
+          owner_id?: string
           photos?: string[]
           piping?: string | null
           pressures?: string | null
@@ -940,6 +982,7 @@ export type Database = {
           id: string
           notes: string | null
           number: string | null
+          owner_id: string
           parts_used: string | null
           service_date: string
           service_performed: string | null
@@ -959,6 +1002,7 @@ export type Database = {
           id?: string
           notes?: string | null
           number?: string | null
+          owner_id?: string
           parts_used?: string | null
           service_date?: string
           service_performed?: string | null
@@ -978,6 +1022,7 @@ export type Database = {
           id?: string
           notes?: string | null
           number?: string | null
+          owner_id?: string
           parts_used?: string | null
           service_date?: string
           service_performed?: string | null
@@ -1015,6 +1060,7 @@ export type Database = {
           description: string
           id: string
           kind: string
+          owner_id: string
           product_id: string | null
           quantity: number
           total: number
@@ -1026,6 +1072,7 @@ export type Database = {
           description: string
           id?: string
           kind?: string
+          owner_id?: string
           product_id?: string | null
           quantity?: number
           total?: number
@@ -1037,6 +1084,7 @@ export type Database = {
           description?: string
           id?: string
           kind?: string
+          owner_id?: string
           product_id?: string | null
           quantity?: number
           total?: number
@@ -1073,6 +1121,7 @@ export type Database = {
           id: string
           notes: string | null
           number: string | null
+          owner_id: string
           photos_after: string[]
           photos_before: string[]
           photos_during: string[]
@@ -1105,6 +1154,7 @@ export type Database = {
           id?: string
           notes?: string | null
           number?: string | null
+          owner_id?: string
           photos_after?: string[]
           photos_before?: string[]
           photos_during?: string[]
@@ -1137,6 +1187,7 @@ export type Database = {
           id?: string
           notes?: string | null
           number?: string | null
+          owner_id?: string
           photos_after?: string[]
           photos_before?: string[]
           photos_during?: string[]
