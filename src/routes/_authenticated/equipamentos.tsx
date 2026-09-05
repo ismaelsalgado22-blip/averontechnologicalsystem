@@ -20,6 +20,7 @@ import {
 } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { EQUIPMENT_TYPES, dateBR } from "@/lib/format";
+import { DeleteButton } from "@/components/delete-button";
 
 export const Route = createFileRoute("/_authenticated/equipamentos")({
   head: () => ({
@@ -183,6 +184,13 @@ function EquipmentPage() {
                 >
                   <Pencil className="size-4" />
                 </Button>
+                <DeleteButton
+                  table="equipment"
+                  id={e.id}
+                  what="Equipamento"
+                  name={[e.type, e.brand].filter(Boolean).join(" ")}
+                  invalidate={["equipment", "dashboard"]}
+                />
               </div>
               <div className="space-y-0.5 text-xs text-muted-foreground">
                 {e.serial_number && <p>Série: {e.serial_number}</p>}

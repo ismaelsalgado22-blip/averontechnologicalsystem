@@ -20,6 +20,7 @@ import {
 } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { SERVICE_CATEGORIES, brl, num } from "@/lib/format";
+import { DeleteButton } from "@/components/delete-button";
 
 export const Route = createFileRoute("/_authenticated/servicos")({
   head: () => ({
@@ -175,6 +176,13 @@ function ServicesPage() {
                       >
                         <Pencil className="size-4" />
                       </Button>
+                      <DeleteButton
+                        table="services"
+                        id={s.id}
+                        what="Serviço"
+                        name={s.name}
+                        invalidate={["services"]}
+                      />
                     </div>
                   </div>
                 ))}

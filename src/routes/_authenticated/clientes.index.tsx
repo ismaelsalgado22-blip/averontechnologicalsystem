@@ -21,6 +21,7 @@ import {
 } from "@/components/ui/dialog";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { maskDoc, maskPhone } from "@/lib/format";
+import { DeleteButton } from "@/components/delete-button";
 
 export const Route = createFileRoute("/_authenticated/clientes/")({
   head: () => ({
@@ -295,6 +296,13 @@ function ClientsPage() {
                   </Link>
                 </Button>
                 <WhatsAppButton phone={c.whatsapp ?? c.phone} vars={{ nome: c.name }} />
+                <DeleteButton
+                  table="clients"
+                  id={c.id}
+                  what="Cliente"
+                  name={c.name}
+                  invalidate={["clients", "dashboard"]}
+                />
               </div>
             </div>
           ))}
