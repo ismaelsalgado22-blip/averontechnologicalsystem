@@ -23,9 +23,9 @@ import { DeleteButton } from "@/components/delete-button";
 export const Route = createFileRoute("/_authenticated/estoque")({
   head: () => ({
     meta: [
-      { title: "Estoque de peças | MEC Frio Refrigeração" },
+      { title: "Estoque de peças | Averon" },
       { name: "description", content: "Controle de estoque de peças e materiais de refrigeração com alerta de estoque mínimo." },
-      { property: "og:title", content: "Estoque de peças | MEC Frio Refrigeração" },
+      { property: "og:title", content: "Estoque de peças | Averon" },
       { property: "og:description", content: "Peças, materiais, custos, preços de venda e movimentações de estoque." },
       { name: "robots", content: "noindex" },
     ],

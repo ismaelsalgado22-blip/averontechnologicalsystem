@@ -29,10 +29,10 @@ import { WO_STATUS, brl, dateBR, dateTimeBR, daysUntil, today } from "@/lib/form
 export const Route = createFileRoute("/_authenticated/dashboard")({
   head: () => ({
     meta: [
-      { title: "Dashboard | MEC Frio Refrigeração" },
+      { title: "Dashboard | Averon" },
       { name: "description", content: "Visão geral dos atendimentos, orçamentos, garantias e faturamento." },
-      { property: "og:title", content: "Dashboard | MEC Frio Refrigeração" },
-      { property: "og:description", content: "Indicadores operacionais e financeiros da MEC Frio." },
+      { property: "og:title", content: "Dashboard | Averon" },
+      { property: "og:description", content: "Indicadores operacionais e financeiros da Averon." },
       { name: "robots", content: "noindex" },
     ],
   }),

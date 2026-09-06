@@ -25,9 +25,9 @@ import { DeleteButton } from "@/components/delete-button";
 export const Route = createFileRoute("/_authenticated/equipamentos")({
   head: () => ({
     meta: [
-      { title: "Equipamentos | MEC Frio Refrigeração" },
+      { title: "Equipamentos | Averon" },
       { name: "description", content: "Cadastro técnico de equipamentos de refrigeração por cliente, com fotos e histórico." },
-      { property: "og:title", content: "Equipamentos | MEC Frio Refrigeração" },
+      { property: "og:title", content: "Equipamentos | Averon" },
       { property: "og:description", content: "Marca, modelo, número de série, gás refrigerante e fotos de cada equipamento." },
       { name: "robots", content: "noindex" },
     ],

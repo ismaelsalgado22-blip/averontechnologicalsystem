@@ -28,9 +28,9 @@ import { DeleteButton } from "@/components/delete-button";
 export const Route = createFileRoute("/_authenticated/ordens")({
   head: () => ({
     meta: [
-      { title: "Ordens de serviço | MEC Frio Refrigeração" },
+      { title: "Ordens de serviço | Averon" },
       { name: "description", content: "Execute ordens de serviço com diagnóstico, medições, fotos antes e depois e assinatura digital do cliente." },
-      { property: "og:title", content: "Ordens de serviço | MEC Frio Refrigeração" },
+      { property: "og:title", content: "Ordens de serviço | Averon" },
       { property: "og:description", content: "Controle completo do atendimento técnico em refrigeração, do diagnóstico à conclusão." },
       { name: "robots", content: "noindex" },
     ],

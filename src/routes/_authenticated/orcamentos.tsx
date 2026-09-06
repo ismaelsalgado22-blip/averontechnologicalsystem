@@ -26,9 +26,9 @@ import { DeleteButton } from "@/components/delete-button";
 export const Route = createFileRoute("/_authenticated/orcamentos")({
   head: () => ({
     meta: [
-      { title: "Orçamentos | MEC Frio Refrigeração" },
+      { title: "Orçamentos | Averon" },
       { name: "description", content: "Crie orçamentos numerados com peças, mão de obra, taxa de deslocamento e envio por WhatsApp." },
-      { property: "og:title", content: "Orçamentos | MEC Frio Refrigeração" },
+      { property: "og:title", content: "Orçamentos | Averon" },
       { property: "og:description", content: "Orçamentos profissionais em PDF com aprovação e conversão em ordem de serviço." },
       { name: "robots", content: "noindex" },
     ],

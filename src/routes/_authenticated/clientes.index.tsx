@@ -26,10 +26,10 @@ import { DeleteButton } from "@/components/delete-button";
 export const Route = createFileRoute("/_authenticated/clientes/")({
   head: () => ({
     meta: [
-      { title: "Clientes | MEC Frio Refrigeração" },
+      { title: "Clientes | Averon" },
       { name: "description", content: "Cadastro de clientes pessoa física e jurídica com histórico de atendimentos." },
-      { property: "og:title", content: "Clientes | MEC Frio Refrigeração" },
-      { property: "og:description", content: "Cadastro e histórico de clientes da MEC Frio." },
+      { property: "og:title", content: "Clientes | Averon" },
+      { property: "og:description", content: "Cadastro e histórico de clientes da Averon." },
       { name: "robots", content: "noindex" },
     ],
   }),

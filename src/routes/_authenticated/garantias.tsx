@@ -26,9 +26,9 @@ import { DeleteButton } from "@/components/delete-button";
 export const Route = createFileRoute("/_authenticated/garantias")({
   head: () => ({
     meta: [
-      { title: "Garantias | MEC Frio Refrigeração" },
+      { title: "Garantias | Averon" },
       { name: "description", content: "Emita certificados de garantia com QR Code de validação e controle de vencimento." },
-      { property: "og:title", content: "Garantias | MEC Frio Refrigeração" },
+      { property: "og:title", content: "Garantias | Averon" },
       { property: "og:description", content: "Certificados de garantia numerados, com prazo, condições e validação online." },
       { name: "robots", content: "noindex" },
     ],

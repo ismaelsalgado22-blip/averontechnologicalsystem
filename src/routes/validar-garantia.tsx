@@ -11,12 +11,12 @@ import { dateBR, warrantyState } from "@/lib/format";
 export const Route = createFileRoute("/validar-garantia")({
   head: () => ({
     meta: [
-      { title: "Validar garantia | MEC Frio Refrigeração" },
+      { title: "Validar garantia | Averon" },
       {
         name: "description",
-        content: "Consulte a autenticidade e a validade do certificado de garantia emitido pela MEC Frio Refrigeração.",
+        content: "Consulte a autenticidade e a validade do certificado de garantia emitido pela Averon.",
       },
-      { property: "og:title", content: "Validar garantia | MEC Frio Refrigeração" },
+      { property: "og:title", content: "Validar garantia | Averon" },
       {
         property: "og:description",
         content: "Digite o número do certificado para conferir prazo, equipamento e condições da garantia.",

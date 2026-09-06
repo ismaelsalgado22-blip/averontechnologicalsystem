@@ -22,9 +22,9 @@ import { DeleteButton } from "@/components/delete-button";
 export const Route = createFileRoute("/_authenticated/clientes/$id")({
   head: () => ({
     meta: [
-      { title: "Ficha do cliente | MEC Frio Refrigeração" },
+      { title: "Ficha do cliente | Averon" },
       { name: "description", content: "Histórico completo do cliente: equipamentos, orçamentos, ordens de serviço e garantias." },
-      { property: "og:title", content: "Ficha do cliente | MEC Frio Refrigeração" },
+      { property: "og:title", content: "Ficha do cliente | Averon" },
       { property: "og:description", content: "Histórico de atendimentos e documentos do cliente." },
       { name: "robots", content: "noindex" },
     ],

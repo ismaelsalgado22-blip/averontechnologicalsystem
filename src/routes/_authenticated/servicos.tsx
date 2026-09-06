@@ -25,9 +25,9 @@ import { DeleteButton } from "@/components/delete-button";
 export const Route = createFileRoute("/_authenticated/servicos")({
   head: () => ({
     meta: [
-      { title: "Tabela de serviços | MEC Frio Refrigeração" },
+      { title: "Tabela de serviços | Averon" },
       { name: "description", content: "Tabela de preços de mão de obra por categoria de equipamento e tipo de serviço." },
-      { property: "og:title", content: "Tabela de serviços | MEC Frio Refrigeração" },
+      { property: "og:title", content: "Tabela de serviços | Averon" },
       { property: "og:description", content: "Preços de mão de obra usados nos orçamentos e ordens de serviço." },
       { name: "robots", content: "noindex" },
     ],

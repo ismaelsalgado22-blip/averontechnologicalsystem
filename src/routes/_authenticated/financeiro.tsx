@@ -23,9 +23,9 @@ import { DeleteButton } from "@/components/delete-button";
 export const Route = createFileRoute("/_authenticated/financeiro")({
   head: () => ({
     meta: [
-      { title: "Financeiro | MEC Frio Refrigeração" },
+      { title: "Financeiro | Averon" },
       { name: "description", content: "Contas a receber, formas de pagamento, faturamento do mês e inadimplência." },
-      { property: "og:title", content: "Financeiro | MEC Frio Refrigeração" },
+      { property: "og:title", content: "Financeiro | Averon" },
       { property: "og:description", content: "Controle de recebimentos por cliente, com vencimentos e baixa de pagamentos." },
       { name: "robots", content: "noindex" },
     ],

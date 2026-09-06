@@ -14,16 +14,16 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 export const Route = createFileRoute("/auth")({
   head: () => ({
     meta: [
-      { title: "Acesso ao sistema | MEC Frio Refrigeração" },
+      { title: "Acesso ao sistema | Averon" },
       {
         name: "description",
         content:
-          "Área restrita da MEC Frio Refrigeração: acesse o sistema de gestão de clientes, orçamentos, ordens de serviço e garantias.",
+          "Área restrita da Averon: acesse o sistema de gestão de clientes, orçamentos, ordens de serviço e garantias.",
       },
-      { property: "og:title", content: "Acesso ao sistema | MEC Frio Refrigeração" },
+      { property: "og:title", content: "Acesso ao sistema | Averon" },
       {
         property: "og:description",
-        content: "Entre no sistema de gestão comercial e técnica da MEC Frio Refrigeração.",
+        content: "Entre no sistema de gestão comercial e técnica da Averon.",
       },
       { name: "robots", content: "noindex" },
     ],
@@ -145,7 +145,7 @@ function AuthPage() {
           </div>
           <div>
             <h2 className="font-display text-2xl font-bold">Acesso ao sistema</h2>
-            <p className="text-sm text-muted-foreground">Área restrita da equipe MEC Frio.</p>
+            <p className="text-sm text-muted-foreground">Área restrita da equipe Averon.</p>
           </div>
 
           <Tabs defaultValue="login">
