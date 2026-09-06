@@ -1,5 +1,5 @@
-import { Snowflake } from "lucide-react";
 import { cn } from "@/lib/utils";
+import logoAsset from "@/assets/averon-logo.png.asset.json";
 
 export function BrandLogo({
   className,
@@ -11,7 +11,7 @@ export function BrandLogo({
   return (
     <div className={cn("flex items-center gap-3", className)}>
       <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-gradient-brand shadow-glow">
-        <Snowflake className="size-5 text-primary-foreground" strokeWidth={2.4} />
+        <img src={logoAsset.url} alt="" className="size-7 object-contain" />
       </span>
       {!compact && (
         <span className="leading-tight">
