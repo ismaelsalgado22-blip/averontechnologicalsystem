@@ -10,9 +10,11 @@ export function BrandLogo({
 }) {
   return (
     <div className={cn("flex items-center gap-3", className)}>
-      <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-gradient-brand shadow-glow">
-        <img src={logoAsset.url} alt="" className="size-7 object-contain" />
-      </span>
+      <img
+        src={logoAsset.url}
+        alt="MEC Frio Refrigeração"
+        className="h-12 w-auto shrink-0 object-contain"
+      />
       {!compact && (
         <span className="leading-tight">
           <span className="block font-display text-sm font-extrabold uppercase tracking-[0.14em] text-foreground">
