@@ -205,7 +205,7 @@ function BudgetsPage() {
     onError: (e: any) => toast.error(e.message ?? "Falha ao converter orçamento"),
   });
 
-  const downloadPdf = async (budget: any) => {
+  const buildPdf = async (budget: any) => {
     const { data: bItems } = await supabase.from("budget_items").select("*").eq("budget_id", budget.id);
     const { data: client } = await supabase.from("clients").select("*").eq("id", budget.client_id).maybeSingle();
     const eq = budget.equipment_id
@@ -218,6 +218,14 @@ function BudgetsPage() {
       client,
       equipment: eq,
     });
+  };
+
+  const downloadPdf = async (item: any) => {
+    try {
+      await buildPdf(item);
+    } catch (e: any) {
+      toast.error(e?.message ?? "Não foi possível gerar o PDF");
+    }
   };
 
   const filtered = useMemo(() => {
