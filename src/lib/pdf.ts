@@ -87,6 +87,24 @@ function footer(doc: Doc, company: Company) {
   doc.setTextColor(20, 20, 20);
 }
 
+function deliver(doc: Doc, filename: string) {
+  const safe = (filename || "documento").replace(/[^\w\-.]+/g, "-") + (filename.endsWith(".pdf") ? "" : ".pdf");
+  const blob = doc.output("blob") as Blob;
+  const url = URL.createObjectURL(blob);
+  const win = window.open(url, "_blank");
+  if (!win) {
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = safe;
+    a.rel = "noopener";
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+  }
+  setTimeout(() => URL.revokeObjectURL(url), 60000);
+  return safe;
+}
+
 function sectionTitle(doc: Doc, y: number, text: string) {
   const w = doc.internal.pageSize.getWidth();
   doc.setFillColor(...NAVY);
@@ -278,7 +296,7 @@ export async function budgetPdf(opts: {
   doc.text("Data", doc.internal.pageSize.getWidth() - M - 60, sy + 14);
 
   footer(doc, company);
-  doc.save(`${budget.number}.pdf`);
+  deliver(doc, `${budget.number || "documento"}.pdf`);
 }
 
 export async function workOrderPdf(opts: {
@@ -356,7 +374,7 @@ export async function workOrderPdf(opts: {
   );
 
   footer(doc, company);
-  doc.save(`${order.number}.pdf`);
+  deliver(doc, `${order.number || "documento"}.pdf`);
 }
 
 export async function reportPdf(opts: {
@@ -443,7 +461,7 @@ export async function reportPdf(opts: {
   doc.text(`Responsável técnico — ${report.technician_name ?? company.name}`, M, sy + 4);
 
   footer(doc, company);
-  doc.save(`${report.number}.pdf`);
+  deliver(doc, `${report.number || "documento"}.pdf`);
 }
 
 export async function warrantyPdf(opts: {
@@ -520,5 +538,5 @@ export async function warrantyPdf(opts: {
   }
 
   footer(doc, company);
-  doc.save(`${warranty.number}.pdf`);
+  deliver(doc, `${warranty.number || "documento"}.pdf`);
 }

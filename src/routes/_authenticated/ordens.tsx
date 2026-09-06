@@ -186,7 +186,7 @@ function OrdersPage() {
     setEditId(null);
   };
 
-  const downloadPdf = async (order: any) => {
+  const buildPdf = async (order: any) => {
     const { data: oItems } = await supabase.from("work_order_items").select("*").eq("work_order_id", order.id);
     const { data: client } = await supabase.from("clients").select("*").eq("id", order.client_id).maybeSingle();
     const eq = order.equipment_id
@@ -199,6 +199,14 @@ function OrdersPage() {
       client,
       equipment: eq,
     });
+  };
+
+  const downloadPdf = async (item: any) => {
+    try {
+      await buildPdf(item);
+    } catch (e: any) {
+      toast.error(e?.message ?? "Não foi possível gerar o PDF");
+    }
   };
 
   const filtered = useMemo(() => {

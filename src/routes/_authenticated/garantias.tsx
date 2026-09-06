@@ -112,7 +112,7 @@ function WarrantiesPage() {
     onError: (e: any) => toast.error(e.message ?? "Falha ao emitir garantia"),
   });
 
-  const downloadPdf = async (w: any) => {
+  const buildPdf = async (w: any) => {
     const { data: client } = await supabase.from("clients").select("*").eq("id", w.client_id).maybeSingle();
     const eq = w.equipment_id
       ? (await supabase.from("equipment").select("*").eq("id", w.equipment_id).maybeSingle()).data
@@ -124,6 +124,14 @@ function WarrantiesPage() {
       equipment: eq,
       validateUrl: `${window.location.origin}/validar-garantia?numero=${encodeURIComponent(w.number)}`,
     });
+  };
+
+  const downloadPdf = async (item: any) => {
+    try {
+      await buildPdf(item);
+    } catch (e: any) {
+      toast.error(e?.message ?? "Não foi possível gerar o PDF");
+    }
   };
 
   const filtered = useMemo(() => {

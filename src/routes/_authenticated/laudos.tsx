@@ -132,12 +132,20 @@ function ReportsPage() {
     onError: (e: any) => toast.error(e.message ?? "Falha ao salvar laudo"),
   });
 
-  const downloadPdf = async (report: any) => {
+  const buildPdf = async (report: any) => {
     const { data: client } = await supabase.from("clients").select("*").eq("id", report.client_id).maybeSingle();
     const eq = report.equipment_id
       ? (await supabase.from("equipment").select("*").eq("id", report.equipment_id).maybeSingle()).data
       : null;
     await reportPdf({ company: company ?? FALLBACK_COMPANY, report, client, equipment: eq });
+  };
+
+  const downloadPdf = async (item: any) => {
+    try {
+      await buildPdf(item);
+    } catch (e: any) {
+      toast.error(e?.message ?? "Não foi possível gerar o PDF");
+    }
   };
 
   const filtered = useMemo(() => {
