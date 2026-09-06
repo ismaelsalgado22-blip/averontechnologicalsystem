@@ -21,12 +21,12 @@ const fill = (tpl: string, v: MsgVars) =>
 export const MSG = {
   orcamento: (v: MsgVars) =>
     fill(
-      "Olá, [NOME]! Aqui é da MEC Frio Refrigeração. Estamos enviando seu orçamento [DOCUMENTO] referente ao equipamento [EQUIPAMENTO]. Valor total: [VALOR]. Você pode visualizar pelo link: [LINK]",
+      "Olá, [NOME]! Aqui é da Averon. Estamos enviando seu orçamento [DOCUMENTO] referente ao equipamento [EQUIPAMENTO]. Valor total: [VALOR]. Você pode visualizar pelo link: [LINK]",
       v,
     ),
   agendamento: (v: MsgVars) =>
     fill(
-      "Olá, [NOME]! Confirmamos seu atendimento da MEC Frio Refrigeração para o dia [DATA] às [HORÁRIO]. Qualquer alteração, é só nos avisar por aqui.",
+      "Olá, [NOME]! Confirmamos seu atendimento da Averon para o dia [DATA] às [HORÁRIO]. Qualquer alteração, é só nos avisar por aqui.",
       v,
     ),
   concluido: (v: MsgVars) =>
@@ -36,15 +36,15 @@ export const MSG = {
     ),
   garantia: (v: MsgVars) =>
     fill(
-      "Olá, [NOME]! Seu serviço realizado pela MEC Frio Refrigeração possui garantia até [DATA]. Certificado [DOCUMENTO]. Qualquer necessidade, estamos à disposição.",
+      "Olá, [NOME]! Seu serviço realizado pela Averon possui garantia até [DATA]. Certificado [DOCUMENTO]. Qualquer necessidade, estamos à disposição.",
       v,
     ),
   laudo: (v: MsgVars) =>
     fill(
-      "Olá, [NOME]! Segue o Laudo Técnico [DOCUMENTO] do equipamento [EQUIPAMENTO], emitido pela MEC Frio Refrigeração.",
+      "Olá, [NOME]! Segue o Laudo Técnico [DOCUMENTO] do equipamento [EQUIPAMENTO], emitido pela Averon.",
       v,
     ),
-  livre: (v: MsgVars) => fill("Olá, [NOME]! Aqui é da MEC Frio Refrigeração.", v),
+  livre: (v: MsgVars) => fill("Olá, [NOME]! Aqui é da Averon.", v),
 };
 
 export const MSG_OPTIONS = [

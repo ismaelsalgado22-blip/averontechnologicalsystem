@@ -13,9 +13,9 @@ import { useProfile } from "@/hooks/use-auth";
 export const Route = createFileRoute("/_authenticated/configuracoes")({
   head: () => ({
     meta: [
-      { title: "Configurações da empresa | MEC Frio Refrigeração" },
+      { title: "Configurações da empresa | Averon" },
       { name: "description", content: "Dados da empresa, contatos, dados bancários e termos padrão de garantia e pagamento." },
-      { property: "og:title", content: "Configurações da empresa | MEC Frio Refrigeração" },
+      { property: "og:title", content: "Configurações da empresa | Averon" },
       { property: "og:description", content: "Informações que aparecem nos orçamentos, ordens de serviço e certificados." },
       { name: "robots", content: "noindex" },
     ],

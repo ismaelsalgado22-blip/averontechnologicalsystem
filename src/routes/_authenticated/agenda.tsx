@@ -24,9 +24,9 @@ import { DeleteButton } from "@/components/delete-button";
 export const Route = createFileRoute("/_authenticated/agenda")({
   head: () => ({
     meta: [
-      { title: "Agenda de atendimentos | MEC Frio Refrigeração" },
+      { title: "Agenda de atendimentos | Averon" },
       { name: "description", content: "Agende visitas técnicas e manutenções preventivas com confirmação por WhatsApp." },
-      { property: "og:title", content: "Agenda de atendimentos | MEC Frio Refrigeração" },
+      { property: "og:title", content: "Agenda de atendimentos | Averon" },
       { property: "og:description", content: "Visitas técnicas, manutenções preventivas e rota do dia da equipe." },
       { name: "robots", content: "noindex" },
     ],

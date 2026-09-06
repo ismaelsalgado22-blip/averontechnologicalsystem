@@ -15,13 +15,13 @@ import { Button } from "@/components/ui/button";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "MEC Frio Refrigeração | Gestão comercial e técnica" },
+      { title: "Averon | Gestão comercial e técnica" },
       {
         name: "description",
         content:
-          "Sistema de gestão da MEC Frio Refrigeração: clientes, equipamentos, orçamentos, ordens de serviço, laudos técnicos, garantias, agenda, estoque e financeiro.",
+          "Sistema de gestão da Averon: clientes, equipamentos, orçamentos, ordens de serviço, laudos técnicos, garantias, agenda, estoque e financeiro.",
       },
-      { property: "og:title", content: "MEC Frio Refrigeração | Gestão comercial e técnica" },
+      { property: "og:title", content: "Averon | Gestão comercial e técnica" },
       {
         property: "og:description",
         content:
@@ -59,7 +59,7 @@ function Landing() {
         <div className="mx-auto max-w-6xl px-4 py-20">
           <p className="kpi-label">Refrigeração comercial e industrial</p>
           <h1 className="mt-3 max-w-3xl font-display text-4xl font-extrabold leading-[1.05] sm:text-6xl">
-            Gestão completa da <span className="text-brand-gradient">MEC Frio Refrigeração</span>
+            Gestão completa da <span className="text-brand-gradient">Averon</span>
           </h1>
           <p className="mt-5 max-w-2xl text-base text-muted-foreground">
             Um só sistema para cadastro de clientes e equipamentos, orçamentos, ordens de serviço, laudos
@@ -91,7 +91,7 @@ function Landing() {
       </section>
 
       <footer className="border-t border-border py-8 text-center text-xs text-muted-foreground">
-        MEC Frio Refrigeração — Refrigeração comercial e industrial
+        Averon — Refrigeração comercial e industrial
       </footer>
     </div>
   );

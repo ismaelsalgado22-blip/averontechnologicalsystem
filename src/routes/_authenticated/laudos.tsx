@@ -27,9 +27,9 @@ import { DeleteButton } from "@/components/delete-button";
 export const Route = createFileRoute("/_authenticated/laudos")({
   head: () => ({
     meta: [
-      { title: "Laudos técnicos | MEC Frio Refrigeração" },
+      { title: "Laudos técnicos | Averon" },
       { name: "description", content: "Emita laudos técnicos com checklist de inspeção, medições, diagnóstico e recomendações." },
-      { property: "og:title", content: "Laudos técnicos | MEC Frio Refrigeração" },
+      { property: "og:title", content: "Laudos técnicos | Averon" },
       { property: "og:description", content: "Checklist completo de inspeção em refrigeração com laudo em PDF." },
       { name: "robots", content: "noindex" },
     ],

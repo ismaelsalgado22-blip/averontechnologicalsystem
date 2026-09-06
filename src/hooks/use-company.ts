@@ -3,7 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 import type { Company } from "@/lib/pdf";
 
 export const FALLBACK_COMPANY: Company = {
-  name: "MEC Frio Refrigeração",
+  name: "Averon",
   tagline: "Refrigeração Comercial e Industrial",
 };
 
