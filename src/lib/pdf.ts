@@ -97,23 +97,16 @@ function footer(doc: Doc, company: Company) {
   doc.setTextColor(20, 20, 20);
 }
 
-function deliver(doc: Doc, filename: string) {
-  const safe = (filename || "documento").replace(/[^\w\-.]+/g, "-") + (filename.endsWith(".pdf") ? "" : ".pdf");
+export type PdfResult = { url: string; filename: string; blob: Blob };
+
+/** Gera o arquivo e devolve um endereço temporário para visualizar/baixar na própria tela. */
+function deliver(doc: Doc, filename: string): PdfResult {
+  const base = filename || "documento";
+  const safe = base.replace(/[^\w\-.]+/g, "-") + (base.toLowerCase().endsWith(".pdf") ? "" : ".pdf");
   const blob = doc.output("blob") as Blob;
-  const url = URL.createObjectURL(blob);
-  const win = window.open(url, "_blank");
-  if (!win) {
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = safe;
-    a.rel = "noopener";
-    document.body.appendChild(a);
-    a.click();
-    a.remove();
-  }
-  setTimeout(() => URL.revokeObjectURL(url), 60000);
-  return safe;
+  return { url: URL.createObjectURL(blob), filename: safe, blob };
 }
+
 
 function sectionTitle(doc: Doc, y: number, text: string) {
   const w = doc.internal.pageSize.getWidth();
