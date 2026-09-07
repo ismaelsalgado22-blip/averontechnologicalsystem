@@ -61,7 +61,7 @@ const emptyForm = {
   status: "aberta",
 };
 
-type Item = { description: string; quantity: string; unit_price: string; product_id?: string | null };
+type Item = { id?: string; description: string; quantity: string; unit_price: string; product_id?: string | null };
 
 function OrdersPage() {
   const qc = useQueryClient();
@@ -73,6 +73,7 @@ function OrdersPage() {
   const [editId, setEditId] = useState<string | null>(null);
   const [form, setForm] = useState(emptyForm);
   const [items, setItems] = useState<Item[]>([]);
+  const [manualTotal, setManualTotal] = useState("");
   const [before, setBefore] = useState<string[]>([]);
   const [during, setDuring] = useState<string[]>([]);
   const [after, setAfter] = useState<string[]>([]);
@@ -102,7 +103,8 @@ function OrdersPage() {
     queryFn: async () => (await supabase.from("products").select("id, name, price").order("name")).data ?? [],
   });
 
-  const total = items.reduce((a, i) => a + num(i.quantity) * num(i.unit_price), 0);
+  const itemsTotal = items.reduce((a, i) => a + num(i.quantity) * num(i.unit_price), 0);
+  const total = manualTotal.trim() !== "" ? num(manualTotal) : itemsTotal;
 
   const save = useMutation({
     mutationFn: async () => {
@@ -137,6 +139,24 @@ function OrdersPage() {
       if (editId) {
         const { error } = await supabase.from("work_orders").update(payload).eq("id", editId);
         if (error) throw error;
+        for (const i of items) {
+          const row = {
+            work_order_id: editId,
+            kind: i.product_id ? "peca" : "servico",
+            description: i.description,
+            quantity: num(i.quantity),
+            unit_price: num(i.unit_price),
+            total: num(i.quantity) * num(i.unit_price),
+            product_id: i.product_id || null,
+          };
+          if (i.id) {
+            const { error: eu } = await supabase.from("work_order_items").update(row).eq("id", i.id);
+            if (eu) throw eu;
+          } else {
+            const { error: ei } = await supabase.from("work_order_items").insert(row);
+            if (ei) throw ei;
+          }
+        }
         return;
       }
       const { data, error } = await supabase.from("work_orders").insert(payload).select("id").single();
@@ -181,6 +201,7 @@ function OrdersPage() {
   const reset = () => {
     setForm(emptyForm);
     setItems([]);
+    setManualTotal("");
     setBefore([]);
     setDuring([]);
     setAfter([]);
@@ -246,7 +267,22 @@ function OrdersPage() {
     setDuring(o.photos_during ?? []);
     setAfter(o.photos_after ?? []);
     setSignature(o.signature ?? null);
-    setItems([]);
+    setManualTotal(o.total != null ? String(o.total) : "");
+    supabase
+      .from("work_order_items")
+      .select("*")
+      .eq("work_order_id", o.id)
+      .then(({ data }) =>
+        setItems(
+          (data ?? []).map((i: any) => ({
+            id: i.id,
+            description: i.description,
+            quantity: String(i.quantity),
+            unit_price: String(i.unit_price),
+            product_id: i.product_id,
+          })),
+        ),
+      );
     setEditId(o.id);
     setOpen(true);
   };
@@ -500,8 +536,7 @@ function OrdersPage() {
               </Field>
             </div>
 
-            {!editId && (
-              <div className="space-y-2">
+            <div className="space-y-2">
                 <div className="flex flex-wrap items-center justify-between gap-2">
                   <h3 className="kpi-label">Peças e serviços utilizados</h3>
                   <div className="flex gap-2">
@@ -567,10 +602,26 @@ function OrdersPage() {
                   </div>
                 ))}
                 <p className="text-right text-sm">
+                  Soma dos itens: <strong>{brl(itemsTotal)}</strong>
+                </p>
+                <div className="grid gap-2 rounded-md border border-dashed border-border p-3 sm:grid-cols-[1fr_12rem] sm:items-center">
+                  <div>
+                    <p className="kpi-label">Valor total do serviço</p>
+                    <p className="text-xs text-muted-foreground">
+                      Deixe em branco para usar a soma dos itens, ou digite o valor manualmente.
+                    </p>
+                  </div>
+                  <Input
+                    inputMode="decimal"
+                    placeholder={String(itemsTotal.toFixed(2))}
+                    value={manualTotal}
+                    onChange={(e) => setManualTotal(e.target.value)}
+                  />
+                </div>
+                <p className="text-right text-sm">
                   Total: <strong className="text-primary">{brl(total)}</strong>
                 </p>
               </div>
-            )}
 
             <div className="grid gap-4 lg:grid-cols-3">
               <PhotoUpload label="Fotos antes" folder="os/antes" paths={before} onChange={setBefore} />
