@@ -30,15 +30,16 @@ type Doc = jsPDF;
 function header(doc: Doc, company: Company, title: string, subtitle: string, logo?: string) {
   const w = doc.internal.pageSize.getWidth();
   doc.setFillColor(...NAVY);
-  doc.rect(0, 0, w, 30, "F");
+  doc.rect(0, 0, w, 36, "F");
   doc.setFillColor(...BLUE);
-  doc.rect(0, 30, w, 1.4, "F");
+  doc.rect(0, 36, w, 1.4, "F");
 
   let textX = M;
   if (logo) {
     try {
-      doc.addImage(logo, "PNG", M, 6, 18, 18);
-      textX = M + 22;
+      const fmt = /^data:image\/jpe?g/i.test(logo) ? "JPEG" : "PNG";
+      doc.addImage(logo, fmt, M, 6, 24, 24);
+      textX = M + 28;
     } catch {
       textX = M;
     }
@@ -46,13 +47,21 @@ function header(doc: Doc, company: Company, title: string, subtitle: string, log
 
   doc.setTextColor(255, 255, 255);
   doc.setFont("helvetica", "bold");
-  doc.setFontSize(16);
-  doc.text(company.name, textX, 14);
+  doc.setFontSize(15);
+  doc.text(doc.splitTextToSize(company.name, w * 0.5)[0] ?? company.name, textX, 13);
   doc.setFont("helvetica", "normal");
-  doc.setFontSize(8.5);
-  doc.text(company.tagline, textX, 20);
-  const contato = [company.phone, company.email].filter(Boolean).join("  •  ");
-  if (contato) doc.text(contato, textX, 25);
+  doc.setFontSize(8);
+  let hy = 18;
+  const lines = [
+    company.tagline,
+    company.cnpj ? `CNPJ ${company.cnpj}` : null,
+    [company.address, company.city, company.state].filter(Boolean).join(", ") || null,
+    [company.phone, company.whatsapp, company.email].filter(Boolean).join("  •  ") || null,
+  ].filter(Boolean) as string[];
+  lines.slice(0, 4).forEach((l) => {
+    doc.text(doc.splitTextToSize(l, w * 0.55)[0] ?? l, textX, hy);
+    hy += 4.2;
+  });
 
   doc.setFont("helvetica", "bold");
   doc.setFontSize(12);
@@ -62,8 +71,9 @@ function header(doc: Doc, company: Company, title: string, subtitle: string, log
   doc.text(subtitle, w - M, 21, { align: "right" });
 
   doc.setTextColor(20, 20, 20);
-  return 40;
+  return 46;
 }
+
 
 function footer(doc: Doc, company: Company) {
   const w = doc.internal.pageSize.getWidth();
