@@ -63,6 +63,7 @@ function BudgetsPage() {
   const qc = useQueryClient();
   const { data: company } = useCompany();
   const pdf = usePdfViewer();
+  const [manualTotal, setManualTotal] = useState("");
   const [q, setQ] = useState("");
   const [status, setStatus] = useState("todos");
   const [open, setOpen] = useState(false);
@@ -105,7 +106,8 @@ function BudgetsPage() {
   const itemsTotal = items
     .filter((i) => i.kind === "peca")
     .reduce((a, i) => a + num(i.quantity) * num(i.unit_price), 0);
-  const total = Math.max(0, laborTotal + itemsTotal + num(form.travel_fee) - num(form.discount));
+  const computedTotal = Math.max(0, laborTotal + itemsTotal + num(form.travel_fee) - num(form.discount));
+  const total = manualTotal.trim() !== "" ? num(manualTotal) : computedTotal;
 
   const create = useMutation({
     mutationFn: async () => {
@@ -534,6 +536,14 @@ function BudgetsPage() {
               </Field>
               <Field label="Desconto">
                 <Input inputMode="decimal" value={form.discount} onChange={(e) => set("discount", e.target.value)} />
+              </Field>
+              <Field label="Valor total (manual)">
+                <Input
+                  inputMode="decimal"
+                  placeholder={computedTotal.toFixed(2)}
+                  value={manualTotal}
+                  onChange={(e) => setManualTotal(e.target.value)}
+                />
               </Field>
               <Field label="Prazo de execução">
                 <Input value={form.deadline} maxLength={80} onChange={(e) => set("deadline", e.target.value)} />
