@@ -30,15 +30,16 @@ type Doc = jsPDF;
 function header(doc: Doc, company: Company, title: string, subtitle: string, logo?: string) {
   const w = doc.internal.pageSize.getWidth();
   doc.setFillColor(...NAVY);
-  doc.rect(0, 0, w, 30, "F");
+  doc.rect(0, 0, w, 36, "F");
   doc.setFillColor(...BLUE);
-  doc.rect(0, 30, w, 1.4, "F");
+  doc.rect(0, 36, w, 1.4, "F");
 
   let textX = M;
   if (logo) {
     try {
-      doc.addImage(logo, "PNG", M, 6, 18, 18);
-      textX = M + 22;
+      const fmt = /^data:image\/jpe?g/i.test(logo) ? "JPEG" : "PNG";
+      doc.addImage(logo, fmt, M, 6, 24, 24);
+      textX = M + 28;
     } catch {
       textX = M;
     }
@@ -46,13 +47,21 @@ function header(doc: Doc, company: Company, title: string, subtitle: string, log
 
   doc.setTextColor(255, 255, 255);
   doc.setFont("helvetica", "bold");
-  doc.setFontSize(16);
-  doc.text(company.name, textX, 14);
+  doc.setFontSize(15);
+  doc.text(doc.splitTextToSize(company.name, w * 0.5)[0] ?? company.name, textX, 13);
   doc.setFont("helvetica", "normal");
-  doc.setFontSize(8.5);
-  doc.text(company.tagline, textX, 20);
-  const contato = [company.phone, company.email].filter(Boolean).join("  •  ");
-  if (contato) doc.text(contato, textX, 25);
+  doc.setFontSize(8);
+  let hy = 18;
+  const lines = [
+    company.tagline,
+    company.cnpj ? `CNPJ ${company.cnpj}` : null,
+    [company.address, company.city, company.state].filter(Boolean).join(", ") || null,
+    [company.phone, company.whatsapp, company.email].filter(Boolean).join("  •  ") || null,
+  ].filter(Boolean) as string[];
+  lines.slice(0, 4).forEach((l) => {
+    doc.text(doc.splitTextToSize(l, w * 0.55)[0] ?? l, textX, hy);
+    hy += 4.2;
+  });
 
   doc.setFont("helvetica", "bold");
   doc.setFontSize(12);
@@ -62,8 +71,9 @@ function header(doc: Doc, company: Company, title: string, subtitle: string, log
   doc.text(subtitle, w - M, 21, { align: "right" });
 
   doc.setTextColor(20, 20, 20);
-  return 40;
+  return 46;
 }
+
 
 function footer(doc: Doc, company: Company) {
   const w = doc.internal.pageSize.getWidth();
@@ -87,23 +97,16 @@ function footer(doc: Doc, company: Company) {
   doc.setTextColor(20, 20, 20);
 }
 
-function deliver(doc: Doc, filename: string) {
-  const safe = (filename || "documento").replace(/[^\w\-.]+/g, "-") + (filename.endsWith(".pdf") ? "" : ".pdf");
+export type PdfResult = { url: string; filename: string; blob: Blob };
+
+/** Gera o arquivo e devolve um endereço temporário para visualizar/baixar na própria tela. */
+function deliver(doc: Doc, filename: string): PdfResult {
+  const base = filename || "documento";
+  const safe = base.replace(/[^\w\-.]+/g, "-") + (base.toLowerCase().endsWith(".pdf") ? "" : ".pdf");
   const blob = doc.output("blob") as Blob;
-  const url = URL.createObjectURL(blob);
-  const win = window.open(url, "_blank");
-  if (!win) {
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = safe;
-    a.rel = "noopener";
-    document.body.appendChild(a);
-    a.click();
-    a.remove();
-  }
-  setTimeout(() => URL.revokeObjectURL(url), 60000);
-  return safe;
+  return { url: URL.createObjectURL(blob), filename: safe, blob };
 }
+
 
 function sectionTitle(doc: Doc, y: number, text: string) {
   const w = doc.internal.pageSize.getWidth();
@@ -296,7 +299,7 @@ export async function budgetPdf(opts: {
   doc.text("Data", doc.internal.pageSize.getWidth() - M - 60, sy + 14);
 
   footer(doc, company);
-  deliver(doc, `${budget.number || "documento"}.pdf`);
+  return deliver(doc, `${budget.number || "documento"}.pdf`);
 }
 
 export async function workOrderPdf(opts: {
@@ -374,7 +377,7 @@ export async function workOrderPdf(opts: {
   );
 
   footer(doc, company);
-  deliver(doc, `${order.number || "documento"}.pdf`);
+  return deliver(doc, `${order.number || "documento"}.pdf`);
 }
 
 export async function reportPdf(opts: {
@@ -461,7 +464,7 @@ export async function reportPdf(opts: {
   doc.text(`Responsável técnico — ${report.technician_name ?? company.name}`, M, sy + 4);
 
   footer(doc, company);
-  deliver(doc, `${report.number || "documento"}.pdf`);
+  return deliver(doc, `${report.number || "documento"}.pdf`);
 }
 
 export async function warrantyPdf(opts: {
@@ -538,5 +541,5 @@ export async function warrantyPdf(opts: {
   }
 
   footer(doc, company);
-  deliver(doc, `${warranty.number || "documento"}.pdf`);
+  return deliver(doc, `${warranty.number || "documento"}.pdf`);
 }

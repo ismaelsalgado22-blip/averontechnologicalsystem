@@ -20,7 +20,8 @@ import {
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { dateBR, today, warrantyState } from "@/lib/format";
 import { warrantyPdf } from "@/lib/pdf";
-import { useCompany, FALLBACK_COMPANY } from "@/hooks/use-company";
+import { useCompany, FALLBACK_COMPANY, companyLogo } from "@/hooks/use-company";
+import { usePdfViewer } from "@/components/pdf-view";
 import { DeleteButton } from "@/components/delete-button";
 
 export const Route = createFileRoute("/_authenticated/garantias")({
@@ -53,6 +54,7 @@ const emptyForm = {
 function WarrantiesPage() {
   const qc = useQueryClient();
   const { data: company } = useCompany();
+  const pdf = usePdfViewer();
   const [q, setQ] = useState("");
   const [open, setOpen] = useState(false);
   const [form, setForm] = useState(emptyForm);
@@ -117,8 +119,9 @@ function WarrantiesPage() {
     const eq = w.equipment_id
       ? (await supabase.from("equipment").select("*").eq("id", w.equipment_id).maybeSingle()).data
       : null;
-    await warrantyPdf({
+    return await warrantyPdf({
       company: company ?? FALLBACK_COMPANY,
+      logo: await companyLogo(company),
       warranty: w,
       client,
       equipment: eq,
@@ -126,13 +129,7 @@ function WarrantiesPage() {
     });
   };
 
-  const downloadPdf = async (item: any) => {
-    try {
-      await buildPdf(item);
-    } catch (e: any) {
-      toast.error(e?.message ?? "Não foi possível gerar o PDF");
-    }
-  };
+  const downloadPdf = (item: any) => pdf.show(() => buildPdf(item));
 
   const filtered = useMemo(() => {
     const term = q.trim().toLowerCase();
@@ -340,6 +337,7 @@ function WarrantiesPage() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+      {pdf.viewer}
     </div>
   );
 }

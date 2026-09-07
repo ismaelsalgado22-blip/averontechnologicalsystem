@@ -20,7 +20,8 @@ import {
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { BUDGET_STATUS, addDays, brl, dateBR, num, today } from "@/lib/format";
 import { budgetPdf } from "@/lib/pdf";
-import { useCompany, FALLBACK_COMPANY } from "@/hooks/use-company";
+import { useCompany, FALLBACK_COMPANY, companyLogo } from "@/hooks/use-company";
+import { usePdfViewer } from "@/components/pdf-view";
 import { DeleteButton } from "@/components/delete-button";
 
 export const Route = createFileRoute("/_authenticated/orcamentos")({
@@ -61,6 +62,8 @@ const emptyForm = {
 function BudgetsPage() {
   const qc = useQueryClient();
   const { data: company } = useCompany();
+  const pdf = usePdfViewer();
+  const [manualTotal, setManualTotal] = useState("");
   const [q, setQ] = useState("");
   const [status, setStatus] = useState("todos");
   const [open, setOpen] = useState(false);
@@ -103,7 +106,8 @@ function BudgetsPage() {
   const itemsTotal = items
     .filter((i) => i.kind === "peca")
     .reduce((a, i) => a + num(i.quantity) * num(i.unit_price), 0);
-  const total = Math.max(0, laborTotal + itemsTotal + num(form.travel_fee) - num(form.discount));
+  const computedTotal = Math.max(0, laborTotal + itemsTotal + num(form.travel_fee) - num(form.discount));
+  const total = manualTotal.trim() !== "" ? num(manualTotal) : computedTotal;
 
   const create = useMutation({
     mutationFn: async () => {
@@ -211,8 +215,9 @@ function BudgetsPage() {
     const eq = budget.equipment_id
       ? (await supabase.from("equipment").select("*").eq("id", budget.equipment_id).maybeSingle()).data
       : null;
-    await budgetPdf({
+    return await budgetPdf({
       company: company ?? FALLBACK_COMPANY,
+      logo: await companyLogo(company),
       budget,
       items: bItems ?? [],
       client,
@@ -220,13 +225,7 @@ function BudgetsPage() {
     });
   };
 
-  const downloadPdf = async (item: any) => {
-    try {
-      await buildPdf(item);
-    } catch (e: any) {
-      toast.error(e?.message ?? "Não foi possível gerar o PDF");
-    }
-  };
+  const downloadPdf = (item: any) => pdf.show(() => buildPdf(item));
 
   const filtered = useMemo(() => {
     const term = q.trim().toLowerCase();
@@ -538,6 +537,14 @@ function BudgetsPage() {
               <Field label="Desconto">
                 <Input inputMode="decimal" value={form.discount} onChange={(e) => set("discount", e.target.value)} />
               </Field>
+              <Field label="Valor total (manual)">
+                <Input
+                  inputMode="decimal"
+                  placeholder={computedTotal.toFixed(2)}
+                  value={manualTotal}
+                  onChange={(e) => setManualTotal(e.target.value)}
+                />
+              </Field>
               <Field label="Prazo de execução">
                 <Input value={form.deadline} maxLength={80} onChange={(e) => set("deadline", e.target.value)} />
               </Field>
@@ -572,6 +579,7 @@ function BudgetsPage() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+      {pdf.viewer}
     </div>
   );
 }
