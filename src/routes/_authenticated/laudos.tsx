@@ -21,7 +21,8 @@ import {
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { dateBR, today } from "@/lib/format";
 import { reportPdf } from "@/lib/pdf";
-import { useCompany, FALLBACK_COMPANY } from "@/hooks/use-company";
+import { useCompany, FALLBACK_COMPANY, companyLogo } from "@/hooks/use-company";
+import { usePdfViewer } from "@/components/pdf-view";
 import { DeleteButton } from "@/components/delete-button";
 
 export const Route = createFileRoute("/_authenticated/laudos")({
@@ -82,6 +83,7 @@ const emptyForm: Record<string, string> = {
 function ReportsPage() {
   const qc = useQueryClient();
   const { data: company } = useCompany();
+  const pdf = usePdfViewer();
   const [q, setQ] = useState("");
   const [open, setOpen] = useState(false);
   const [editId, setEditId] = useState<string | null>(null);
@@ -137,16 +139,10 @@ function ReportsPage() {
     const eq = report.equipment_id
       ? (await supabase.from("equipment").select("*").eq("id", report.equipment_id).maybeSingle()).data
       : null;
-    await reportPdf({ company: company ?? FALLBACK_COMPANY, report, client, equipment: eq });
+    return await reportPdf({ logo: await companyLogo(company), company: company ?? FALLBACK_COMPANY, report, client, equipment: eq });
   };
 
-  const downloadPdf = async (item: any) => {
-    try {
-      await buildPdf(item);
-    } catch (e: any) {
-      toast.error(e?.message ?? "Não foi possível gerar o PDF");
-    }
-  };
+  const downloadPdf = (item: any) => pdf.show(() => buildPdf(item));
 
   const filtered = useMemo(() => {
     const term = q.trim().toLowerCase();
