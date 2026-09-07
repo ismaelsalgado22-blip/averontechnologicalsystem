@@ -569,6 +569,7 @@ function BudgetsPage() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+      {pdf.viewer}
     </div>
   );
 }

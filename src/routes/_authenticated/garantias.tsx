@@ -337,6 +337,7 @@ function WarrantiesPage() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+      {pdf.viewer}
     </div>
   );
 }

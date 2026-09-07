@@ -594,6 +594,7 @@ function OrdersPage() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+      {pdf.viewer}
     </div>
   );
 }
