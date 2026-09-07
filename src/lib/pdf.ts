@@ -299,7 +299,7 @@ export async function budgetPdf(opts: {
   doc.text("Data", doc.internal.pageSize.getWidth() - M - 60, sy + 14);
 
   footer(doc, company);
-  deliver(doc, `${budget.number || "documento"}.pdf`);
+  return deliver(doc, `${budget.number || "documento"}.pdf`);
 }
 
 export async function workOrderPdf(opts: {
@@ -377,7 +377,7 @@ export async function workOrderPdf(opts: {
   );
 
   footer(doc, company);
-  deliver(doc, `${order.number || "documento"}.pdf`);
+  return deliver(doc, `${order.number || "documento"}.pdf`);
 }
 
 export async function reportPdf(opts: {
@@ -464,7 +464,7 @@ export async function reportPdf(opts: {
   doc.text(`Responsável técnico — ${report.technician_name ?? company.name}`, M, sy + 4);
 
   footer(doc, company);
-  deliver(doc, `${report.number || "documento"}.pdf`);
+  return deliver(doc, `${report.number || "documento"}.pdf`);
 }
 
 export async function warrantyPdf(opts: {
@@ -541,5 +541,5 @@ export async function warrantyPdf(opts: {
   }
 
   footer(doc, company);
-  deliver(doc, `${warranty.number || "documento"}.pdf`);
+  return deliver(doc, `${warranty.number || "documento"}.pdf`);
 }
