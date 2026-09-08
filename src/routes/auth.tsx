@@ -126,7 +126,7 @@ function AuthPage() {
         <BrandLogo />
         <div className="max-w-md space-y-4">
           <h1 className="font-display text-4xl font-extrabold leading-tight">
-            Gestão completa da sua <span className="text-brand-gradient">refrigeração</span>
+            Gestão completa da sua <span className="text-brand-gradient">prestação de serviços</span>
           </h1>
           <p className="text-sm text-muted-foreground">
             Clientes, equipamentos, orçamentos, ordens de serviço, laudos técnicos, garantias, agenda,
@@ -134,7 +134,7 @@ function AuthPage() {
           </p>
         </div>
         <p className="text-xs uppercase tracking-[0.25em] text-muted-foreground">
-          Refrigeração comercial e industrial
+          Sistema para empresas de prestação de serviços
         </p>
       </div>
 

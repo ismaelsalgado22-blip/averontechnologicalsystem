@@ -25,7 +25,7 @@ export const Route = createFileRoute("/")({
       {
         property: "og:description",
         content:
-          "Refrigeração comercial e industrial: orçamentos, ordens de serviço, laudos e garantias em um único sistema.",
+          "Sistema para empresas de prestação de serviços: orçamentos, ordens de serviço, laudos, garantias e financeiro em um só lugar.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
@@ -37,9 +37,9 @@ export const Route = createFileRoute("/")({
 const MODULES = [
   { icon: Receipt, title: "Orçamentos", text: "Numeração automática, PDF profissional e envio por WhatsApp." },
   { icon: ClipboardList, title: "Ordens de Serviço", text: "Diagnóstico, medições técnicas, fotos e assinatura digital." },
-  { icon: FileText, title: "Laudos Técnicos", text: "Inspeção completa do sistema de refrigeração com conclusão técnica." },
+  { icon: FileText, title: "Laudos Técnicos", text: "Inspeção técnica detalhada com diagnóstico e conclusão." },
   { icon: ShieldCheck, title: "Garantias", text: "Certificados com QR Code de validação e alertas de vencimento." },
-  { icon: Snowflake, title: "Equipamentos", text: "Histórico por equipamento: marca, modelo, série, gás e fotos." },
+  { icon: Snowflake, title: "Equipamentos", text: "Histórico por equipamento: marca, modelo, série e fotos." },
   { icon: CalendarClock, title: "Agenda", text: "Agendamentos por técnico com confirmação via WhatsApp." },
   { icon: Wrench, title: "Serviços", text: "Tabela de preços de mão de obra por categoria de equipamento." },
   { icon: Wallet, title: "Financeiro", text: "Contas a receber, formas de pagamento e faturamento mensal." },
@@ -57,14 +57,15 @@ function Landing() {
 
       <section className="surface-brand border-y border-border">
         <div className="mx-auto max-w-6xl px-4 py-20">
-          <p className="kpi-label">Refrigeração comercial e industrial</p>
+          <p className="kpi-label">Software para empresas de prestação de serviços</p>
           <h1 className="mt-3 max-w-3xl font-display text-4xl font-extrabold leading-[1.05] sm:text-6xl">
-            Gestão completa da <span className="text-brand-gradient">Averon</span>
+            Gestão completa da sua <span className="text-brand-gradient">prestação de serviços</span>
           </h1>
           <p className="mt-5 max-w-2xl text-base text-muted-foreground">
-            Um só sistema para cadastro de clientes e equipamentos, orçamentos, ordens de serviço, laudos
-            técnicos, certificados de garantia, agenda de atendimentos, estoque de peças e controle
-            financeiro.
+            O Averon é o sistema para empresas prestadoras de serviços: clientes e equipamentos,
+            orçamentos, ordens de serviço, laudos técnicos, certificados de garantia, agenda de
+            atendimentos, estoque de peças e controle financeiro. Cada empresa usa a própria logomarca e
+            razão social nos documentos emitidos.
           </p>
           <div className="mt-8 flex flex-wrap gap-3">
             <Button asChild size="lg">
@@ -91,7 +92,7 @@ function Landing() {
       </section>
 
       <footer className="border-t border-border py-8 text-center text-xs text-muted-foreground">
-        Averon — Refrigeração comercial e industrial
+        Averon — sistema de gestão para empresas de prestação de serviços
       </footer>
     </div>
   );

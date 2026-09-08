@@ -1,8 +1,8 @@
 # Roadmap
 
-## Em andamento
-- [ ] Remover "Averon Refrigeração" e deixar somente "Averon" como marca do sistema
-- [ ] Apresentação do app voltada a empresas de prestação de serviços (não só refrigeração)
-- [ ] Permitir informar valor manualmente em ordens de serviço e outras abas (total manual, itens livres na edição)
-- [ ] Corrigir emissão/abertura dos PDFs em todas as abas (visualizador interno + baixar)
-- [ ] Cada empresa cadastrada envia a própria logomarca e dados (razão social, CNPJ, contatos) que aparecem no topo dos documentos
+## Concluído
+- [x] Marca do sistema apenas "Averon" (sem "Refrigeração")
+- [x] Apresentação do app voltada a empresas de prestação de serviços
+- [x] Valor total manual em ordens de serviço e orçamentos; itens editáveis ao editar uma OS
+- [x] Visualizador de documentos dentro do sistema, com baixar e abrir em nova aba
+- [x] Logomarca e dados da empresa de cada cliente no topo dos documentos

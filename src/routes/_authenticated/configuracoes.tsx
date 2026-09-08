@@ -9,6 +9,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useProfile } from "@/hooks/use-auth";
+import { removeFile, signedUrl, uploadFile } from "@/lib/storage";
+import { ImagePlus, Loader2 } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/configuracoes")({
   head: () => ({
@@ -24,7 +26,7 @@ export const Route = createFileRoute("/_authenticated/configuracoes")({
 });
 
 const FIELDS: [string, string, "input" | "textarea"][] = [
-  ["name", "Nome da empresa", "input"],
+  ["name", "Razão social / nome da empresa", "input"],
   ["tagline", "Slogan", "input"],
   ["cnpj", "CNPJ", "input"],
   ["phone", "Telefone", "input"],
@@ -45,6 +47,9 @@ function SettingsPage() {
   const { data: me } = useProfile();
   const [form, setForm] = useState<Record<string, string>>({});
   const [rowId, setRowId] = useState<string | null>(null);
+  const [logoPath, setLogoPath] = useState<string | null>(null);
+  const [logoPreview, setLogoPreview] = useState("");
+  const [uploading, setUploading] = useState(false);
 
   const { data: settings } = useQuery({
     queryKey: ["company_settings"],
@@ -73,14 +78,35 @@ function SettingsPage() {
     if (!settings) return;
     setRowId((settings as any).id);
     setForm(Object.fromEntries(FIELDS.map(([k]) => [k, (settings as any)[k] ?? ""])));
+    const path = (settings as any).logo_url ?? null;
+    setLogoPath(path);
+    if (path) signedUrl(path).then(setLogoPreview);
+    else setLogoPreview("");
   }, [settings]);
+
+  const pickLogo = async (file?: File | null) => {
+    if (!file) return;
+    setUploading(true);
+    try {
+      const path = await uploadFile(file, "logos");
+      if (logoPath) await removeFile(logoPath);
+      setLogoPath(path);
+      setLogoPreview(await signedUrl(path));
+      toast.success("Logomarca enviada. Clique em salvar para aplicar nos documentos.");
+    } catch (e: any) {
+      toast.error(e?.message ?? "Falha ao enviar a logomarca");
+    } finally {
+      setUploading(false);
+    }
+  };
 
   const save = useMutation({
     mutationFn: async () => {
       if (!form["name"]?.trim()) throw new Error("Informe o nome da empresa");
       const payload = Object.fromEntries(FIELDS.map(([k]) => [k, form[k]?.trim() || null]));
       payload["name"] = form["name"].trim();
-      payload["tagline"] = form["tagline"]?.trim() || "Refrigeração Comercial e Industrial";
+      payload["tagline"] = form["tagline"]?.trim() || "Prestação de serviços";
+      (payload as any).logo_url = logoPath;
       const { error } = rowId
         ? await supabase.from("company_settings").update(payload as any).eq("id", rowId)
         : await supabase.from("company_settings").insert(payload as any);
@@ -112,6 +138,51 @@ function SettingsPage() {
           Apenas administradores podem alterar os dados da empresa.
         </p>
       )}
+
+      <div className="surface-panel space-y-4 p-5">
+        <h2 className="font-display text-base font-semibold">Logomarca da empresa</h2>
+        <p className="text-xs text-muted-foreground">
+          Esta logomarca aparece no topo dos orçamentos, ordens de serviço, laudos e certificados, junto
+          com a razão social e os dados de contato preenchidos abaixo.
+        </p>
+        <div className="flex flex-wrap items-center gap-4">
+          <div className="grid h-24 w-40 place-items-center overflow-hidden rounded-lg border border-dashed border-border bg-muted/40">
+            {logoPreview ? (
+              <img src={logoPreview} alt="Logomarca da empresa" className="max-h-20 max-w-36 object-contain" />
+            ) : (
+              <span className="px-2 text-center text-xs text-muted-foreground">Nenhuma logomarca</span>
+            )}
+          </div>
+          <div className="flex gap-2">
+            <Button type="button" variant="secondary" disabled={uploading || !me?.isAdmin} asChild>
+              <label className="cursor-pointer">
+                {uploading ? <Loader2 className="size-4 animate-spin" /> : <ImagePlus className="size-4" />}
+                Enviar logomarca
+                <input
+                  type="file"
+                  accept="image/png,image/jpeg"
+                  className="hidden"
+                  disabled={uploading || !me?.isAdmin}
+                  onChange={(e) => pickLogo(e.target.files?.[0])}
+                />
+              </label>
+            </Button>
+            {logoPath && (
+              <Button
+                type="button"
+                variant="ghost"
+                disabled={!me?.isAdmin}
+                onClick={() => {
+                  setLogoPath(null);
+                  setLogoPreview("");
+                }}
+              >
+                Remover
+              </Button>
+            )}
+          </div>
+        </div>
+      </div>
 
       <div className="surface-panel space-y-4 p-5">
         <h2 className="font-display text-base font-semibold">Dados da empresa</h2>
