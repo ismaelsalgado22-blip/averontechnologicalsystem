@@ -242,7 +242,7 @@ export async function budgetPdf(opts: {
   items: any[];
   client: any;
   equipment: any;
-  logo?: string;
+  logo?: string | undefined;
   link?: string;
 }) {
   const { company, budget, items, client, equipment, logo } = opts;
@@ -308,7 +308,7 @@ export async function workOrderPdf(opts: {
   items: any[];
   client: any;
   equipment: any;
-  logo?: string;
+  logo?: string | undefined;
 }) {
   const { company, order, items, client, equipment, logo } = opts;
   const doc = new jsPDF();
@@ -385,7 +385,7 @@ export async function reportPdf(opts: {
   report: any;
   client: any;
   equipment: any;
-  logo?: string;
+  logo?: string | undefined;
 }) {
   const { company, report, client, equipment, logo } = opts;
   const doc = new jsPDF();
@@ -472,7 +472,7 @@ export async function warrantyPdf(opts: {
   warranty: any;
   client: any;
   equipment: any;
-  logo?: string;
+  logo?: string | undefined;
   validateUrl: string;
 }) {
   const { company, warranty, client, equipment, logo, validateUrl } = opts;
