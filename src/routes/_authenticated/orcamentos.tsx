@@ -153,6 +153,7 @@ function BudgetsPage() {
       setOpen(false);
       setForm(emptyForm);
       setItems([]);
+      setManualTotal("");
       qc.invalidateQueries({ queryKey: ["budgets"] });
     },
     onError: (e: any) => toast.error(e.message ?? "Falha ao criar orçamento"),
@@ -253,6 +254,7 @@ function BudgetsPage() {
             onClick={() => {
               setForm(emptyForm);
               setItems([]);
+              setManualTotal("");
               setOpen(true);
             }}
           >
