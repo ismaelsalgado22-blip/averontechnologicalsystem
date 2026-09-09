@@ -15,17 +15,17 @@ import { Button } from "@/components/ui/button";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Averon | Gestão comercial e técnica" },
+      { title: "Averon | Gestão para empresas de serviços" },
       {
         name: "description",
         content:
-          "Sistema de gestão da Averon: clientes, equipamentos, orçamentos, ordens de serviço, laudos técnicos, garantias, agenda, estoque e financeiro.",
+          "Software completo para empresas de serviços: centralize a operação, organize a agenda da equipe e emita documentos personalizados com a sua marca.",
       },
-      { property: "og:title", content: "Averon | Gestão comercial e técnica" },
+      { property: "og:title", content: "Averon | Gestão para empresas de serviços" },
       {
         property: "og:description",
         content:
-          "Sistema para empresas de prestação de serviços: orçamentos, ordens de serviço, laudos, garantias e financeiro em um só lugar.",
+          "Software completo para empresas de serviços: centralize a operação, organize a agenda da equipe e emita documentos personalizados com a sua marca.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
@@ -57,13 +57,14 @@ function Landing() {
 
       <section className="surface-brand border-y border-border">
         <div className="mx-auto max-w-6xl px-4 py-20">
-          <p className="kpi-label">Sistema de controle de serviços</p>
+          <p className="kpi-label">Software de gestão para empresas de serviços</p>
           <h1 className="mt-3 max-w-3xl font-display text-4xl font-extrabold leading-[1.05] sm:text-6xl">
-            Gestão completa da sua <span className="text-brand-gradient">operação</span>
+            Transforme a rotina da sua <span className="text-brand-gradient">operação</span>
           </h1>
           <p className="mt-5 max-w-2xl text-base text-muted-foreground">
-            Controle orçamentos, ordens de serviço, laudos, garantias, agenda, estoque e financeiro em um
-            só lugar — com a sua própria logomarca e dados nos documentos emitidos.
+            Averon é o software de gestão completo para transformar a rotina da sua empresa de serviços.
+            Ele centraliza a operação, organiza a agenda da sua equipe e automatiza a emissão de documentos
+            personalizados com a sua marca e razão social.
           </p>
           <div className="mt-8 flex flex-wrap gap-3">
             <Button asChild size="lg">
