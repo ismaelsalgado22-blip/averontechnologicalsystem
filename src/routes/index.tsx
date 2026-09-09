@@ -15,17 +15,17 @@ import { Button } from "@/components/ui/button";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Averon | Gestão comercial e técnica" },
+      { title: "Averon | Gestão para empresas de serviços" },
       {
         name: "description",
         content:
-          "Sistema de gestão da Averon: clientes, equipamentos, orçamentos, ordens de serviço, laudos técnicos, garantias, agenda, estoque e financeiro.",
+          "Software completo para empresas de serviços: centralize a operação, organize a agenda da equipe e emita documentos personalizados com a sua marca.",
       },
-      { property: "og:title", content: "Averon | Gestão comercial e técnica" },
+      { property: "og:title", content: "Averon | Gestão para empresas de serviços" },
       {
         property: "og:description",
         content:
-          "Sistema para empresas de prestação de serviços: orçamentos, ordens de serviço, laudos, garantias e financeiro em um só lugar.",
+          "Software completo para empresas de serviços: centralize a operação, organize a agenda da equipe e emita documentos personalizados com a sua marca.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
