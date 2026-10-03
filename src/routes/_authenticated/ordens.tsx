@@ -137,8 +137,13 @@ function OrdersPage() {
         payload.signed_at = new Date().toISOString();
       }
       if (editId) {
-        const { error } = await supabase.from("work_orders").update(payload).eq("id", editId);
+        const { data: upd, error } = await supabase
+          .from("work_orders")
+          .update(payload)
+          .eq("id", editId)
+          .select("id");
         if (error) throw error;
+        if (!upd?.length) throw new Error("Não foi possível salvar as alterações desta ordem");
         for (const i of items) {
           const row = {
             work_order_id: editId,
@@ -267,22 +272,25 @@ function OrdersPage() {
     setDuring(o.photos_during ?? []);
     setAfter(o.photos_after ?? []);
     setSignature(o.signature ?? null);
-    setManualTotal(o.total != null ? String(o.total) : "");
+    setManualTotal("");
+    setItems([]);
     supabase
       .from("work_order_items")
       .select("*")
       .eq("work_order_id", o.id)
-      .then(({ data }) =>
-        setItems(
-          (data ?? []).map((i: any) => ({
-            id: i.id,
-            description: i.description,
-            quantity: String(i.quantity),
-            unit_price: String(i.unit_price),
-            product_id: i.product_id,
-          })),
-        ),
-      );
+      .then(({ data }) => {
+        const list = (data ?? []).map((i: any) => ({
+          id: i.id,
+          description: i.description,
+          quantity: String(i.quantity),
+          unit_price: String(i.unit_price),
+          product_id: i.product_id,
+        }));
+        setItems(list);
+        const sum = list.reduce((a, i) => a + num(i.quantity) * num(i.unit_price), 0);
+        // Só mantém valor manual se ele foi digitado (diferente da soma dos itens)
+        if (o.total != null && Math.abs(Number(o.total) - sum) > 0.005) setManualTotal(String(o.total));
+      });
     setEditId(o.id);
     setOpen(true);
   };

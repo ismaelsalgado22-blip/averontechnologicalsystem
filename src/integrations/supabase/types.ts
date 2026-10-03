@@ -809,6 +809,42 @@ export type Database = {
         }
         Relationships: []
       }
+      subscriptions: {
+        Row: {
+          active_until: string | null
+          created_at: string
+          email: string | null
+          full_name: string | null
+          notes: string | null
+          price: number
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          active_until?: string | null
+          created_at?: string
+          email?: string | null
+          full_name?: string | null
+          notes?: string | null
+          price?: number
+          status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          active_until?: string | null
+          created_at?: string
+          email?: string | null
+          full_name?: string | null
+          notes?: string | null
+          price?: number
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       technical_reports: {
         Row: {
           client_id: string
