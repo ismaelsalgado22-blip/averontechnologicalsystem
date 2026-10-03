@@ -314,10 +314,17 @@ export async function workOrderPdf(opts: {
   const doc = new jsPDF();
   let y = header(doc, company, "Ordem de Serviço", `${order.number}  •  ${dateBR(order.service_date)}`, logo);
 
+  y = sectionTitle(doc, y, "Dados do cliente");
+  y = pair(doc, y, [
+    ...clientLines(client),
+    ["Nome fantasia", client?.trade_name ?? "—"],
+    ["Contato responsável", client?.contact_person ?? "—"],
+    ["Inscrição estadual", client?.state_registration ?? "—"],
+    ["Complemento / CEP", [client?.complement, client?.zip_code].filter(Boolean).join(" / ") || "—"],
+  ]);
+
   y = sectionTitle(doc, y, "Atendimento");
   y = pair(doc, y, [
-    ["Cliente", client?.name ?? "—"],
-    ["Telefone", client?.phone ?? client?.whatsapp ?? "—"],
     ["Técnico responsável", order.technician_name ?? "—"],
     ["Data / horário", `${dateBR(order.service_date)} ${order.service_time ?? ""}`.trim()],
     ["Tipo de atendimento", order.service_type ?? "—"],
@@ -326,7 +333,16 @@ export async function workOrderPdf(opts: {
 
   if (equipment) {
     y = sectionTitle(doc, y, "Equipamento");
-    y = pair(doc, y, equipLines(equipment));
+    y = pair(doc, y, [
+      ...equipLines(equipment),
+      ["Patrimônio", equipment.asset_tag ?? "—"],
+      ["Capacidade", equipment.capacity ?? "—"],
+      ["Tensão", equipment.voltage ?? "—"],
+      ["Compressor", equipment.compressor ?? "—"],
+      ["Local de instalação", equipment.install_location ?? "—"],
+      ["Data de instalação", dateBR(equipment.install_date)],
+      ["Estado de conservação", equipment.condition ?? "—"],
+    ]);
   }
 
   y = sectionTitle(doc, y, "Execução");
