@@ -1,6 +1,7 @@
 # Roadmap
 
 ## Concluído
+- [x] Paginação automática dos PDFs para textos, tabelas, assinaturas e QR Code extensos
 - [x] Marca do sistema apenas "Averon" (sem "Refrigeração")
 - [x] Apresentação do app voltada a empresas de prestação de serviços
 - [x] Valor total manual em ordens de serviço e orçamentos; itens editáveis ao editar uma OS

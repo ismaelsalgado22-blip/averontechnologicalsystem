@@ -27,6 +27,20 @@ const M = 14;
 
 type Doc = jsPDF;
 
+type PageContext = {
+  doc: Doc;
+  company: Company;
+  title: string;
+  subtitle: string;
+  logo?: string;
+};
+
+const LINE_HEIGHT = 4.2;
+
+function contentBottom(doc: Doc) {
+  return doc.internal.pageSize.getHeight() - 23;
+}
+
 function header(doc: Doc, company: Company, title: string, subtitle: string, logo?: string) {
   const w = doc.internal.pageSize.getWidth();
   doc.setFillColor(...NAVY);
@@ -97,6 +111,16 @@ function footer(doc: Doc, company: Company) {
   doc.setTextColor(20, 20, 20);
 }
 
+function nextPage(ctx: PageContext) {
+  footer(ctx.doc, ctx.company);
+  ctx.doc.addPage();
+  return header(ctx.doc, ctx.company, ctx.title, `${ctx.subtitle} — continuação`, ctx.logo);
+}
+
+function ensureSpace(ctx: PageContext, y: number, required: number) {
+  return y + required <= contentBottom(ctx.doc) ? y : nextPage(ctx);
+}
+
 export type PdfResult = { url: string; filename: string; blob: Blob };
 
 /** Gera o arquivo e devolve um endereço temporário para visualizar/baixar na própria tela. */
@@ -108,7 +132,9 @@ function deliver(doc: Doc, filename: string): PdfResult {
 }
 
 
-function sectionTitle(doc: Doc, y: number, text: string) {
+function sectionTitle(ctx: PageContext, y: number, text: string) {
+  const { doc } = ctx;
+  y = ensureSpace(ctx, y, 18);
   const w = doc.internal.pageSize.getWidth();
   doc.setFillColor(...NAVY);
   doc.rect(M, y, w - M * 2, 6.5, "F");
@@ -121,76 +147,128 @@ function sectionTitle(doc: Doc, y: number, text: string) {
   return y + 10;
 }
 
-function pair(doc: Doc, y: number, items: [string, string][], cols = 2) {
+function pair(ctx: PageContext, y: number, items: [string, string][], cols = 2) {
+  const { doc } = ctx;
   const w = doc.internal.pageSize.getWidth() - M * 2;
   const colW = w / cols;
   doc.setFontSize(8.5);
-  let row = 0;
-  items.forEach((it, i) => {
-    const c = i % cols;
-    row = Math.floor(i / cols);
-    const x = M + c * colW;
-    const yy = y + row * 9;
-    doc.setTextColor(...GRAY);
-    doc.text(it[0].toUpperCase(), x, yy);
-    doc.setTextColor(20, 20, 20);
-    doc.setFont("helvetica", "bold");
-    doc.text(doc.splitTextToSize(it[1] || "—", colW - 4), x, yy + 4.2);
-    doc.setFont("helvetica", "normal");
-  });
-  return y + (row + 1) * 9 + 2;
+  for (let i = 0; i < items.length; i += cols) {
+    const rowItems = items.slice(i, i + cols);
+    const values = rowItems.map((item) => doc.splitTextToSize(String(item[1] || "—"), colW - 4) as string[]);
+    const rowHeight = Math.max(9, 4.2 + Math.max(...values.map((lines) => lines.length)) * LINE_HEIGHT + 2);
+    y = ensureSpace(ctx, y, rowHeight);
+    rowItems.forEach((item, column) => {
+      const x = M + column * colW;
+      doc.setTextColor(...GRAY);
+      doc.setFont("helvetica", "normal");
+      doc.text(item[0].toUpperCase(), x, y);
+      doc.setTextColor(20, 20, 20);
+      doc.setFont("helvetica", "bold");
+      doc.text(values[column] ?? ["—"], x, y + 4.2);
+    });
+    y += rowHeight;
+  }
+  doc.setFont("helvetica", "normal");
+  return y + 2;
 }
 
-function block(doc: Doc, y: number, label: string, text?: string | null) {
+function block(ctx: PageContext, y: number, label: string, text?: string | null) {
   if (!text) return y;
+  const { doc } = ctx;
   const w = doc.internal.pageSize.getWidth() - M * 2;
+  const lines = doc.splitTextToSize(String(text), w) as string[];
+  let offset = 0;
+  let continued = false;
+
+  while (offset < lines.length) {
+    y = ensureSpace(ctx, y, 11);
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(8);
+    doc.setTextColor(...GRAY);
+    doc.text(`${label.toUpperCase()}${continued ? " (CONTINUAÇÃO)" : ""}`, M, y);
+    doc.setTextColor(20, 20, 20);
+    doc.setFontSize(9);
+
+    const availableLines = Math.max(1, Math.floor((contentBottom(doc) - (y + 4.5)) / LINE_HEIGHT));
+    const chunk = lines.slice(offset, offset + availableLines);
+    doc.text(chunk, M, y + 4.5);
+    y += 4.5 + chunk.length * LINE_HEIGHT + 3;
+    offset += chunk.length;
+    if (offset < lines.length) {
+      y = nextPage(ctx);
+      continued = true;
+    }
+  }
+  return y;
+}
+
+function tableHeader(ctx: PageContext, y: number, cols: number[], width: number) {
+  const { doc } = ctx;
+  y = ensureSpace(ctx, y, 13);
+  doc.setFillColor(235, 240, 248);
+  doc.rect(M, y, width, 7, "F");
   doc.setFontSize(8);
-  doc.setTextColor(...GRAY);
-  doc.text(label.toUpperCase(), M, y);
-  doc.setTextColor(20, 20, 20);
-  doc.setFontSize(9);
-  const lines = doc.splitTextToSize(text, w);
-  doc.text(lines, M, y + 4.5);
-  return y + 4.5 + lines.length * 4.2 + 3;
+  doc.setFont("helvetica", "bold");
+  doc.text("DESCRIÇÃO", cols[0] + 2, y + 4.8);
+  doc.text("QTD", cols[1], y + 4.8);
+  doc.text("V. UNIT.", cols[2], y + 4.8);
+  doc.text("TOTAL", cols[3] - 2, y + 4.8, { align: "right" });
+  doc.setFont("helvetica", "normal");
+  doc.setDrawColor(210, 216, 226);
+  doc.rect(M, y, width, 7);
+  return y + 7;
 }
 
 function itemsTable(
-  doc: Doc,
+  ctx: PageContext,
   y: number,
   rows: { description: string; quantity: number; unit_price: number; total: number }[],
 ) {
+  const { doc } = ctx;
   const w = doc.internal.pageSize.getWidth() - M * 2;
   const cols = [M, M + w * 0.6, M + w * 0.72, M + w];
-  doc.setFillColor(235, 240, 248);
-  doc.rect(M, y, w, 7, "F");
-  doc.setFontSize(8);
-  doc.setFont("helvetica", "bold");
-  doc.text("DESCRIÇÃO", cols[0]! + 2, y + 4.8);
-  doc.text("QTD", cols[1]!, y + 4.8);
-  doc.text("V. UNIT.", cols[2]!, y + 4.8);
-  doc.text("TOTAL", cols[3]! - 2, y + 4.8, { align: "right" });
-  doc.setFont("helvetica", "normal");
-  let yy = y + 7;
-  rows.forEach((r, i) => {
-    const lines = doc.splitTextToSize(r.description, w * 0.56);
-    const hRow = Math.max(6.5, lines.length * 4.2 + 2.5);
-    if (i % 2 === 1) {
-      doc.setFillColor(247, 249, 252);
-      doc.rect(M, yy, w, hRow, "F");
+  y = tableHeader(ctx, y, cols, w);
+  rows.forEach((row, rowIndex) => {
+    const lines = doc.splitTextToSize(String(row.description || "—"), w * 0.56) as string[];
+    let offset = 0;
+    let firstChunk = true;
+    while (offset < lines.length) {
+      let availableLines = Math.floor((contentBottom(doc) - y - 2.5) / LINE_HEIGHT);
+      if (availableLines < 1) {
+        y = nextPage(ctx);
+        y = tableHeader(ctx, y, cols, w);
+        availableLines = Math.max(1, Math.floor((contentBottom(doc) - y - 2.5) / LINE_HEIGHT));
+      }
+      const chunk = lines.slice(offset, offset + availableLines);
+      const rowHeight = Math.max(6.5, chunk.length * LINE_HEIGHT + 2.5);
+      if (rowIndex % 2 === 1) {
+        doc.setFillColor(247, 249, 252);
+        doc.rect(M, y, w, rowHeight, "F");
+      }
+      doc.setDrawColor(210, 216, 226);
+      doc.rect(M, y, w, rowHeight);
+      doc.setFontSize(8.5);
+      doc.text(chunk, cols[0] + 2, y + 4.5);
+      if (firstChunk) {
+        doc.text(String(Number(row.quantity)), cols[1], y + 4.5);
+        doc.text(brl(row.unit_price), cols[2], y + 4.5);
+        doc.text(brl(row.total), cols[3] - 2, y + 4.5, { align: "right" });
+      }
+      y += rowHeight;
+      offset += chunk.length;
+      firstChunk = false;
+      if (offset < lines.length) {
+        y = nextPage(ctx);
+        y = tableHeader(ctx, y, cols, w);
+      }
     }
-    doc.setFontSize(8.5);
-    doc.text(lines, cols[0]! + 2, yy + 4.5);
-    doc.text(String(Number(r.quantity)), cols[1]!, yy + 4.5);
-    doc.text(brl(r.unit_price), cols[2]!, yy + 4.5);
-    doc.text(brl(r.total), cols[3]! - 2, yy + 4.5, { align: "right" });
-    yy += hRow;
   });
-  doc.setDrawColor(210, 216, 226);
-  doc.rect(M, y, w, yy - y);
-  return yy + 4;
+  return y + 4;
 }
 
-function totalsBox(doc: Doc, y: number, lines: [string, string][], highlight: [string, string]) {
+function totalsBox(ctx: PageContext, y: number, lines: [string, string][], highlight: [string, string]) {
+  const { doc } = ctx;
+  y = ensureSpace(ctx, y, lines.length * 5.5 + 15);
   const w = doc.internal.pageSize.getWidth() - M * 2;
   const boxW = w * 0.45;
   const x = M + w - boxW;
@@ -247,30 +325,31 @@ export async function budgetPdf(opts: {
 }) {
   const { company, budget, items, client, equipment, logo } = opts;
   const doc = new jsPDF();
-  let y = header(doc, company, "Orçamento", `${budget.number}  •  ${dateBR(budget.issue_date)}`, logo);
+  const ctx = { doc, company, title: "Orçamento", subtitle: `${budget.number}  •  ${dateBR(budget.issue_date)}`, logo };
+  let y = header(doc, company, ctx.title, ctx.subtitle, logo);
 
-  y = sectionTitle(doc, y, "Dados do cliente");
-  y = pair(doc, y, clientLines(client));
+  y = sectionTitle(ctx, y, "Dados do cliente");
+  y = pair(ctx, y, clientLines(client));
   if (equipment) {
-    y = sectionTitle(doc, y, "Equipamento");
-    y = pair(doc, y, equipLines(equipment));
+    y = sectionTitle(ctx, y, "Equipamento");
+    y = pair(ctx, y, equipLines(equipment));
   }
-  y = sectionTitle(doc, y, "Descrição do problema / serviço");
-  y = block(doc, y, "Problema relatado", budget.problem_description ?? "—");
+  y = sectionTitle(ctx, y, "Descrição do problema / serviço");
+  y = block(ctx, y, "Problema relatado", budget.problem_description ?? "—");
 
   const servicos = items.filter((i) => i.kind === "servico");
   const pecas = items.filter((i) => i.kind !== "servico");
   if (servicos.length) {
-    y = sectionTitle(doc, y, "Serviços");
-    y = itemsTable(doc, y, servicos);
+    y = sectionTitle(ctx, y, "Serviços");
+    y = itemsTable(ctx, y, servicos);
   }
   if (pecas.length) {
-    y = sectionTitle(doc, y, "Peças e materiais");
-    y = itemsTable(doc, y, pecas);
+    y = sectionTitle(ctx, y, "Peças e materiais");
+    y = itemsTable(ctx, y, pecas);
   }
 
   y = totalsBox(
-    doc,
+    ctx,
     y + 2,
     [
       ["Serviços / mão de obra", brl(budget.labor_total)],
@@ -281,16 +360,16 @@ export async function budgetPdf(opts: {
     ["VALOR TOTAL", brl(budget.total)],
   );
 
-  y = sectionTitle(doc, y, "Condições");
-  y = pair(doc, y, [
+  y = sectionTitle(ctx, y, "Condições");
+  y = pair(ctx, y, [
     ["Prazo de execução", budget.deadline ?? "—"],
     ["Validade do orçamento", dateBR(budget.valid_until)],
   ]);
-  y = block(doc, y, "Condições de pagamento", budget.payment_conditions ?? company.payment_conditions);
-  y = block(doc, y, "Observações", budget.notes ?? company.default_notes);
+  y = block(ctx, y, "Condições de pagamento", budget.payment_conditions ?? company.payment_conditions);
+  y = block(ctx, y, "Observações", budget.notes ?? company.default_notes);
 
-  const h = doc.internal.pageSize.getHeight();
-  const sy = Math.min(y + 8, h - 40);
+  y = ensureSpace(ctx, y, 25);
+  const sy = y + 6;
   doc.setDrawColor(...GRAY);
   doc.line(M, sy + 10, M + 80, sy + 10);
   doc.setFontSize(8);
@@ -312,10 +391,11 @@ export async function workOrderPdf(opts: {
 }) {
   const { company, order, items, client, equipment, logo } = opts;
   const doc = new jsPDF();
-  let y = header(doc, company, "Ordem de Serviço", `${order.number}  •  ${dateBR(order.service_date)}`, logo);
+  const ctx = { doc, company, title: "Ordem de Serviço", subtitle: `${order.number}  •  ${dateBR(order.service_date)}`, logo };
+  let y = header(doc, company, ctx.title, ctx.subtitle, logo);
 
-  y = sectionTitle(doc, y, "Dados do cliente");
-  y = pair(doc, y, [
+  y = sectionTitle(ctx, y, "Dados do cliente");
+  y = pair(ctx, y, [
     ...clientLines(client),
     ["Nome fantasia", client?.trade_name ?? "—"],
     ["Contato responsável", client?.contact_person ?? "—"],
@@ -323,8 +403,8 @@ export async function workOrderPdf(opts: {
     ["Complemento / CEP", [client?.complement, client?.zip_code].filter(Boolean).join(" / ") || "—"],
   ]);
 
-  y = sectionTitle(doc, y, "Atendimento");
-  y = pair(doc, y, [
+  y = sectionTitle(ctx, y, "Atendimento");
+  y = pair(ctx, y, [
     ["Técnico responsável", order.technician_name ?? "—"],
     ["Data / horário", `${dateBR(order.service_date)} ${order.service_time ?? ""}`.trim()],
     ["Tipo de atendimento", order.service_type ?? "—"],
@@ -332,8 +412,8 @@ export async function workOrderPdf(opts: {
   ]);
 
   if (equipment) {
-    y = sectionTitle(doc, y, "Equipamento");
-    y = pair(doc, y, [
+    y = sectionTitle(ctx, y, "Equipamento");
+    y = pair(ctx, y, [
       ...equipLines(equipment),
       ["Patrimônio", equipment.asset_tag ?? "—"],
       ["Capacidade", equipment.capacity ?? "—"],
@@ -345,14 +425,14 @@ export async function workOrderPdf(opts: {
     ]);
   }
 
-  y = sectionTitle(doc, y, "Execução");
-  y = block(doc, y, "Problema relatado pelo cliente", order.reported_problem);
-  y = block(doc, y, "Diagnóstico técnico", order.diagnosis);
-  y = block(doc, y, "Serviço executado", order.executed_service);
+  y = sectionTitle(ctx, y, "Execução");
+  y = block(ctx, y, "Problema relatado pelo cliente", order.reported_problem);
+  y = block(ctx, y, "Diagnóstico técnico", order.diagnosis);
+  y = block(ctx, y, "Serviço executado", order.executed_service);
 
-  y = sectionTitle(doc, y, "Medições técnicas");
+  y = sectionTitle(ctx, y, "Medições técnicas");
   y = pair(
-    doc,
+    ctx,
     y,
     [
       ["Gás refrigerante", order.refrigerant ?? "—"],
@@ -366,15 +446,15 @@ export async function workOrderPdf(opts: {
   );
 
   if (items.length) {
-    y = sectionTitle(doc, y, "Peças e materiais utilizados");
-    y = itemsTable(doc, y, items);
-    y = totalsBox(doc, y, [], ["TOTAL DO SERVIÇO", brl(order.total)]);
+    y = sectionTitle(ctx, y, "Peças e materiais utilizados");
+    y = itemsTable(ctx, y, items);
+    y = totalsBox(ctx, y, [], ["TOTAL DO SERVIÇO", brl(order.total)]);
   }
 
-  y = block(doc, y, "Observações", order.notes ?? company.default_notes);
+  y = block(ctx, y, "Observações", order.notes ?? company.default_notes);
 
-  const h = doc.internal.pageSize.getHeight();
-  let sy = Math.min(y + 6, h - 45);
+  y = ensureSpace(ctx, y, order.signature ? 38 : 18);
+  let sy = y + 4;
   if (order.signature) {
     try {
       doc.addImage(order.signature, "PNG", M, sy, 60, 22);
@@ -405,16 +485,23 @@ export async function reportPdf(opts: {
 }) {
   const { company, report, client, equipment, logo } = opts;
   const doc = new jsPDF();
+  const ctx = {
+    doc,
+    company,
+    title: "Laudo Técnico",
+    subtitle: `${report.number}  •  ${dateBR(report.inspection_date)}`,
+    logo,
+  };
   let y = header(
     doc,
     company,
-    "Laudo Técnico",
-    `${report.number}  •  ${dateBR(report.inspection_date)}`,
+    ctx.title,
+    ctx.subtitle,
     logo,
   );
 
-  y = sectionTitle(doc, y, "Identificação");
-  y = pair(doc, y, [
+  y = sectionTitle(ctx, y, "Identificação");
+  y = pair(ctx, y, [
     ["Cliente", client?.name ?? "—"],
     ["Local da inspeção", report.location ?? "—"],
     ["Equipamento", equipment?.type ?? "—"],
@@ -423,9 +510,9 @@ export async function reportPdf(opts: {
     ["Técnico responsável", report.technician_name ?? "—"],
   ]);
 
-  y = sectionTitle(doc, y, "Inspeção técnica");
+  y = sectionTitle(ctx, y, "Inspeção técnica");
   y = pair(
-    doc,
+    ctx,
     y,
     [
       ["Estado geral", report.general_condition ?? "—"],
@@ -446,9 +533,9 @@ export async function reportPdf(opts: {
     2,
   );
 
-  y = sectionTitle(doc, y, "Medições");
+  y = sectionTitle(ctx, y, "Medições");
   y = pair(
-    doc,
+    ctx,
     y,
     [
       ["Pressões", report.pressures ?? "—"],
@@ -460,20 +547,14 @@ export async function reportPdf(opts: {
     2,
   );
 
-  if (y > 215) {
-    footer(doc, company);
-    doc.addPage();
-    y = header(doc, company, "Laudo Técnico", `${report.number} — continuação`, logo);
-  }
+  y = sectionTitle(ctx, y, "Conclusão técnica");
+  y = block(ctx, y, "Diagnóstico técnico", report.diagnosis);
+  y = block(ctx, y, "Causa provável do problema", report.probable_cause);
+  y = block(ctx, y, "Recomendação técnica", report.recommendation);
+  y = block(ctx, y, "Serviço recomendado", report.recommended_service);
 
-  y = sectionTitle(doc, y, "Conclusão técnica");
-  y = block(doc, y, "Diagnóstico técnico", report.diagnosis);
-  y = block(doc, y, "Causa provável do problema", report.probable_cause);
-  y = block(doc, y, "Recomendação técnica", report.recommendation);
-  y = block(doc, y, "Serviço recomendado", report.recommended_service);
-
-  const h = doc.internal.pageSize.getHeight();
-  const sy = Math.min(y + 10, h - 32);
+  y = ensureSpace(ctx, y, 15);
+  const sy = y + 7;
   doc.setDrawColor(...GRAY);
   doc.line(M, sy, M + 80, sy);
   doc.setFontSize(8);
@@ -494,11 +575,18 @@ export async function warrantyPdf(opts: {
   const { company, warranty, client, equipment, logo, validateUrl } = opts;
   const doc = new jsPDF();
   const w = doc.internal.pageSize.getWidth();
+  const ctx = {
+    doc,
+    company,
+    title: "Certificado de Garantia",
+    subtitle: `${warranty.number}  •  Emitido em ${dateBR(warranty.created_at ?? new Date())}`,
+    logo,
+  };
   let y = header(
     doc,
     company,
-    "Certificado de Garantia",
-    `${warranty.number}  •  Emitido em ${dateBR(warranty.created_at ?? new Date())}`,
+    ctx.title,
+    ctx.subtitle,
     logo,
   );
 
@@ -516,33 +604,33 @@ export async function warrantyPdf(opts: {
   doc.setTextColor(20, 20, 20);
   y += 26;
 
-  y = sectionTitle(doc, y, "Beneficiário");
-  y = pair(doc, y, [
+  y = sectionTitle(ctx, y, "Beneficiário");
+  y = pair(ctx, y, [
     ["Cliente", client?.name ?? "—"],
     [client?.kind === "pj" ? "CNPJ" : "CPF", client?.document ?? "—"],
     ["Equipamento", equipment?.type ?? "—"],
     ["Marca / Modelo / Série", [equipment?.brand, equipment?.model, equipment?.serial_number].filter(Boolean).join(" / ") || "—"],
   ]);
 
-  y = sectionTitle(doc, y, "Serviço garantido");
-  y = block(doc, y, "Serviço realizado", warranty.service_performed);
-  y = block(doc, y, "Peças utilizadas", warranty.parts_used);
-  y = pair(doc, y, [
+  y = sectionTitle(ctx, y, "Serviço garantido");
+  y = block(ctx, y, "Serviço realizado", warranty.service_performed);
+  y = block(ctx, y, "Peças utilizadas", warranty.parts_used);
+  y = pair(ctx, y, [
     ["Data do serviço", dateBR(warranty.service_date)],
     ["Início da garantia", dateBR(warranty.start_date)],
     ["Prazo", `${warranty.days} dias`],
     ["Vencimento", dateBR(warranty.end_date)],
   ]);
 
-  y = sectionTitle(doc, y, "Condições da garantia");
-  y = block(doc, y, "Condições", warranty.conditions ?? company.warranty_terms);
-  y = block(doc, y, "Exclusões", warranty.exclusions);
-  y = block(doc, y, "Observações", warranty.notes);
+  y = sectionTitle(ctx, y, "Condições da garantia");
+  y = block(ctx, y, "Condições", warranty.conditions ?? company.warranty_terms);
+  y = block(ctx, y, "Exclusões", warranty.exclusions);
+  y = block(ctx, y, "Observações", warranty.notes);
 
   try {
     const qr = await QRCode.toDataURL(validateUrl, { margin: 1, width: 240 });
-    const h = doc.internal.pageSize.getHeight();
-    const qy = Math.min(y + 4, h - 52);
+    y = ensureSpace(ctx, y, 42);
+    const qy = y + 2;
     doc.addImage(qr, "PNG", w - M - 30, qy, 30, 30);
     doc.setFontSize(7.5);
     doc.setTextColor(...GRAY);
