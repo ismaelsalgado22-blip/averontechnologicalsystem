@@ -157,7 +157,7 @@ function pair(ctx: PageContext, y: number, items: [string, string][], cols = 2) 
     const values = rowItems.map((item) => doc.splitTextToSize(String(item[1] || "—"), colW - 4) as string[]);
     const offsets = values.map(() => 0);
     let continued = false;
-    while (values.some((lines, column) => offsets[column] < lines.length)) {
+    while (values.some((lines, column) => (offsets[column] ?? 0) < lines.length)) {
       y = ensureSpace(ctx, y, 11);
       const availableLines = Math.max(1, Math.floor((contentBottom(doc) - y - 6.2) / LINE_HEIGHT));
       let renderedLines = 1;
@@ -176,7 +176,7 @@ function pair(ctx: PageContext, y: number, items: [string, string][], cols = 2) 
         offsets[column] = offset + chunk.length;
       });
       y += Math.max(9, 4.2 + renderedLines * LINE_HEIGHT + 2);
-      if (values.some((lines, column) => offsets[column] < lines.length)) {
+      if (values.some((lines, column) => (offsets[column] ?? 0) < lines.length)) {
         y = nextPage(ctx);
         continued = true;
       }
