@@ -32,7 +32,7 @@ type PageContext = {
   company: Company;
   title: string;
   subtitle: string;
-  logo?: string;
+  logo: string | undefined;
 };
 
 const LINE_HEIGHT = 4.2;
@@ -155,18 +155,32 @@ function pair(ctx: PageContext, y: number, items: [string, string][], cols = 2) 
   for (let i = 0; i < items.length; i += cols) {
     const rowItems = items.slice(i, i + cols);
     const values = rowItems.map((item) => doc.splitTextToSize(String(item[1] || "—"), colW - 4) as string[]);
-    const rowHeight = Math.max(9, 4.2 + Math.max(...values.map((lines) => lines.length)) * LINE_HEIGHT + 2);
-    y = ensureSpace(ctx, y, rowHeight);
-    rowItems.forEach((item, column) => {
-      const x = M + column * colW;
-      doc.setTextColor(...GRAY);
-      doc.setFont("helvetica", "normal");
-      doc.text(item[0].toUpperCase(), x, y);
-      doc.setTextColor(20, 20, 20);
-      doc.setFont("helvetica", "bold");
-      doc.text(values[column] ?? ["—"], x, y + 4.2);
-    });
-    y += rowHeight;
+    const offsets = values.map(() => 0);
+    let continued = false;
+    while (values.some((lines, column) => (offsets[column] ?? 0) < lines.length)) {
+      y = ensureSpace(ctx, y, 11);
+      const availableLines = Math.max(1, Math.floor((contentBottom(doc) - y - 6.2) / LINE_HEIGHT));
+      let renderedLines = 1;
+      rowItems.forEach((item, column) => {
+        const x = M + column * colW;
+        const valueLines = values[column] ?? ["—"];
+        const offset = offsets[column] ?? 0;
+        const chunk = valueLines.slice(offset, offset + availableLines);
+        renderedLines = Math.max(renderedLines, chunk.length);
+        doc.setTextColor(...GRAY);
+        doc.setFont("helvetica", "normal");
+        doc.text(`${item[0].toUpperCase()}${continued && chunk.length ? " (CONT.)" : ""}`, x, y);
+        doc.setTextColor(20, 20, 20);
+        doc.setFont("helvetica", "bold");
+        if (chunk.length) doc.text(chunk, x, y + 4.2);
+        offsets[column] = offset + chunk.length;
+      });
+      y += Math.max(9, 4.2 + renderedLines * LINE_HEIGHT + 2);
+      if (values.some((lines, column) => (offsets[column] ?? 0) < lines.length)) {
+        y = nextPage(ctx);
+        continued = true;
+      }
+    }
   }
   doc.setFont("helvetica", "normal");
   return y + 2;
@@ -202,7 +216,7 @@ function block(ctx: PageContext, y: number, label: string, text?: string | null)
   return y;
 }
 
-function tableHeader(ctx: PageContext, y: number, cols: number[], width: number) {
+function tableHeader(ctx: PageContext, y: number, cols: [number, number, number, number], width: number) {
   const { doc } = ctx;
   y = ensureSpace(ctx, y, 13);
   doc.setFillColor(235, 240, 248);
@@ -226,7 +240,7 @@ function itemsTable(
 ) {
   const { doc } = ctx;
   const w = doc.internal.pageSize.getWidth() - M * 2;
-  const cols = [M, M + w * 0.6, M + w * 0.72, M + w];
+  const cols: [number, number, number, number] = [M, M + w * 0.6, M + w * 0.72, M + w];
   y = tableHeader(ctx, y, cols, w);
   rows.forEach((row, rowIndex) => {
     const lines = doc.splitTextToSize(String(row.description || "—"), w * 0.56) as string[];
