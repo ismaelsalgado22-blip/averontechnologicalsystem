@@ -57,6 +57,7 @@ const emptyForm = {
   compressor_current: "",
   temperatures: "",
   tests: "",
+  other_tests: "",
   notes: "",
   status: "aberta",
 };

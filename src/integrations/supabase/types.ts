@@ -1157,6 +1157,7 @@ export type Database = {
           id: string
           notes: string | null
           number: string | null
+          other_tests: string | null
           owner_id: string
           photos_after: string[]
           photos_before: string[]
@@ -1190,6 +1191,7 @@ export type Database = {
           id?: string
           notes?: string | null
           number?: string | null
+          other_tests?: string | null
           owner_id?: string
           photos_after?: string[]
           photos_before?: string[]
@@ -1223,6 +1225,7 @@ export type Database = {
           id?: string
           notes?: string | null
           number?: string | null
+          other_tests?: string | null
           owner_id?: string
           photos_after?: string[]
           photos_before?: string[]
