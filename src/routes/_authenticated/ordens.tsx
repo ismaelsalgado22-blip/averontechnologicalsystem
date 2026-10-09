@@ -516,6 +516,9 @@ function OrdersPage() {
                   onChange={(e) => set("executed_service", e.target.value)}
                 />
               </Field>
+              <Field label="Observações">
+                <Textarea value={form.notes} rows={2} maxLength={800} onChange={(e) => set("notes", e.target.value)} />
+              </Field>
             </div>
 
             <div className="grid gap-3 sm:grid-cols-3">
@@ -642,10 +645,6 @@ function OrdersPage() {
               <PhotoUpload label="Fotos durante" folder="os/durante" paths={during} onChange={setDuring} />
               <PhotoUpload label="Fotos depois" folder="os/depois" paths={after} onChange={setAfter} />
             </div>
-
-            <Field label="Observações">
-              <Textarea value={form.notes} rows={2} maxLength={800} onChange={(e) => set("notes", e.target.value)} />
-            </Field>
 
             <SignaturePad value={signature} onChange={setSignature} />
           </div>
