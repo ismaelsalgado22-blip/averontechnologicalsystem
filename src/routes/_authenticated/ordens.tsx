@@ -57,6 +57,7 @@ const emptyForm = {
   compressor_current: "",
   temperatures: "",
   tests: "",
+  other_tests: "",
   notes: "",
   status: "aberta",
 };
@@ -125,6 +126,7 @@ function OrdersPage() {
         compressor_current: form.compressor_current || null,
         temperatures: form.temperatures || null,
         tests: form.tests || null,
+        other_tests: form.other_tests || null,
         notes: form.notes || null,
         status: form.status,
         photos_before: before,
@@ -265,6 +267,7 @@ function OrdersPage() {
       compressor_current: o.compressor_current ?? "",
       temperatures: o.temperatures ?? "",
       tests: o.tests ?? "",
+      other_tests: o.other_tests ?? "",
       notes: o.notes ?? "",
       status: o.status,
     });
@@ -513,6 +516,9 @@ function OrdersPage() {
                   onChange={(e) => set("executed_service", e.target.value)}
                 />
               </Field>
+              <Field label="Observações">
+                <Textarea value={form.notes} rows={2} maxLength={800} onChange={(e) => set("notes", e.target.value)} />
+              </Field>
             </div>
 
             <div className="grid gap-3 sm:grid-cols-3">
@@ -541,6 +547,9 @@ function OrdersPage() {
               </Field>
               <Field label="Testes realizados">
                 <Input value={form.tests} maxLength={120} onChange={(e) => set("tests", e.target.value)} />
+              </Field>
+              <Field label="Outros testes">
+                <Input value={form.other_tests} maxLength={120} onChange={(e) => set("other_tests", e.target.value)} />
               </Field>
             </div>
 
@@ -636,10 +645,6 @@ function OrdersPage() {
               <PhotoUpload label="Fotos durante" folder="os/durante" paths={during} onChange={setDuring} />
               <PhotoUpload label="Fotos depois" folder="os/depois" paths={after} onChange={setAfter} />
             </div>
-
-            <Field label="Observações">
-              <Textarea value={form.notes} rows={2} maxLength={800} onChange={(e) => set("notes", e.target.value)} />
-            </Field>
 
             <SignaturePad value={signature} onChange={setSignature} />
           </div>

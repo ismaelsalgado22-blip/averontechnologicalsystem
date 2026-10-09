@@ -455,6 +455,7 @@ export async function workOrderPdf(opts: {
       ["Corrente do compressor", order.compressor_current ?? "—"],
       ["Temperaturas", order.temperatures ?? "—"],
       ["Testes realizados", order.tests ?? "—"],
+      ["Outros testes", order.other_tests ?? "—"],
     ],
     2,
   );
