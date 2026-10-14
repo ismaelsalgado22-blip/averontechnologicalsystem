@@ -28,6 +28,8 @@ export const Route = createFileRoute("/_authenticated/financeiro")({
       { property: "og:title", content: "Financeiro | Averon" },
       { property: "og:description", content: "Controle de recebimentos por cliente, com vencimentos e baixa de pagamentos." },
       { name: "robots", content: "noindex" },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
     ],
   }),
   component: FinancePage,

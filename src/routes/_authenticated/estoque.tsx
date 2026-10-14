@@ -28,6 +28,8 @@ export const Route = createFileRoute("/_authenticated/estoque")({
       { property: "og:title", content: "Estoque de peças | Averon" },
       { property: "og:description", content: "Peças, materiais, custos, preços de venda e movimentações de estoque." },
       { name: "robots", content: "noindex" },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
     ],
   }),
   component: StockPage,

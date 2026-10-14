@@ -27,6 +27,8 @@ export const Route = createFileRoute("/_authenticated/clientes/$id")({
       { property: "og:title", content: "Ficha do cliente | Averon" },
       { property: "og:description", content: "Histórico de atendimentos e documentos do cliente." },
       { name: "robots", content: "noindex" },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
     ],
   }),
   component: ClientDetail,

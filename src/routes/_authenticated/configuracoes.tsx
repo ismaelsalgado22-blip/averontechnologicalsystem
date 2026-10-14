@@ -20,6 +20,8 @@ export const Route = createFileRoute("/_authenticated/configuracoes")({
       { property: "og:title", content: "Configurações da empresa | Averon" },
       { property: "og:description", content: "Informações que aparecem nos orçamentos, ordens de serviço e certificados." },
       { name: "robots", content: "noindex" },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
     ],
   }),
   component: SettingsPage,

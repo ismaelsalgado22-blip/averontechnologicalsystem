@@ -30,6 +30,8 @@ export const Route = createFileRoute("/_authenticated/equipamentos")({
       { property: "og:title", content: "Equipamentos | Averon" },
       { property: "og:description", content: "Marca, modelo, número de série, gás refrigerante e fotos de cada equipamento." },
       { name: "robots", content: "noindex" },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
     ],
   }),
   component: EquipmentPage,

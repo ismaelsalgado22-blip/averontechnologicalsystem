@@ -32,6 +32,8 @@ export const Route = createFileRoute("/_authenticated/garantias")({
       { property: "og:title", content: "Garantias | Averon" },
       { property: "og:description", content: "Certificados de garantia numerados, com prazo, condições e validação online." },
       { name: "robots", content: "noindex" },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
     ],
   }),
   component: WarrantiesPage,

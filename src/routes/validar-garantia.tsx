@@ -21,6 +21,8 @@ export const Route = createFileRoute("/validar-garantia")({
         property: "og:description",
         content: "Digite o número do certificado para conferir prazo, equipamento e condições da garantia.",
       },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
     ],
   }),
   component: ValidatePage,

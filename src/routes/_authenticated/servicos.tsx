@@ -30,6 +30,8 @@ export const Route = createFileRoute("/_authenticated/servicos")({
       { property: "og:title", content: "Tabela de serviços | Averon" },
       { property: "og:description", content: "Preços de mão de obra usados nos orçamentos e ordens de serviço." },
       { name: "robots", content: "noindex" },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
     ],
   }),
   component: ServicesPage,

@@ -29,6 +29,8 @@ export const Route = createFileRoute("/_authenticated/agenda")({
       { property: "og:title", content: "Agenda de atendimentos | Averon" },
       { property: "og:description", content: "Visitas técnicas, manutenções preventivas e rota do dia da equipe." },
       { name: "robots", content: "noindex" },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
     ],
   }),
   component: SchedulePage,
