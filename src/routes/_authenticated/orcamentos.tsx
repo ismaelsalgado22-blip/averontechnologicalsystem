@@ -32,6 +32,8 @@ export const Route = createFileRoute("/_authenticated/orcamentos")({
       { property: "og:title", content: "Orçamentos | Averon" },
       { property: "og:description", content: "Orçamentos profissionais em PDF com aprovação e conversão em ordem de serviço." },
       { name: "robots", content: "noindex" },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
     ],
   }),
   component: BudgetsPage,

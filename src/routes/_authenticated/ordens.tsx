@@ -34,6 +34,8 @@ export const Route = createFileRoute("/_authenticated/ordens")({
       { property: "og:title", content: "Ordens de serviço | Averon" },
       { property: "og:description", content: "Controle completo do atendimento técnico em refrigeração, do diagnóstico à conclusão." },
       { name: "robots", content: "noindex" },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
     ],
   }),
   component: OrdersPage,

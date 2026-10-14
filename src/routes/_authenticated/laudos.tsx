@@ -33,6 +33,8 @@ export const Route = createFileRoute("/_authenticated/laudos")({
       { property: "og:title", content: "Laudos técnicos | Averon" },
       { property: "og:description", content: "Checklist completo de inspeção em refrigeração com laudo em PDF." },
       { name: "robots", content: "noindex" },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
     ],
   }),
   component: ReportsPage,

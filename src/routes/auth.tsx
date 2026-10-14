@@ -26,6 +26,8 @@ export const Route = createFileRoute("/auth")({
         content: "Entre no sistema de gestão comercial e técnica da Averon.",
       },
       { name: "robots", content: "noindex" },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
     ],
   }),
   component: AuthPage,

@@ -10,3 +10,4 @@
 <!-- LOVABLE:END -->
 
 - Keep PDF layout primitives pagination-aware so all generated document types reserve header and footer space.
+- Shared dialog, confirmation, and sheet primitives must constrain height to the dynamic viewport and allow vertical scrolling; keep form sections and navigation chrome from shrinking so actions remain reachable on short screens.
