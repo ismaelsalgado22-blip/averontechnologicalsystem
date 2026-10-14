@@ -60,7 +60,7 @@ export function AppShell({ children }: { children: ReactNode }) {
   };
 
   const nav = (
-    <nav className="flex flex-1 flex-col gap-1 overflow-y-auto scroll-thin px-3 py-4">
+    <nav className="flex min-h-0 flex-1 flex-col gap-1 overflow-y-auto overscroll-contain scroll-thin px-3 py-4">
       {NAV.map((item) => {
         const active = pathname === item.to || pathname.startsWith(`${item.to}/`);
         return (
@@ -69,7 +69,7 @@ export function AppShell({ children }: { children: ReactNode }) {
             to={item.to}
             onClick={() => setOpen(false)}
             className={cn(
-              "flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors",
+              "flex shrink-0 items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors",
               active
                 ? "bg-sidebar-accent text-sidebar-accent-foreground shadow-glow"
                 : "text-sidebar-foreground/75 hover:bg-sidebar-accent/60 hover:text-sidebar-accent-foreground",
@@ -84,7 +84,7 @@ export function AppShell({ children }: { children: ReactNode }) {
   );
 
   const footer = (
-    <div className="border-t border-sidebar-border px-3 py-3">
+    <div className="shrink-0 border-t border-sidebar-border px-3 py-3">
       <div className="mb-2 px-1">
         <p className="truncate text-sm font-semibold">{data?.profile?.full_name ?? "Usuário"}</p>
         <p className="text-[11px] uppercase tracking-widest text-muted-foreground">
@@ -101,7 +101,7 @@ export function AppShell({ children }: { children: ReactNode }) {
   return (
     <div className="min-h-screen bg-background">
       <aside className="fixed inset-y-0 left-0 z-40 hidden w-64 flex-col border-r border-sidebar-border bg-sidebar lg:flex">
-        <div className="border-b border-sidebar-border px-4 py-4">
+        <div className="shrink-0 border-b border-sidebar-border px-4 py-4">
           <BrandLogo />
         </div>
         {nav}
@@ -115,8 +115,8 @@ export function AppShell({ children }: { children: ReactNode }) {
             onClick={() => setOpen(false)}
             aria-label="Fechar menu"
           />
-          <aside className="relative flex h-full w-72 flex-col border-r border-sidebar-border bg-sidebar">
-            <div className="flex items-center justify-between border-b border-sidebar-border px-4 py-4">
+          <aside className="relative flex h-dvh w-72 flex-col border-r border-sidebar-border bg-sidebar">
+            <div className="flex shrink-0 items-center justify-between border-b border-sidebar-border px-4 py-4">
               <BrandLogo />
               <Button variant="ghost" size="icon" onClick={() => setOpen(false)}>
                 <X className="size-4" />

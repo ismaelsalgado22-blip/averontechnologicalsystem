@@ -1,5 +1,8 @@
 # Roadmap
 
+## Em andamento
+- [ ] Verificar rolagem e acesso aos botões de salvar nos formulários e navegação de todas as abas
+
 ## Concluído
 - [x] Paginação automática dos PDFs para textos, tabelas, assinaturas e QR Code extensos
 - [x] Marca do sistema apenas "Averon" (sem "Refrigeração")
