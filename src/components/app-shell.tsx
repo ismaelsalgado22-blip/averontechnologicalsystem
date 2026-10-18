@@ -21,6 +21,7 @@ import {
 import { supabase } from "@/integrations/supabase/client";
 import { useProfile } from "@/hooks/use-auth";
 import { BrandLogo } from "@/components/brand-logo";
+import { AlertsBell } from "@/components/alerts-bell";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
@@ -134,7 +135,13 @@ export function AppShell({ children }: { children: ReactNode }) {
             <Menu className="size-5" />
           </Button>
           <BrandLogo />
+          <div className="ml-auto">
+            <AlertsBell />
+          </div>
         </header>
+        <div className="sticky top-0 z-30 hidden justify-end border-b border-border bg-background/85 px-6 py-2 backdrop-blur lg:flex">
+          <AlertsBell />
+        </div>
         <main className="mx-auto w-full max-w-7xl space-y-6 px-4 py-6 sm:px-6 lg:py-8">{children}</main>
       </div>
     </div>
