@@ -1,6 +1,7 @@
 # Roadmap
 
 ## Concluído
+- [x] Alertas com som: agenda (30 min antes e próximas 24h), pagamentos atrasados, garantias vencendo, estoque baixo
 - [x] Rolagem e acesso aos botões de salvar nos dez formulários, configurações e navegação, verificados em três tamanhos de tela
 - [x] Paginação automática dos PDFs para textos, tabelas, assinaturas e QR Code extensos
 - [x] Marca do sistema apenas "Averon" (sem "Refrigeração")
