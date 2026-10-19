@@ -572,6 +572,7 @@ export type Database = {
       guest_appointments: {
         Row: {
           address: string | null
+          cep: string | null
           contact_name: string
           contact_phone: string
           created_at: string
@@ -587,6 +588,7 @@ export type Database = {
         }
         Insert: {
           address?: string | null
+          cep?: string | null
           contact_name: string
           contact_phone: string
           created_at?: string
@@ -602,6 +604,7 @@ export type Database = {
         }
         Update: {
           address?: string | null
+          cep?: string | null
           contact_name?: string
           contact_phone?: string
           created_at?: string
