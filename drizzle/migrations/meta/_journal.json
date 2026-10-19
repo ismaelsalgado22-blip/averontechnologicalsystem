@@ -8,6 +8,13 @@
       "when": 1791575487175,
       "tag": "0000_create_add_other_tests_to_work_orders",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1792381586536,
+      "tag": "0001_create_guest_appointments",
+      "breakpoints": true
     }
   ]
 }
