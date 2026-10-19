@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { CalendarClock, Plus } from "lucide-react";
+import { CalendarClock, MapPin, Navigation, Plus } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { PageHeader, StatusPill, EmptyState } from "@/components/page-header";
@@ -57,9 +57,32 @@ const emptyForm = {
   time: "09:00",
   duration_minutes: "60",
   address: "",
+  cep: "",
+  number: "",
+  district: "",
+  city: "",
+  complement: "",
   status: "agendado",
   notes: "",
 };
+
+function composeAddress(f: typeof emptyForm) {
+  const street = [f.address, f.number].filter(Boolean).join(", ");
+  const cityState = [f.city].filter(Boolean).join(" - ");
+  return [street, f.district, cityState, f.complement, f.cep ? `CEP ${f.cep}` : ""]
+    .filter(Boolean)
+    .join(" • ");
+}
+
+function fullAddress(a: any) {
+  if (a.address) return a.address as string;
+  const c = a.clients;
+  if (!c) return "";
+  const street = [c.address, c.number].filter(Boolean).join(", ");
+  return [street, c.district, c.city, c.complement, c.zip_code ? `CEP ${c.zip_code}` : ""]
+    .filter(Boolean)
+    .join(" • ");
+}
 
 function SchedulePage() {
   const qc = useQueryClient();
