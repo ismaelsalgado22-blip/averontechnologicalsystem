@@ -1,24 +1,25 @@
-import { describe, expect, test } from "bun:test";
+import { describe, it as test } from "node:test";
+import { deepStrictEqual, throws } from "node:assert/strict";
 import { appointmentContact, guestContact } from "./appointment-contact";
 
 describe("agendamento sem cadastro", () => {
   test("aceita apenas nome e telefone sem documento ou cliente", () => {
-    expect(guestContact(" Ana Silva ", " (11) 99999-0000 ")).toEqual({
+    deepStrictEqual(guestContact(" Ana Silva ", " (11) 99999-0000 "), {
       contact_name: "Ana Silva", contact_phone: "(11) 99999-0000",
     });
   });
   test("exige nome", () => {
-    expect(() => guestContact(" ", "11999990000")).toThrow();
+    throws(() => guestContact(" ", "11999990000"));
   });
   test("exige telefone", () => {
-    expect(() => guestContact("Ana Silva", " ")).toThrow();
+    throws(() => guestContact("Ana Silva", " "));
   });
   test("mantém contato do cliente cadastrado", () => {
-    expect(appointmentContact({ clients: { name: "João", phone: "1133330000", whatsapp: "11999990000" } }))
-      .toEqual({ name: "João", phone: "11999990000" });
+    deepStrictEqual(appointmentContact({ clients: { name: "João", phone: "1133330000", whatsapp: "11999990000" } }),
+      { name: "João", phone: "11999990000" });
   });
   test("usa contato avulso para exibição e WhatsApp", () => {
-    expect(appointmentContact(guestContact("Ana Silva", "11999990000")))
-      .toEqual({ name: "Ana Silva", phone: "11999990000" });
+    deepStrictEqual(appointmentContact(guestContact("Ana Silva", "11999990000")),
+      { name: "Ana Silva", phone: "11999990000" });
   });
 });
