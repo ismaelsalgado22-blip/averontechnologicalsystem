@@ -25,6 +25,7 @@ import {
 import { supabase } from "@/integrations/supabase/client";
 import { PageHeader, StatusPill } from "@/components/page-header";
 import { WO_STATUS, brl, dateBR, dateTimeBR, daysUntil, today } from "@/lib/format";
+import { appointmentContact } from "@/lib/appointment-contact";
 
 export const Route = createFileRoute("/_authenticated/dashboard")({
   head: () => ({
@@ -88,6 +89,7 @@ function Dashboard() {
         lowStock,
         ordersForChart,
         statusRows,
+        guestAppointments,
       ] = await Promise.all([
         supabase.from("clients").select("id", { count: "exact", head: true }),
         supabase
@@ -120,7 +122,13 @@ function Dashboard() {
         supabase.from("products").select("id, name, stock, min_stock, unit"),
         supabase.from("work_orders").select("service_date, total").gte("service_date", monthStart),
         supabase.from("work_orders").select("status"),
+        supabase.from("guest_appointments")
+          .select("id, title, scheduled_at, technician_name, status, contact_name, contact_phone")
+          .gte("scheduled_at", new Date().toISOString())
+          .order("scheduled_at")
+          .limit(6),
       ]);
+      if (guestAppointments.error) throw guestAppointments.error;
 
       const sum = (rows: { amount?: number; total?: number }[] | null, key: "amount" | "total") =>
         (rows ?? []).reduce((a, r) => a + Number((r as any)[key] ?? 0), 0);
@@ -143,7 +151,8 @@ function Dashboard() {
         receivable: sum(pendingPay.data as any, "amount"),
         overdue: sum(overdue.data as any, "amount"),
         warranties: warranties.data ?? [],
-        appointments: appointments.data ?? [],
+        appointments: [...(appointments.data ?? []), ...(guestAppointments.data ?? [])]
+          .sort((a, b) => a.scheduled_at.localeCompare(b.scheduled_at)).slice(0, 6),
         recentOrders: recentOrders.data ?? [],
         lowStock: (lowStock.data ?? []).filter((p: any) => Number(p.stock) <= Number(p.min_stock)),
         statusChart: [...byStatus.entries()].map(([k, v]) => ({
@@ -292,7 +301,7 @@ function Dashboard() {
               {(data?.appointments ?? []).map((a: any) => (
                 <div key={a.id} className="flex items-center justify-between gap-3 text-sm">
                   <span className="min-w-0">
-                    <span className="block truncate font-semibold">{a.clients?.name ?? a.title}</span>
+                    <span className="block truncate font-semibold">{appointmentContact(a).name || a.title}</span>
                     <span className="block text-xs text-muted-foreground">
                       {dateTimeBR(a.scheduled_at)} • {a.technician_name ?? "sem técnico"}
                     </span>
