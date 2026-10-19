@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { CalendarClock, Plus } from "lucide-react";
+import { CalendarClock, MapPin, Navigation, Plus } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { PageHeader, StatusPill, EmptyState } from "@/components/page-header";
@@ -57,9 +57,32 @@ const emptyForm = {
   time: "09:00",
   duration_minutes: "60",
   address: "",
+  cep: "",
+  number: "",
+  district: "",
+  city: "",
+  complement: "",
   status: "agendado",
   notes: "",
 };
+
+function composeAddress(f: typeof emptyForm) {
+  const street = [f.address, f.number].filter(Boolean).join(", ");
+  const cityState = [f.city].filter(Boolean).join(" - ");
+  return [street, f.district, cityState, f.complement, f.cep ? `CEP ${f.cep}` : ""]
+    .filter(Boolean)
+    .join(" • ");
+}
+
+function fullAddress(a: any) {
+  if (a.address) return a.address as string;
+  const c = a.clients;
+  if (!c) return "";
+  const street = [c.address, c.number].filter(Boolean).join(", ");
+  return [street, c.district, c.city, c.complement, c.zip_code ? `CEP ${c.zip_code}` : ""]
+    .filter(Boolean)
+    .join(" • ");
+}
 
 function SchedulePage() {
   const qc = useQueryClient();
@@ -84,7 +107,7 @@ function SchedulePage() {
   const { data: clients } = useQuery({
     queryKey: ["clients"],
     queryFn: async () =>
-      (await supabase.from("clients").select("id, name, phone, whatsapp, address, city").order("name")).data ?? [],
+      (await supabase.from("clients").select("id, name, phone, whatsapp, address, number, district, city, state, complement, zip_code").order("name")).data ?? [],
   });
   const { data: equipment } = useQuery({
     queryKey: ["equipment", "all"],
@@ -102,12 +125,12 @@ function SchedulePage() {
         technician_name: form.technician_name || null,
         scheduled_at: scheduled.toISOString(),
         duration_minutes: Number(form.duration_minutes) || 60,
-        address: form.address || null,
+        address: composeAddress(form) || null,
         status: form.status,
         notes: form.notes || null,
       };
       const { error } = contact
-        ? await supabase.from("guest_appointments").insert({ ...payload, ...contact })
+        ? await supabase.from("guest_appointments").insert({ ...payload, ...contact, cep: form.cep || null })
         : await supabase.from("appointments").insert({ ...payload, client_id: form.client_id, equipment_id: form.equipment_id || null });
       if (error) throw error;
     },

@@ -1,0 +1,1 @@
+ALTER TABLE public.guest_appointments ADD COLUMN cep TEXT;

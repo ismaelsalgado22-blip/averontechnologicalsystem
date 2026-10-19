@@ -15,6 +15,13 @@
       "when": 1792381586536,
       "tag": "0001_create_guest_appointments",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1792387543553,
+      "tag": "0002_add_cep_to_guest_appointments",
+      "breakpoints": true
     }
   ]
 }
