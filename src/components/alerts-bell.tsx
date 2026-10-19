@@ -7,6 +7,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { dateBR } from "@/lib/format";
+import { appointmentContact } from "@/lib/appointment-contact";
 
 type Alert = { id: string; kind: string; title: string; detail: string; to: string; urgent?: boolean };
 
@@ -57,7 +58,7 @@ export function AlertsBell() {
     queryKey: ["alerts"],
     refetchInterval: 60_000,
     queryFn: async () => {
-      const [pay, war, prod, app] = await Promise.all([
+      const [pay, war, prod, app, guest] = await Promise.all([
         supabase.from("payments").select("id, amount, due_date, paid_at, status, clients(name)").is("paid_at", null),
         supabase.from("warranties").select("id, number, end_date, clients(name)").not("end_date", "is", null),
         supabase.from("products").select("id, name, stock, min_stock"),
@@ -67,8 +68,18 @@ export function AlertsBell() {
           .in("status", ["agendado", "confirmado"])
           .gte("scheduled_at", new Date(Date.now() - 3600_000).toISOString())
           .lte("scheduled_at", new Date(Date.now() + 86400_000).toISOString()),
+        supabase.from("guest_appointments")
+          .select("id, title, scheduled_at, status, contact_name, contact_phone")
+          .in("status", ["agendado", "confirmado"])
+          .gte("scheduled_at", new Date(Date.now() - 3600_000).toISOString())
+          .lte("scheduled_at", new Date(Date.now() + 86400_000).toISOString()),
       ]);
-      return { pay: pay.data ?? [], war: war.data ?? [], prod: prod.data ?? [], app: app.data ?? [] };
+      if (app.error) throw app.error;
+      if (guest.error) throw guest.error;
+      return { pay: pay.data ?? [], war: war.data ?? [], prod: prod.data ?? [], app: [
+        ...(app.data ?? []).map((a) => ({ ...a, source: "appointments" })),
+        ...(guest.data ?? []).map((a) => ({ ...a, source: "guest_appointments" })),
+      ] };
     },
   });
 
@@ -82,10 +93,10 @@ export function AlertsBell() {
       if (diff < -60) return;
       const urgent = diff <= APPOINTMENT_LEAD_MIN;
       list.push({
-        id: `app-${a.id}-${urgent ? "soon" : "day"}`,
+        id: `app-${a.source}-${a.id}-${urgent ? "soon" : "day"}`,
         kind: "Agenda",
         title: urgent ? (diff <= 0 ? "Atendimento agora" : `Atendimento em ${Math.round(diff)} min`) : "Atendimento nas próximas 24h",
-        detail: `${a.title} • ${a.clients?.name ?? ""} • ${new Date(a.scheduled_at).toLocaleString("pt-BR", { dateStyle: "short", timeStyle: "short" })}`,
+        detail: `${a.title} • ${appointmentContact(a).name} • ${new Date(a.scheduled_at).toLocaleString("pt-BR", { dateStyle: "short", timeStyle: "short" })}`,
         to: "/agenda",
         urgent,
       });

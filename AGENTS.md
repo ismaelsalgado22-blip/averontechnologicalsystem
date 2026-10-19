@@ -11,3 +11,4 @@
 
 - Keep PDF layout primitives pagination-aware so all generated document types reserve header and footer space.
 - Shared dialog, confirmation, and sheet primitives must constrain height to the dynamic viewport and allow vertical scrolling; keep form sections and navigation chrome from shrinking so actions remain reachable on short screens.
+- Store unregistered-contact appointments in guest_appointments and merge them with appointments in scheduling, dashboard and alerts; this preserves the required client foreign key without creating fictitious clients. Carry the source table through status and delete actions.

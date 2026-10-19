@@ -569,6 +569,54 @@ export type Database = {
           },
         ]
       }
+      guest_appointments: {
+        Row: {
+          address: string | null
+          contact_name: string
+          contact_phone: string
+          created_at: string
+          duration_minutes: number
+          id: string
+          notes: string | null
+          owner_id: string
+          scheduled_at: string
+          status: string
+          technician_name: string | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          address?: string | null
+          contact_name: string
+          contact_phone: string
+          created_at?: string
+          duration_minutes?: number
+          id?: string
+          notes?: string | null
+          owner_id?: string
+          scheduled_at?: string
+          status?: string
+          technician_name?: string | null
+          title?: string
+          updated_at?: string
+        }
+        Update: {
+          address?: string | null
+          contact_name?: string
+          contact_phone?: string
+          created_at?: string
+          duration_minutes?: number
+          id?: string
+          notes?: string | null
+          owner_id?: string
+          scheduled_at?: string
+          status?: string
+          technician_name?: string | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       inventory_movements: {
         Row: {
           created_at: string
