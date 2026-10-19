@@ -1,5 +1,8 @@
 # Roadmap
 
+## Em andamento
+- [ ] Agendamento com nome e telefone sem cadastro, mantendo clientes cadastrados e alertas da agenda
+
 ## Concluído
 - [x] Alertas com som: agenda (30 min antes e próximas 24h), pagamentos atrasados, garantias vencendo, estoque baixo
 - [x] Rolagem e acesso aos botões de salvar nos dez formulários, configurações e navegação, verificados em três tamanhos de tela
