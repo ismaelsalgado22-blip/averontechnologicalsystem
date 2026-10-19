@@ -107,7 +107,7 @@ function SchedulePage() {
   const { data: clients } = useQuery({
     queryKey: ["clients"],
     queryFn: async () =>
-      (await supabase.from("clients").select("id, name, phone, whatsapp, address, city").order("name")).data ?? [],
+      (await supabase.from("clients").select("id, name, phone, whatsapp, address, number, district, city, state, complement, zip_code").order("name")).data ?? [],
   });
   const { data: equipment } = useQuery({
     queryKey: ["equipment", "all"],
@@ -125,12 +125,12 @@ function SchedulePage() {
         technician_name: form.technician_name || null,
         scheduled_at: scheduled.toISOString(),
         duration_minutes: Number(form.duration_minutes) || 60,
-        address: form.address || null,
+        address: composeAddress(form) || null,
         status: form.status,
         notes: form.notes || null,
       };
       const { error } = contact
-        ? await supabase.from("guest_appointments").insert({ ...payload, ...contact })
+        ? await supabase.from("guest_appointments").insert({ ...payload, ...contact, cep: form.cep || null })
         : await supabase.from("appointments").insert({ ...payload, client_id: form.client_id, equipment_id: form.equipment_id || null });
       if (error) throw error;
     },
