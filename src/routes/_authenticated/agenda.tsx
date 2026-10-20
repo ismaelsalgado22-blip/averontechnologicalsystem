@@ -215,7 +215,7 @@ function SchedulePage() {
                         {a.technician_name ? ` • ${a.technician_name}` : ""}
                       </p>
                       <p className="text-xs text-muted-foreground">
-                        {a.address ?? ([a.clients?.address, a.clients?.city].filter(Boolean).join(", ") || "Endereço não informado")}
+                        {fullAddress(a) || "Endereço não informado"}
                       </p>
                     </div>
                     <div className="flex flex-wrap items-center gap-2">
@@ -231,6 +231,40 @@ function SchedulePage() {
                           ))}
                         </SelectContent>
                       </Select>
+                      {fullAddress(a) ? (
+                        <>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className="h-8 gap-1.5 text-xs"
+                            onClick={() =>
+                              window.open(
+                                `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(fullAddress(a))}`,
+                                "_blank",
+                                "noopener",
+                              )
+                            }
+                          >
+                            <MapPin className="size-3.5" />
+                            Maps
+                          </Button>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className="h-8 gap-1.5 text-xs"
+                            onClick={() =>
+                              window.open(
+                                `https://waze.com/ul?q=${encodeURIComponent(fullAddress(a))}&navigate=yes`,
+                                "_blank",
+                                "noopener",
+                              )
+                            }
+                          >
+                            <Navigation className="size-3.5" />
+                            Waze
+                          </Button>
+                        </>
+                      ) : null}
                       <WhatsAppButton
                         phone={appointmentContact(a).phone}
                         template="agendamento"
@@ -262,7 +296,7 @@ function SchedulePage() {
             <DialogTitle>Novo agendamento</DialogTitle>
           </DialogHeader>
           <div className="space-y-3">
-            <Tabs value={form.mode} onValueChange={(mode) => setForm((f) => ({ ...f, mode, client_id: "", equipment_id: "", address: "" }))}>
+            <Tabs value={form.mode} onValueChange={(mode) => setForm((f) => ({ ...f, mode, client_id: "", equipment_id: "", address: "", cep: "", number: "", district: "", city: "", complement: "" }))}>
               <TabsList className="grid h-auto w-full grid-cols-2">
                 <TabsTrigger value="registered" className="whitespace-normal">Cliente cadastrado</TabsTrigger>
                 <TabsTrigger value="guest" className="whitespace-normal">Sem cadastro</TabsTrigger>
@@ -289,7 +323,12 @@ function SchedulePage() {
                       ...f,
                       client_id: v,
                       equipment_id: "",
-                      address: [c?.address, c?.city].filter(Boolean).join(", "),
+                      address: c?.address ?? "",
+                      number: c?.number ?? "",
+                      district: c?.district ?? "",
+                      city: c?.city ?? "",
+                      complement: c?.complement ?? "",
+                      cep: c?.zip_code ?? "",
                     }));
                   }}
                 >
@@ -359,9 +398,32 @@ function SchedulePage() {
                 </Select>
               </Field>
             </div>
-            <Field label="Endereço do atendimento">
-              <Input value={form.address} maxLength={200} onChange={(e) => set("address", e.target.value)} />
-            </Field>
+            <div className="space-y-3 rounded-lg border border-border p-3">
+              <p className="kpi-label flex items-center gap-1.5">
+                <MapPin className="size-3.5" />
+                Endereço do atendimento
+              </p>
+              <div className="grid gap-3 sm:grid-cols-2">
+                <Field label="CEP">
+                  <Input aria-label="CEP" inputMode="numeric" value={form.cep} maxLength={9} onChange={(e) => set("cep", e.target.value)} />
+                </Field>
+                <Field label="Logradouro">
+                  <Input aria-label="Logradouro" value={form.address} maxLength={160} onChange={(e) => set("address", e.target.value)} />
+                </Field>
+                <Field label="Número">
+                  <Input aria-label="Número" value={form.number} maxLength={20} onChange={(e) => set("number", e.target.value)} />
+                </Field>
+                <Field label="Bairro">
+                  <Input aria-label="Bairro" value={form.district} maxLength={80} onChange={(e) => set("district", e.target.value)} />
+                </Field>
+                <Field label="Cidade">
+                  <Input aria-label="Cidade" value={form.city} maxLength={80} onChange={(e) => set("city", e.target.value)} />
+                </Field>
+                <Field label="Complemento">
+                  <Input aria-label="Complemento" value={form.complement} maxLength={80} onChange={(e) => set("complement", e.target.value)} />
+                </Field>
+              </div>
+            </div>
             <Field label="Observações">
               <Textarea value={form.notes} rows={2} maxLength={600} onChange={(e) => set("notes", e.target.value)} />
             </Field>
