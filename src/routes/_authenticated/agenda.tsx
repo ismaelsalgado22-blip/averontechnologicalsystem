@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { CalendarClock, MapPin, Navigation, Plus } from "lucide-react";
+import { CalendarClock, MapPin, Navigation, Pencil, Plus } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { PageHeader, StatusPill, EmptyState } from "@/components/page-header";
@@ -88,6 +88,8 @@ function SchedulePage() {
   const qc = useQueryClient();
   const [open, setOpen] = useState(false);
   const [form, setForm] = useState(emptyForm);
+  const [filter, setFilter] = useState("todos");
+  const [editing, setEditing] = useState<{ id: string; source: AppointmentSource } | null>(null);
 
   const { data: appointments } = useQuery({
     queryKey: ["appointments"],
