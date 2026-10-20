@@ -194,12 +194,14 @@ function SchedulePage() {
 
   const groups = useMemo(() => {
     const map = new Map<string, any[]>();
-    (appointments ?? []).forEach((a: any) => {
+    (appointments ?? [])
+      .filter((a: any) => filter === "todos" || a.status === filter)
+      .forEach((a: any) => {
       const day = String(a.scheduled_at).slice(0, 10);
       map.set(day, [...(map.get(day) ?? []), a]);
-    });
+      });
     return [...map.entries()].sort(([a], [b]) => a.localeCompare(b));
-  }, [appointments]);
+  }, [appointments, filter]);
 
   const set = (k: keyof typeof emptyForm, v: string) => setForm((f) => ({ ...f, [k]: v }));
   const clientEquip = ((equipment as any[]) ?? []).filter((e: any) => e.client_id === form.client_id);
@@ -212,6 +214,7 @@ function SchedulePage() {
         actions={
           <Button
             onClick={() => {
+              setEditing(null);
               setForm(emptyForm);
               setOpen(true);
             }}
@@ -221,6 +224,17 @@ function SchedulePage() {
           </Button>
         }
       />
+
+      <Tabs value={filter} onValueChange={setFilter}>
+        <TabsList className="grid h-auto w-full grid-cols-3 sm:grid-cols-5">
+          <TabsTrigger value="todos" className="whitespace-normal">Todos</TabsTrigger>
+          {Object.entries(STATUS).map(([k, v]) => (
+            <TabsTrigger key={k} value={k} className="whitespace-normal">
+              {v.label}
+            </TabsTrigger>
+          ))}
+        </TabsList>
+      </Tabs>
 
       {groups.length === 0 ? (
         <EmptyState title="Agenda vazia" description="Agende a primeira visita técnica." />
@@ -308,6 +322,15 @@ function SchedulePage() {
                           horario: String(a.scheduled_at).slice(11, 16),
                         }}
                       />
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="h-8 gap-1.5 text-xs"
+                        onClick={() => openEdit(a)}
+                      >
+                        <Pencil className="size-3.5" />
+                        Editar
+                      </Button>
                       <DeleteButton
                         table={a.source}
                         id={a.id}
@@ -327,7 +350,7 @@ function SchedulePage() {
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent className="max-w-2xl">
           <DialogHeader>
-            <DialogTitle>Novo agendamento</DialogTitle>
+            <DialogTitle>{editing ? "Editar agendamento" : "Novo agendamento"}</DialogTitle>
           </DialogHeader>
           <div className="space-y-3">
             <Tabs value={form.mode} onValueChange={(mode) => setForm((f) => ({ ...f, mode, client_id: "", equipment_id: "", address: "", cep: "", number: "", district: "", city: "", complement: "" }))}>
@@ -466,8 +489,8 @@ function SchedulePage() {
             <Button variant="ghost" onClick={() => setOpen(false)}>
               Cancelar
             </Button>
-            <Button onClick={() => create.mutate()} disabled={create.isPending}>
-              Agendar
+            <Button onClick={() => save.mutate()} disabled={save.isPending}>
+              {editing ? "Salvar" : "Agendar"}
             </Button>
           </DialogFooter>
         </DialogContent>
