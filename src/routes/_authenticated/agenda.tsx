@@ -22,6 +22,8 @@ import { dateBR, dateTimeBR, today } from "@/lib/format";
 import { DeleteButton } from "@/components/delete-button";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { appointmentContact, guestContact, type AppointmentSource } from "@/lib/appointment-contact";
+import { CepInput } from "@/components/cep-input";
+import { mergePostalAddress } from "@/lib/postal-address";
 
 export const Route = createFileRoute("/_authenticated/agenda")({
   head: () => ({
@@ -462,7 +464,11 @@ function SchedulePage() {
               </p>
               <div className="grid gap-3 sm:grid-cols-2">
                 <Field label="CEP">
-                  <Input aria-label="CEP" inputMode="numeric" value={form.cep} maxLength={9} onChange={(e) => set("cep", e.target.value)} />
+                  <CepInput value={form.cep} onChange={(cep) => set("cep", cep)}
+                    onAddress={(address) => setForm((current) => {
+                      const filled = mergePostalAddress({ ...current, state: "" }, address);
+                      return { ...current, address: filled.address, district: filled.district, city: filled.city };
+                    })} />
                 </Field>
                 <Field label="Logradouro">
                   <Input aria-label="Logradouro" value={form.address} maxLength={160} onChange={(e) => set("address", e.target.value)} />

@@ -22,6 +22,8 @@ import {
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { maskDoc, maskPhone } from "@/lib/format";
 import { DeleteButton } from "@/components/delete-button";
+import { CepInput } from "@/components/cep-input";
+import { mergePostalAddress } from "@/lib/postal-address";
 
 export const Route = createFileRoute("/_authenticated/clientes/")({
   head: () => ({
@@ -134,7 +136,8 @@ export function ClientForm({
           <Input value={value.email} maxLength={160} onChange={(e) => set("email", e.target.value)} />
         </Field>
         <Field label="CEP">
-          <Input value={value.zip_code} maxLength={12} onChange={(e) => set("zip_code", e.target.value)} />
+          <CepInput value={value.zip_code} onChange={(cep) => set("zip_code", cep)}
+            onAddress={(address) => onChange(mergePostalAddress(value, address))} />
         </Field>
         <Field label="Endereço">
           <Input value={value.address} maxLength={160} onChange={(e) => set("address", e.target.value)} />
