@@ -289,7 +289,12 @@ function SchedulePage() {
                       ...f,
                       client_id: v,
                       equipment_id: "",
-                      address: [c?.address, c?.city].filter(Boolean).join(", "),
+                      address: c?.address ?? "",
+                      number: c?.number ?? "",
+                      district: c?.district ?? "",
+                      city: c?.city ?? "",
+                      complement: c?.complement ?? "",
+                      cep: c?.zip_code ?? "",
                     }));
                   }}
                 >
@@ -359,9 +364,32 @@ function SchedulePage() {
                 </Select>
               </Field>
             </div>
-            <Field label="Endereço do atendimento">
-              <Input value={form.address} maxLength={200} onChange={(e) => set("address", e.target.value)} />
-            </Field>
+            <div className="space-y-3 rounded-lg border border-border p-3">
+              <p className="kpi-label flex items-center gap-1.5">
+                <MapPin className="size-3.5" />
+                Endereço do atendimento
+              </p>
+              <div className="grid gap-3 sm:grid-cols-2">
+                <Field label="CEP">
+                  <Input aria-label="CEP" inputMode="numeric" value={form.cep} maxLength={9} onChange={(e) => set("cep", e.target.value)} />
+                </Field>
+                <Field label="Logradouro">
+                  <Input aria-label="Logradouro" value={form.address} maxLength={160} onChange={(e) => set("address", e.target.value)} />
+                </Field>
+                <Field label="Número">
+                  <Input aria-label="Número" value={form.number} maxLength={20} onChange={(e) => set("number", e.target.value)} />
+                </Field>
+                <Field label="Bairro">
+                  <Input aria-label="Bairro" value={form.district} maxLength={80} onChange={(e) => set("district", e.target.value)} />
+                </Field>
+                <Field label="Cidade">
+                  <Input aria-label="Cidade" value={form.city} maxLength={80} onChange={(e) => set("city", e.target.value)} />
+                </Field>
+                <Field label="Complemento">
+                  <Input aria-label="Complemento" value={form.complement} maxLength={80} onChange={(e) => set("complement", e.target.value)} />
+                </Field>
+              </div>
+            </div>
             <Field label="Observações">
               <Textarea value={form.notes} rows={2} maxLength={600} onChange={(e) => set("notes", e.target.value)} />
             </Field>
