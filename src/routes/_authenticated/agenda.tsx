@@ -215,7 +215,7 @@ function SchedulePage() {
                         {a.technician_name ? ` • ${a.technician_name}` : ""}
                       </p>
                       <p className="text-xs text-muted-foreground">
-                        {a.address ?? ([a.clients?.address, a.clients?.city].filter(Boolean).join(", ") || "Endereço não informado")}
+                        {fullAddress(a) || "Endereço não informado"}
                       </p>
                     </div>
                     <div className="flex flex-wrap items-center gap-2">
@@ -231,6 +231,40 @@ function SchedulePage() {
                           ))}
                         </SelectContent>
                       </Select>
+                      {fullAddress(a) ? (
+                        <>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className="h-8 gap-1.5 text-xs"
+                            onClick={() =>
+                              window.open(
+                                `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(fullAddress(a))}`,
+                                "_blank",
+                                "noopener",
+                              )
+                            }
+                          >
+                            <MapPin className="size-3.5" />
+                            Maps
+                          </Button>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className="h-8 gap-1.5 text-xs"
+                            onClick={() =>
+                              window.open(
+                                `https://waze.com/ul?q=${encodeURIComponent(fullAddress(a))}&navigate=yes`,
+                                "_blank",
+                                "noopener",
+                              )
+                            }
+                          >
+                            <Navigation className="size-3.5" />
+                            Waze
+                          </Button>
+                        </>
+                      ) : null}
                       <WhatsAppButton
                         phone={appointmentContact(a).phone}
                         template="agendamento"
@@ -262,7 +296,7 @@ function SchedulePage() {
             <DialogTitle>Novo agendamento</DialogTitle>
           </DialogHeader>
           <div className="space-y-3">
-            <Tabs value={form.mode} onValueChange={(mode) => setForm((f) => ({ ...f, mode, client_id: "", equipment_id: "", address: "" }))}>
+            <Tabs value={form.mode} onValueChange={(mode) => setForm((f) => ({ ...f, mode, client_id: "", equipment_id: "", address: "", cep: "", number: "", district: "", city: "", complement: "" }))}>
               <TabsList className="grid h-auto w-full grid-cols-2">
                 <TabsTrigger value="registered" className="whitespace-normal">Cliente cadastrado</TabsTrigger>
                 <TabsTrigger value="guest" className="whitespace-normal">Sem cadastro</TabsTrigger>
