@@ -116,7 +116,7 @@ function SchedulePage() {
     queryFn: async () => (await supabase.from("equipment").select("id, client_id, type, brand")).data ?? [],
   });
 
-  const create = useMutation({
+  const save = useMutation({
     mutationFn: async () => {
       if (form.mode === "registered" && !form.client_id) throw new Error("Selecione o cliente");
       const contact = form.mode === "guest" ? guestContact(form.contact_name, form.contact_phone) : null;
@@ -131,21 +131,53 @@ function SchedulePage() {
         status: form.status,
         notes: form.notes || null,
       };
+      if (editing) {
+        const updatePayload =
+          editing.source === "guest_appointments"
+            ? { ...payload, ...contact!, cep: form.cep || null }
+            : { ...payload, client_id: form.client_id, equipment_id: form.equipment_id || null };
+        const { error } = await supabase.from(editing.source).update(updatePayload).eq("id", editing.id);
+        if (error) throw error;
+        return;
+      }
       const { error } = contact
         ? await supabase.from("guest_appointments").insert({ ...payload, ...contact, cep: form.cep || null })
         : await supabase.from("appointments").insert({ ...payload, client_id: form.client_id, equipment_id: form.equipment_id || null });
       if (error) throw error;
     },
     onSuccess: () => {
-      toast.success("Atendimento agendado");
+      toast.success(editing ? "Agendamento atualizado" : "Atendimento agendado");
       setOpen(false);
       setForm(emptyForm);
+      setEditing(null);
       qc.invalidateQueries({ queryKey: ["appointments"] });
       qc.invalidateQueries({ queryKey: ["dashboard"] });
       qc.invalidateQueries({ queryKey: ["alerts"] });
     },
     onError: (e: any) => toast.error(e.message ?? "Falha ao agendar"),
   });
+
+  const openEdit = (a: any) => {
+    setEditing({ id: a.id, source: a.source });
+    setForm({
+      ...emptyForm,
+      mode: a.source === "guest_appointments" ? "guest" : "registered",
+      contact_name: a.contact_name ?? "",
+      contact_phone: a.contact_phone ?? "",
+      client_id: a.client_id ?? "",
+      equipment_id: a.equipment_id ?? "",
+      title: a.title ?? "Visita técnica",
+      technician_name: a.technician_name ?? "",
+      date: String(a.scheduled_at).slice(0, 10),
+      time: String(a.scheduled_at).slice(11, 16),
+      duration_minutes: String(a.duration_minutes ?? 60),
+      address: a.address ?? "",
+      cep: a.cep ?? "",
+      status: a.status ?? "agendado",
+      notes: a.notes ?? "",
+    });
+    setOpen(true);
+  };
 
   const changeStatus = useMutation({
     mutationFn: async ({ id, value, source }: { id: string; value: string; source: AppointmentSource }) => {
