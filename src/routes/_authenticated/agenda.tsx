@@ -86,6 +86,17 @@ function fullAddress(a: any) {
     .join(" • ");
 }
 
+const pad2 = (n: number) => String(n).padStart(2, "0");
+
+function localDateTime(iso: string) {
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return { date: "", time: "" };
+  return {
+    date: `${d.getFullYear()}-${pad2(d.getMonth() + 1)}-${pad2(d.getDate())}`,
+    time: `${pad2(d.getHours())}:${pad2(d.getMinutes())}`,
+  };
+}
+
 function SchedulePage() {
   const qc = useQueryClient();
   const [open, setOpen] = useState(false);
@@ -160,6 +171,7 @@ function SchedulePage() {
   });
 
   const openEdit = (a: any) => {
+    const { date, time } = localDateTime(a.scheduled_at);
     setEditing({ id: a.id, source: a.source });
     setForm({
       ...emptyForm,
@@ -170,8 +182,8 @@ function SchedulePage() {
       equipment_id: a.equipment_id ?? "",
       title: a.title ?? "Visita técnica",
       technician_name: a.technician_name ?? "",
-      date: String(a.scheduled_at).slice(0, 10),
-      time: String(a.scheduled_at).slice(11, 16),
+      date: date || today(),
+      time: time || "09:00",
       duration_minutes: String(a.duration_minutes ?? 60),
       address: a.address ?? "",
       cep: a.cep ?? "",
@@ -199,7 +211,7 @@ function SchedulePage() {
     (appointments ?? [])
       .filter((a: any) => filter === "todos" || a.status === filter)
       .forEach((a: any) => {
-      const day = String(a.scheduled_at).slice(0, 10);
+      const day = localDateTime(a.scheduled_at).date || String(a.scheduled_at).slice(0, 10);
       map.set(day, [...(map.get(day) ?? []), a]);
       });
     return [...map.entries()].sort(([a], [b]) => a.localeCompare(b));
@@ -254,7 +266,7 @@ function SchedulePage() {
                     <div className="min-w-0">
                       <div className="flex items-center gap-2">
                         <span className="font-display text-sm font-bold">
-                          {String(a.scheduled_at).slice(11, 16)}
+                          {localDateTime(a.scheduled_at).time}
                         </span>
                         <StatusPill label={STATUS[a.status]?.label ?? a.status} tone={STATUS[a.status]?.tone ?? ""} />
                       </div>
@@ -321,7 +333,7 @@ function SchedulePage() {
                         vars={{
                           nome: appointmentContact(a).name,
                           data: dateBR(a.scheduled_at),
-                          horario: String(a.scheduled_at).slice(11, 16),
+                          horario: localDateTime(a.scheduled_at).time,
                         }}
                       />
                       <Button
