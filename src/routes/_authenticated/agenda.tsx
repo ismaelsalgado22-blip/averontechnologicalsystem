@@ -171,6 +171,7 @@ function SchedulePage() {
   });
 
   const openEdit = (a: any) => {
+    const { date, time } = localDateTime(a.scheduled_at);
     setEditing({ id: a.id, source: a.source });
     setForm({
       ...emptyForm,
@@ -181,8 +182,8 @@ function SchedulePage() {
       equipment_id: a.equipment_id ?? "",
       title: a.title ?? "Visita técnica",
       technician_name: a.technician_name ?? "",
-      date: String(a.scheduled_at).slice(0, 10),
-      time: String(a.scheduled_at).slice(11, 16),
+      date: date || today(),
+      time: time || "09:00",
       duration_minutes: String(a.duration_minutes ?? 60),
       address: a.address ?? "",
       cep: a.cep ?? "",
