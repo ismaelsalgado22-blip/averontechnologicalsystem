@@ -266,7 +266,7 @@ function SchedulePage() {
                     <div className="min-w-0">
                       <div className="flex items-center gap-2">
                         <span className="font-display text-sm font-bold">
-                          {String(a.scheduled_at).slice(11, 16)}
+                          {localDateTime(a.scheduled_at).time}
                         </span>
                         <StatusPill label={STATUS[a.status]?.label ?? a.status} tone={STATUS[a.status]?.tone ?? ""} />
                       </div>
@@ -333,7 +333,7 @@ function SchedulePage() {
                         vars={{
                           nome: appointmentContact(a).name,
                           data: dateBR(a.scheduled_at),
-                          horario: String(a.scheduled_at).slice(11, 16),
+                          horario: localDateTime(a.scheduled_at).time,
                         }}
                       />
                       <Button
