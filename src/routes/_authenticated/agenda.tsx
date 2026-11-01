@@ -86,6 +86,17 @@ function fullAddress(a: any) {
     .join(" • ");
 }
 
+const pad2 = (n: number) => String(n).padStart(2, "0");
+
+function localDateTime(iso: string) {
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return { date: "", time: "" };
+  return {
+    date: `${d.getFullYear()}-${pad2(d.getMonth() + 1)}-${pad2(d.getDate())}`,
+    time: `${pad2(d.getHours())}:${pad2(d.getMinutes())}`,
+  };
+}
+
 function SchedulePage() {
   const qc = useQueryClient();
   const [open, setOpen] = useState(false);
