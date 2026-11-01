@@ -211,7 +211,7 @@ function SchedulePage() {
     (appointments ?? [])
       .filter((a: any) => filter === "todos" || a.status === filter)
       .forEach((a: any) => {
-      const day = String(a.scheduled_at).slice(0, 10);
+      const day = localDateTime(a.scheduled_at).date || String(a.scheduled_at).slice(0, 10);
       map.set(day, [...(map.get(day) ?? []), a]);
       });
     return [...map.entries()].sort(([a], [b]) => a.localeCompare(b));
