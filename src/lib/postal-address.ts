@@ -11,7 +11,7 @@ export function formatCep(value: string) {
 export async function lookupCep(value: string, signal?: AbortSignal): Promise<PostalAddress> {
   const cep = cepDigits(value);
   if (cep.length !== 8) throw new Error("Informe um CEP com 8 dígitos.");
-  const response = await fetch(`https://viacep.com.br/ws/${cep}/json/`, { signal });
+  const response = await fetch(`https://viacep.com.br/ws/${cep}/json/`, { signal: signal ?? null });
   if (!response.ok) throw new Error("Não foi possível consultar o CEP. Preencha o endereço manualmente.");
   const data = await response.json();
   if (data.erro) throw new Error("CEP não encontrado. Confira o número ou preencha o endereço manualmente.");
