@@ -1,9 +1,7 @@
 # Roadmap
 
-## Em andamento
-- [ ] Preenchimento automático de endereço por CEP em cadastro, edição de clientes e agenda; validar consulta e salvamento
-
 ## Concluído
+- [x] Preenchimento automático por CEP em cadastro e edição de clientes e agenda; consulta real, preservação de número/complemento e salvamento verificados
 - [x] Agendamento com nome e telefone sem cadastro, mantendo clientes cadastrados, WhatsApp e alertas; salvamento, status, exclusão e rolagem no celular verificados
 - [x] Alertas com som: agenda (30 min antes e próximas 24h), pagamentos atrasados, garantias vencendo, estoque baixo
 - [x] Rolagem e acesso aos botões de salvar nos dez formulários, configurações e navegação, verificados em três tamanhos de tela
