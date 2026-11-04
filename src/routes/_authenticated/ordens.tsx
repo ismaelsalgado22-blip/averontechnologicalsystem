@@ -127,8 +127,9 @@ function OrdersPage() {
       notes: o.reported_problem,
     };
     const { data: existing } = await supabase.from("appointments").select("id").eq("work_order_id", o.id).limit(1);
-    const { error } = existing?.length
-      ? await supabase.from("appointments").update(row).eq("id", existing[0]!.id)
+    const existingId = existing?.[0]?.id;
+    const { error } = existingId
+      ? await supabase.from("appointments").update(row).eq("id", existingId)
       : await supabase.from("appointments").insert({ ...row, status: "agendado", duration_minutes: 60 });
     if (error) throw error;
     qc.invalidateQueries({ queryKey: ["appointments"] });
