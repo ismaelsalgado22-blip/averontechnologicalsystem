@@ -110,28 +110,9 @@ function OrdersPage() {
   const total = manualTotal.trim() !== "" ? num(manualTotal) : itemsTotal;
 
   const syncAgenda = async (orderId: string) => {
-    const { data: o } = await supabase
-      .from("work_orders")
-      .select("id, number, client_id, equipment_id, service_date, service_time, service_type, technician_name, reported_problem, status")
-      .eq("id", orderId)
-      .single();
+    // The database trigger creates/updates the linked appointment; here we only refresh screens.
+    const { data: o } = await supabase.from("work_orders").select("status").eq("id", orderId).single();
     if (!o || o.status !== "agendada") return false;
-    const scheduled = new Date(`${o.service_date}T${o.service_time || "09:00"}:00`);
-    const row = {
-      client_id: o.client_id,
-      equipment_id: o.equipment_id,
-      work_order_id: o.id,
-      title: [o.number ? `OS ${o.number}` : "Ordem de serviço", o.service_type].filter(Boolean).join(" • "),
-      technician_name: o.technician_name,
-      scheduled_at: scheduled.toISOString(),
-      notes: o.reported_problem,
-    };
-    const { data: existing } = await supabase.from("appointments").select("id").eq("work_order_id", o.id).limit(1);
-    const existingId = existing?.[0]?.id;
-    const { error } = existingId
-      ? await supabase.from("appointments").update(row).eq("id", existingId)
-      : await supabase.from("appointments").insert({ ...row, status: "agendado", duration_minutes: 60 });
-    if (error) throw error;
     qc.invalidateQueries({ queryKey: ["appointments"] });
     qc.invalidateQueries({ queryKey: ["dashboard"] });
     qc.invalidateQueries({ queryKey: ["alerts"] });
