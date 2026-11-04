@@ -102,6 +102,7 @@ function SchedulePage() {
   const [open, setOpen] = useState(false);
   const [form, setForm] = useState(emptyForm);
   const [filter, setFilter] = useState("todos");
+  const [dateFilter, setDateFilter] = useState("");
   const [editing, setEditing] = useState<{ id: string; source: AppointmentSource } | null>(null);
 
   const { data: appointments } = useQuery({
@@ -207,15 +208,24 @@ function SchedulePage() {
   });
 
   const groups = useMemo(() => {
+    const todayKey = today();
     const map = new Map<string, any[]>();
     (appointments ?? [])
       .filter((a: any) => filter === "todos" || a.status === filter)
+      .filter((a: any) => !dateFilter || (localDateTime(a.scheduled_at).date || String(a.scheduled_at).slice(0, 10)) === dateFilter)
       .forEach((a: any) => {
       const day = localDateTime(a.scheduled_at).date || String(a.scheduled_at).slice(0, 10);
       map.set(day, [...(map.get(day) ?? []), a]);
       });
     return [...map.entries()].sort(([a], [b]) => a.localeCompare(b));
-  }, [appointments, filter]);
+  }, [appointments, filter, dateFilter]);
+
+  const dayTone = (day: string) => {
+    const t = today();
+    if (day === t) return "text-destructive";
+    if (day > t) return "text-success";
+    return "";
+  };
 
   const set = (k: keyof typeof emptyForm, v: string) => setForm((f) => ({ ...f, [k]: v }));
   const clientEquip = ((equipment as any[]) ?? []).filter((e: any) => e.client_id === form.client_id);
@@ -239,6 +249,21 @@ function SchedulePage() {
         }
       />
 
+      <div className="flex flex-wrap items-center gap-2">
+        <Input
+          type="date"
+          aria-label="Filtrar por data"
+          className="h-9 w-auto"
+          value={dateFilter}
+          onChange={(e) => setDateFilter(e.target.value)}
+        />
+        {dateFilter && (
+          <Button variant="outline" size="sm" className="h-9" onClick={() => setDateFilter("")}>
+            Todas as datas
+          </Button>
+        )}
+      </div>
+
       <Tabs value={filter} onValueChange={setFilter}>
         <TabsList className="grid h-auto w-full grid-cols-3 sm:grid-cols-5">
           <TabsTrigger value="todos" className="whitespace-normal">Todos</TabsTrigger>
@@ -251,14 +276,17 @@ function SchedulePage() {
       </Tabs>
 
       {groups.length === 0 ? (
-        <EmptyState title="Agenda vazia" description="Agende a primeira visita técnica." />
+        <EmptyState title="Agenda vazia" description={dateFilter ? "Nenhum atendimento nessa data." : "Agende a primeira visita técnica."} />
       ) : (
         <div className="space-y-5">
           {groups.map(([day, list]) => (
             <div key={day} className="space-y-2">
-              <h2 className="flex items-center gap-2 kpi-label">
-                <CalendarClock className="size-3.5" />
+              <h2
+                className={`flex items-center gap-2 font-display text-lg font-bold tracking-tight sm:text-xl ${dayTone(day)}`}
+              >
+                <CalendarClock className="size-4" />
                 {dateBR(day)}
+                {day === today() && <span className="text-xs font-semibold uppercase tracking-wide text-destructive">Hoje</span>}
               </h2>
               <div className="space-y-2">
                 {list.map((a: any) => (
