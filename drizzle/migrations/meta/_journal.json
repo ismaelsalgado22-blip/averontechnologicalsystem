@@ -29,6 +29,13 @@
       "when": 1793798980150,
       "tag": "0003_sync_work_orders_to_agenda",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1793799001326,
+      "tag": "0004_fix_agenda_title_from_os",
+      "breakpoints": true
     }
   ]
 }
