@@ -10,7 +10,7 @@ export type Database = {
   // Allows to automatically instantiate createClient with right options
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
-    PostgrestVersion: "14.5"
+    PostgrestVersion: "14.17"
   }
   public: {
     Tables: {
@@ -68,6 +68,7 @@ export type Database = {
           id: string
           notes: string | null
           owner_id: string
+          reported_problem: string | null
           scheduled_at: string
           status: string
           technician_name: string | null
@@ -84,6 +85,7 @@ export type Database = {
           id?: string
           notes?: string | null
           owner_id?: string
+          reported_problem?: string | null
           scheduled_at?: string
           status?: string
           technician_name?: string | null
@@ -100,6 +102,7 @@ export type Database = {
           id?: string
           notes?: string | null
           owner_id?: string
+          reported_problem?: string | null
           scheduled_at?: string
           status?: string
           technician_name?: string | null
@@ -569,6 +572,60 @@ export type Database = {
           },
         ]
       }
+      guest_appointments: {
+        Row: {
+          address: string | null
+          cep: string | null
+          contact_name: string
+          contact_phone: string
+          created_at: string
+          duration_minutes: number
+          id: string
+          notes: string | null
+          owner_id: string
+          reported_problem: string | null
+          scheduled_at: string
+          status: string
+          technician_name: string | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          address?: string | null
+          cep?: string | null
+          contact_name: string
+          contact_phone: string
+          created_at?: string
+          duration_minutes?: number
+          id?: string
+          notes?: string | null
+          owner_id?: string
+          reported_problem?: string | null
+          scheduled_at?: string
+          status?: string
+          technician_name?: string | null
+          title?: string
+          updated_at?: string
+        }
+        Update: {
+          address?: string | null
+          cep?: string | null
+          contact_name?: string
+          contact_phone?: string
+          created_at?: string
+          duration_minutes?: number
+          id?: string
+          notes?: string | null
+          owner_id?: string
+          reported_problem?: string | null
+          scheduled_at?: string
+          status?: string
+          technician_name?: string | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       inventory_movements: {
         Row: {
           created_at: string
@@ -806,6 +863,42 @@ export type Database = {
           notes?: string | null
           owner_id?: string
           updated_at?: string
+        }
+        Relationships: []
+      }
+      subscriptions: {
+        Row: {
+          active_until: string | null
+          created_at: string
+          email: string | null
+          full_name: string | null
+          notes: string | null
+          price: number
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          active_until?: string | null
+          created_at?: string
+          email?: string | null
+          full_name?: string | null
+          notes?: string | null
+          price?: number
+          status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          active_until?: string | null
+          created_at?: string
+          email?: string | null
+          full_name?: string | null
+          notes?: string | null
+          price?: number
+          status?: string
+          updated_at?: string
+          user_id?: string
         }
         Relationships: []
       }
@@ -1121,6 +1214,7 @@ export type Database = {
           id: string
           notes: string | null
           number: string | null
+          other_tests: string | null
           owner_id: string
           photos_after: string[]
           photos_before: string[]
@@ -1154,6 +1248,7 @@ export type Database = {
           id?: string
           notes?: string | null
           number?: string | null
+          other_tests?: string | null
           owner_id?: string
           photos_after?: string[]
           photos_before?: string[]
@@ -1187,6 +1282,7 @@ export type Database = {
           id?: string
           notes?: string | null
           number?: string | null
+          other_tests?: string | null
           owner_id?: string
           photos_after?: string[]
           photos_before?: string[]

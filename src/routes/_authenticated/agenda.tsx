@@ -51,6 +51,7 @@ const emptyForm = {
   duration_minutes: "60",
   address: "",
   status: "agendado",
+  reported_problem: "",
   notes: "",
 };
 
@@ -93,6 +94,7 @@ function SchedulePage() {
         duration_minutes: Number(form.duration_minutes) || 60,
         address: form.address || null,
         status: form.status,
+        reported_problem: form.reported_problem.trim() || null,
         notes: form.notes || null,
       });
       if (error) throw error;
@@ -174,6 +176,12 @@ function SchedulePage() {
                       <p className="text-xs text-muted-foreground">
                         {a.address ?? ([a.clients?.address, a.clients?.city].filter(Boolean).join(", ") || "Endereço não informado")}
                       </p>
+                      {a.reported_problem && (
+                        <div className="mt-2 rounded-md bg-muted/60 p-2">
+                          <p className="text-xs font-semibold">Problema relatado</p>
+                          <p className="whitespace-pre-wrap text-xs text-muted-foreground">{a.reported_problem}</p>
+                        </div>
+                      )}
                     </div>
                     <div className="flex flex-wrap items-center gap-2">
                       <Select value={a.status ?? ""} onValueChange={(value) => changeStatus.mutate({ id: a.id, value })}>
@@ -299,6 +307,15 @@ function SchedulePage() {
             </div>
             <Field label="Endereço do atendimento">
               <Input value={form.address} maxLength={200} onChange={(e) => set("address", e.target.value)} />
+            </Field>
+            <Field label="Problema relatado">
+              <Textarea
+                value={form.reported_problem}
+                rows={3}
+                maxLength={1200}
+                placeholder="Descreva o problema informado pelo cliente"
+                onChange={(e) => set("reported_problem", e.target.value)}
+              />
             </Field>
             <Field label="Observações">
               <Textarea value={form.notes} rows={2} maxLength={600} onChange={(e) => set("notes", e.target.value)} />

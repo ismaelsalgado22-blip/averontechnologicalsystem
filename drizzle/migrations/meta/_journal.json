@@ -1,0 +1,13 @@
+{
+  "version": "7",
+  "dialect": "postgresql",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "7",
+      "when": 1793932411347,
+      "tag": "0000_add_reported_problem_to_appointments",
+      "breakpoints": true
+    }
+  ]
+}
