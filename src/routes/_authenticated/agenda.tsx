@@ -111,13 +111,14 @@ function SchedulePage() {
         repaired_problem: form.repaired_problem.trim() || null,
         notes: form.notes || null,
       };
-      const payload = source === "appointments"
-        ? { ...common, client_id: form.client_id, equipment_id: form.equipment_id || null }
-        : { ...common, contact_name: form.contact_name.trim(), contact_phone: form.contact_phone.trim() };
-      const query = editingId
-        ? supabase.from(source).update(payload).eq("id", editingId)
-        : supabase.from(source).insert(payload);
-      const { data, error } = await query.select("id");
+      const result = source === "appointments"
+        ? await (editingId
+            ? supabase.from("appointments").update({ ...common, client_id: form.client_id, equipment_id: form.equipment_id || null }).eq("id", editingId)
+            : supabase.from("appointments").insert({ ...common, client_id: form.client_id, equipment_id: form.equipment_id || null })).select("id")
+        : await (editingId
+            ? supabase.from("guest_appointments").update({ ...common, contact_name: form.contact_name.trim(), contact_phone: form.contact_phone.trim() }).eq("id", editingId)
+            : supabase.from("guest_appointments").insert({ ...common, contact_name: form.contact_name.trim(), contact_phone: form.contact_phone.trim() })).select("id");
+      const { data, error } = result;
       if (error) throw error;
       if (!data?.length) throw new Error("Não foi possível salvar o agendamento");
     },
@@ -318,8 +319,6 @@ function SchedulePage() {
                   </SelectContent>
                 </Select>
               </Field>
-              <Field label="Título">
-                </Field>
               </>}
               <Field label="Título">
                 <Input value={form.title} maxLength={120} onChange={(e) => set("title", e.target.value)} />
@@ -371,7 +370,7 @@ function SchedulePage() {
                 onChange={(e) => set("reported_problem", e.target.value)}
               />
             </Field>
-            <Field label="Observações">
+            <Field label="Problema reparado">
               <Textarea aria-label="Problema reparado" value={form.repaired_problem} rows={3} maxLength={1200} placeholder="Descreva o problema reparado" onChange={(e) => set("repaired_problem", e.target.value)} />
             </Field>
             <Field label="Observações">
