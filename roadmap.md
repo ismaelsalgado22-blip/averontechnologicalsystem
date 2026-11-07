@@ -7,3 +7,4 @@
 - [x] Visualizador de documentos dentro do sistema, com baixar e abrir em nova aba
 - [x] Logomarca e dados da empresa de cada cliente no topo dos documentos
 - [x] Problema relatado editável e visível na agenda, incluindo ordens agendadas
+- [x] Problema reparado preenchível e editável na agenda com e sem cadastro

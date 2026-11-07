@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { CalendarClock, Plus } from "lucide-react";
+import { CalendarClock, Plus, Pencil } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { PageHeader, StatusPill, EmptyState } from "@/components/page-header";
@@ -18,8 +18,9 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { dateBR, dateTimeBR, today } from "@/lib/format";
+import { dateBR, today } from "@/lib/format";
 import { DeleteButton } from "@/components/delete-button";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 export const Route = createFileRoute("/_authenticated/agenda")({
   head: () => ({
@@ -28,6 +29,8 @@ export const Route = createFileRoute("/_authenticated/agenda")({
       { name: "description", content: "Agende visitas técnicas e manutenções preventivas com confirmação por WhatsApp." },
       { property: "og:title", content: "Agenda de atendimentos | Averon" },
       { property: "og:description", content: "Visitas técnicas, manutenções preventivas e rota do dia da equipe." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
       { name: "robots", content: "noindex" },
     ],
   }),
@@ -52,6 +55,9 @@ const emptyForm = {
   address: "",
   status: "agendado",
   reported_problem: "",
+  repaired_problem: "",
+  contact_name: "",
+  contact_phone: "",
   notes: "",
 };
 
@@ -59,6 +65,8 @@ function SchedulePage() {
   const qc = useQueryClient();
   const [open, setOpen] = useState(false);
   const [form, setForm] = useState(emptyForm);
+  const [source, setSource] = useState<"appointments" | "guest_appointments">("appointments");
+  const [editingId, setEditingId] = useState<string | null>(null);
 
   const { data: appointments } = useQuery({
     queryKey: ["appointments"],
@@ -68,7 +76,12 @@ function SchedulePage() {
         .select("*, clients(name, phone, whatsapp, address, city), equipment(type, brand)")
         .order("scheduled_at");
       if (error) throw error;
-      return data;
+      const { data: guests, error: guestError } = await supabase.from("guest_appointments").select("*").order("scheduled_at");
+      if (guestError) throw guestError;
+      return [
+        ...(data ?? []).map((a) => ({ ...a, source: "appointments" as const })),
+        ...(guests ?? []).map((a) => ({ ...a, source: "guest_appointments" as const, clients: { name: a.contact_name, phone: a.contact_phone, whatsapp: a.contact_phone }, equipment: null })),
+      ].sort((a, b) => a.scheduled_at.localeCompare(b.scheduled_at));
     },
   });
   const { data: clients } = useQuery({
@@ -83,11 +96,11 @@ function SchedulePage() {
 
   const create = useMutation({
     mutationFn: async () => {
-      if (!form.client_id) throw new Error("Selecione o cliente");
+      if (source === "appointments" && !form.client_id) throw new Error("Selecione o cliente");
+      if (source === "guest_appointments" && (!form.contact_name.trim() || !form.contact_phone.trim())) throw new Error("Informe nome e telefone");
       const scheduled = new Date(`${form.date}T${form.time || "09:00"}:00`);
-      const { error } = await supabase.from("appointments").insert({
-        client_id: form.client_id,
-        equipment_id: form.equipment_id || null,
+      if (Number.isNaN(scheduled.getTime())) throw new Error("Informe uma data e horário válidos");
+      const common = {
         title: form.title.trim() || "Visita técnica",
         technician_name: form.technician_name || null,
         scheduled_at: scheduled.toISOString(),
@@ -95,22 +108,35 @@ function SchedulePage() {
         address: form.address || null,
         status: form.status,
         reported_problem: form.reported_problem.trim() || null,
+        repaired_problem: form.repaired_problem.trim() || null,
         notes: form.notes || null,
-      });
+      };
+      const result = source === "appointments"
+        ? await (editingId
+            ? supabase.from("appointments").update({ ...common, client_id: form.client_id, equipment_id: form.equipment_id || null }).eq("id", editingId)
+            : supabase.from("appointments").insert({ ...common, client_id: form.client_id, equipment_id: form.equipment_id || null })).select("id")
+        : await (editingId
+            ? supabase.from("guest_appointments").update({ ...common, contact_name: form.contact_name.trim(), contact_phone: form.contact_phone.trim() }).eq("id", editingId)
+            : supabase.from("guest_appointments").insert({ ...common, contact_name: form.contact_name.trim(), contact_phone: form.contact_phone.trim() })).select("id");
+      const { data, error } = result;
       if (error) throw error;
+      if (!data?.length) throw new Error("Não foi possível salvar o agendamento");
     },
     onSuccess: () => {
-      toast.success("Atendimento agendado");
+      toast.success(editingId ? "Agendamento atualizado" : "Atendimento agendado");
       setOpen(false);
       setForm(emptyForm);
+      setEditingId(null);
       qc.invalidateQueries({ queryKey: ["appointments"] });
+      qc.invalidateQueries({ queryKey: ["dashboard"] });
+      qc.invalidateQueries({ queryKey: ["alerts"] });
     },
     onError: (e: any) => toast.error(e.message ?? "Falha ao agendar"),
   });
 
   const changeStatus = useMutation({
-    mutationFn: async ({ id, value }: { id: string; value: string }) => {
-      const { error } = await supabase.from("appointments").update({ status: value }).eq("id", id);
+    mutationFn: async ({ id, value, source }: { id: string; value: string; source: "appointments" | "guest_appointments" }) => {
+      const { error } = await supabase.from(source).update({ status: value }).eq("id", id);
       if (error) throw error;
     },
     onSuccess: () => qc.invalidateQueries({ queryKey: ["appointments"] }),
@@ -138,6 +164,8 @@ function SchedulePage() {
           <Button
             onClick={() => {
               setForm(emptyForm);
+              setEditingId(null);
+              setSource("appointments");
               setOpen(true);
             }}
           >
@@ -182,9 +210,23 @@ function SchedulePage() {
                           <p className="whitespace-pre-wrap text-xs text-muted-foreground">{a.reported_problem}</p>
                         </div>
                       )}
+                      {a.repaired_problem && (
+                        <div className="mt-2 rounded-md bg-muted/60 p-2">
+                          <p className="text-xs font-semibold">Problema reparado</p>
+                          <p className="whitespace-pre-wrap break-words text-xs text-muted-foreground">{a.repaired_problem}</p>
+                        </div>
+                      )}
                     </div>
                     <div className="flex flex-wrap items-center gap-2">
-                      <Select value={a.status ?? ""} onValueChange={(value) => changeStatus.mutate({ id: a.id, value })}>
+                      <Button variant="outline" size="sm" onClick={() => {
+                        const local = new Date(a.scheduled_at);
+                        const pad = (n: number) => String(n).padStart(2, "0");
+                        setSource(a.source);
+                        setEditingId(a.id);
+                        setForm({ ...emptyForm, client_id: a.client_id ?? "", equipment_id: a.equipment_id ?? "", title: a.title, technician_name: a.technician_name ?? "", date: `${local.getFullYear()}-${pad(local.getMonth() + 1)}-${pad(local.getDate())}`, time: `${pad(local.getHours())}:${pad(local.getMinutes())}`, duration_minutes: String(a.duration_minutes), address: a.address ?? "", status: a.status, reported_problem: a.reported_problem ?? "", repaired_problem: a.repaired_problem ?? "", contact_name: a.contact_name ?? "", contact_phone: a.contact_phone ?? "", notes: a.notes ?? "" });
+                        setOpen(true);
+                      }}><Pencil className="size-4" />Editar</Button>
+                      <Select value={a.status ?? ""} onValueChange={(value) => changeStatus.mutate({ id: a.id, value, source: a.source })}>
                         <SelectTrigger className="h-8 w-36 text-xs">
                           <SelectValue />
                         </SelectTrigger>
@@ -206,7 +248,7 @@ function SchedulePage() {
                         }}
                       />
                       <DeleteButton
-                        table="appointments"
+                        table={a.source}
                         id={a.id}
                         what="Agendamento"
                         name={a.title}
@@ -224,10 +266,20 @@ function SchedulePage() {
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent className="max-w-2xl">
           <DialogHeader>
-            <DialogTitle>Novo agendamento</DialogTitle>
+            <DialogTitle>{editingId ? "Editar agendamento" : "Novo agendamento"}</DialogTitle>
           </DialogHeader>
           <div className="space-y-3">
+            <Tabs value={source} onValueChange={(value) => { setSource(value === "guest_appointments" ? "guest_appointments" : "appointments"); setForm(emptyForm); }}>
+              <TabsList>
+                <TabsTrigger value="appointments" disabled={Boolean(editingId)}>Cliente cadastrado</TabsTrigger>
+                <TabsTrigger value="guest_appointments" disabled={Boolean(editingId)}>Sem cadastro</TabsTrigger>
+              </TabsList>
+            </Tabs>
             <div className="grid gap-3 sm:grid-cols-2">
+              {source === "guest_appointments" ? <>
+                <Field label="Nome *"><Input aria-label="Nome do contato" value={form.contact_name} onChange={(e) => set("contact_name", e.target.value)} /></Field>
+                <Field label="Telefone *"><Input aria-label="Telefone do contato" type="tel" value={form.contact_phone} onChange={(e) => set("contact_phone", e.target.value)} /></Field>
+              </> : <>
               <Field label="Cliente *">
                 <Select
                   value={form.client_id}
@@ -267,6 +319,7 @@ function SchedulePage() {
                   </SelectContent>
                 </Select>
               </Field>
+              </>}
               <Field label="Título">
                 <Input value={form.title} maxLength={120} onChange={(e) => set("title", e.target.value)} />
               </Field>
@@ -317,6 +370,9 @@ function SchedulePage() {
                 onChange={(e) => set("reported_problem", e.target.value)}
               />
             </Field>
+            <Field label="Problema reparado">
+              <Textarea aria-label="Problema reparado" value={form.repaired_problem} rows={3} maxLength={1200} placeholder="Descreva o problema reparado" onChange={(e) => set("repaired_problem", e.target.value)} />
+            </Field>
             <Field label="Observações">
               <Textarea value={form.notes} rows={2} maxLength={600} onChange={(e) => set("notes", e.target.value)} />
             </Field>
@@ -326,7 +382,7 @@ function SchedulePage() {
               Cancelar
             </Button>
             <Button onClick={() => create.mutate()} disabled={create.isPending}>
-              Agendar
+              {editingId ? "Salvar alterações" : "Agendar"}
             </Button>
           </DialogFooter>
         </DialogContent>
