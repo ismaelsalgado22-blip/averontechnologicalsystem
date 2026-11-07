@@ -8,6 +8,13 @@
       "when": 1793932411347,
       "tag": "0000_add_reported_problem_to_appointments",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1794042447930,
+      "tag": "0001_add_repaired_problem_to_agenda",
+      "breakpoints": true
     }
   ]
 }

@@ -68,6 +68,7 @@ export type Database = {
           id: string
           notes: string | null
           owner_id: string
+          repaired_problem: string | null
           reported_problem: string | null
           scheduled_at: string
           status: string
@@ -85,6 +86,7 @@ export type Database = {
           id?: string
           notes?: string | null
           owner_id?: string
+          repaired_problem?: string | null
           reported_problem?: string | null
           scheduled_at?: string
           status?: string
@@ -102,6 +104,7 @@ export type Database = {
           id?: string
           notes?: string | null
           owner_id?: string
+          repaired_problem?: string | null
           reported_problem?: string | null
           scheduled_at?: string
           status?: string
@@ -583,6 +586,7 @@ export type Database = {
           id: string
           notes: string | null
           owner_id: string
+          repaired_problem: string | null
           reported_problem: string | null
           scheduled_at: string
           status: string
@@ -600,6 +604,7 @@ export type Database = {
           id?: string
           notes?: string | null
           owner_id?: string
+          repaired_problem?: string | null
           reported_problem?: string | null
           scheduled_at?: string
           status?: string
@@ -617,6 +622,7 @@ export type Database = {
           id?: string
           notes?: string | null
           owner_id?: string
+          repaired_problem?: string | null
           reported_problem?: string | null
           scheduled_at?: string
           status?: string
