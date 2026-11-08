@@ -15,6 +15,13 @@
       "when": 1794042447930,
       "tag": "0001_add_repaired_problem_to_agenda",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1794152321583,
+      "tag": "0002_secure_notification_center",
+      "breakpoints": true
     }
   ]
 }
