@@ -676,6 +676,66 @@ export type Database = {
           },
         ]
       }
+      notification_preferences: {
+        Row: {
+          settings: Json
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          settings?: Json
+          updated_at?: string
+          user_id?: string
+        }
+        Update: {
+          settings?: Json
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      notifications: {
+        Row: {
+          body: string
+          created_at: string
+          dedupe_key: string
+          entity_id: string | null
+          event: string
+          id: string
+          module: string
+          owner_id: string
+          priority: string
+          read_at: string | null
+          title: string
+        }
+        Insert: {
+          body?: string
+          created_at?: string
+          dedupe_key: string
+          entity_id?: string | null
+          event: string
+          id?: string
+          module: string
+          owner_id?: string
+          priority?: string
+          read_at?: string | null
+          title: string
+        }
+        Update: {
+          body?: string
+          created_at?: string
+          dedupe_key?: string
+          entity_id?: string | null
+          event?: string
+          id?: string
+          module?: string
+          owner_id?: string
+          priority?: string
+          read_at?: string | null
+          title?: string
+        }
+        Relationships: []
+      }
       payments: {
         Row: {
           amount: number
@@ -1347,6 +1407,21 @@ export type Database = {
         Returns: boolean
       }
       next_doc_number: { Args: { p_prefix: string }; Returns: string }
+      refresh_due_notifications: { Args: never; Returns: undefined }
+      subscription_is_active: { Args: never; Returns: boolean }
+      validate_warranty: {
+        Args: { certificate_number: string }
+        Returns: {
+          conditions: string
+          days: number
+          end_date: string
+          exclusions: string
+          number: string
+          service_date: string
+          service_performed: string
+          start_date: string
+        }[]
+      }
     }
     Enums: {
       app_role: "administrador" | "tecnico" | "administrativo"
