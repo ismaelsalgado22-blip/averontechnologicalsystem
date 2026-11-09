@@ -41,8 +41,9 @@ export function DeleteButton({
 
   const remove = useMutation({
     mutationFn: async () => {
-      const { error } = await supabase.from(table as never).delete().eq("id", id);
+      const { data, error } = await supabase.from(table as never).delete().eq("id", id).select("id");
       if (error) throw error;
+      if (!data?.length) throw new Error("O registro não foi excluído. Verifique seu acesso.");
     },
     onSuccess: () => {
       toast.success(`${what} excluído com sucesso`);

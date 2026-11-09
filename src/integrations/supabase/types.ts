@@ -1399,6 +1399,16 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      adjust_inventory: {
+        Args: {
+          kind: string
+          product: string
+          quantity: number
+          reason?: string
+        }
+        Returns: undefined
+      }
+      convert_budget: { Args: { budget: string }; Returns: string }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
@@ -1408,6 +1418,11 @@ export type Database = {
       }
       next_doc_number: { Args: { p_prefix: string }; Returns: string }
       refresh_due_notifications: { Args: never; Returns: undefined }
+      save_budget: { Args: { items: Json; payload: Json }; Returns: string }
+      save_work_order: {
+        Args: { items: Json; order_id: string; payload: Json }
+        Returns: string
+      }
       subscription_is_active: { Args: never; Returns: boolean }
       validate_warranty: {
         Args: { certificate_number: string }

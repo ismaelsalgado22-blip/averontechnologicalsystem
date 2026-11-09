@@ -4,7 +4,9 @@ const BUCKET = "mecfrio";
 
 export async function uploadFile(file: File, folder: string) {
   const ext = file.name.split(".").pop() ?? "jpg";
-  const path = `${folder}/${crypto.randomUUID()}.${ext}`;
+  const { data, error: authError } = await supabase.auth.getUser();
+  if (authError || !data.user) throw new Error("Entre novamente para enviar arquivos");
+  const path = `${data.user.id}/${folder}/${crypto.randomUUID()}.${ext}`;
   const { error } = await supabase.storage.from(BUCKET).upload(path, file, { upsert: false });
   if (error) throw error;
   return path;
@@ -13,7 +15,8 @@ export async function uploadFile(file: File, folder: string) {
 export async function signedUrl(path: string, seconds = 3600) {
   if (!path) return "";
   if (path.startsWith("http") || path.startsWith("data:")) return path;
-  const { data } = await supabase.storage.from(BUCKET).createSignedUrl(path, seconds);
+  const { data, error } = await supabase.storage.from(BUCKET).createSignedUrl(path, seconds);
+  if (error) throw error;
   return data?.signedUrl ?? "";
 }
 
@@ -24,7 +27,8 @@ export async function signedUrls(paths: string[]) {
 
 export async function removeFile(path: string) {
   if (!path || path.startsWith("http")) return;
-  await supabase.storage.from(BUCKET).remove([path]);
+  const { error } = await supabase.storage.from(BUCKET).remove([path]);
+  if (error) throw error;
 }
 
 /** Converte imagem do storage em dataURL, para embutir em PDF. */
