@@ -21,6 +21,7 @@ import { Route as AuthenticatedEstoqueRouteImport } from './routes/_authenticate
 import { Route as AuthenticatedFinanceiroRouteImport } from './routes/_authenticated/financeiro'
 import { Route as AuthenticatedGarantiasRouteImport } from './routes/_authenticated/garantias'
 import { Route as AuthenticatedLaudosRouteImport } from './routes/_authenticated/laudos'
+import { Route as AuthenticatedNotificacoesRouteImport } from './routes/_authenticated/notificacoes'
 import { Route as AuthenticatedOrcamentosRouteImport } from './routes/_authenticated/orcamentos'
 import { Route as AuthenticatedOrdensRouteImport } from './routes/_authenticated/ordens'
 import { Route as AuthenticatedServicosRouteImport } from './routes/_authenticated/servicos'
@@ -88,6 +89,12 @@ const AuthenticatedLaudosRoute = AuthenticatedLaudosRouteImport.update({
   path: '/laudos',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedNotificacoesRoute =
+  AuthenticatedNotificacoesRouteImport.update({
+    id: '/notificacoes',
+    path: '/notificacoes',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedOrcamentosRoute = AuthenticatedOrcamentosRouteImport.update({
   id: '/orcamentos',
   path: '/orcamentos',
@@ -127,6 +134,7 @@ export interface FileRoutesByFullPath {
   '/financeiro': typeof AuthenticatedFinanceiroRoute
   '/garantias': typeof AuthenticatedGarantiasRoute
   '/laudos': typeof AuthenticatedLaudosRoute
+  '/notificacoes': typeof AuthenticatedNotificacoesRoute
   '/orcamentos': typeof AuthenticatedOrcamentosRoute
   '/ordens': typeof AuthenticatedOrdensRoute
   '/servicos': typeof AuthenticatedServicosRoute
@@ -145,6 +153,7 @@ export interface FileRoutesByTo {
   '/financeiro': typeof AuthenticatedFinanceiroRoute
   '/garantias': typeof AuthenticatedGarantiasRoute
   '/laudos': typeof AuthenticatedLaudosRoute
+  '/notificacoes': typeof AuthenticatedNotificacoesRoute
   '/orcamentos': typeof AuthenticatedOrcamentosRoute
   '/ordens': typeof AuthenticatedOrdensRoute
   '/servicos': typeof AuthenticatedServicosRoute
@@ -165,6 +174,7 @@ export interface FileRoutesById {
   '/_authenticated/financeiro': typeof AuthenticatedFinanceiroRoute
   '/_authenticated/garantias': typeof AuthenticatedGarantiasRoute
   '/_authenticated/laudos': typeof AuthenticatedLaudosRoute
+  '/_authenticated/notificacoes': typeof AuthenticatedNotificacoesRoute
   '/_authenticated/orcamentos': typeof AuthenticatedOrcamentosRoute
   '/_authenticated/ordens': typeof AuthenticatedOrdensRoute
   '/_authenticated/servicos': typeof AuthenticatedServicosRoute
@@ -185,6 +195,7 @@ export interface FileRouteTypes {
     | '/financeiro'
     | '/garantias'
     | '/laudos'
+    | '/notificacoes'
     | '/orcamentos'
     | '/ordens'
     | '/servicos'
@@ -203,6 +214,7 @@ export interface FileRouteTypes {
     | '/financeiro'
     | '/garantias'
     | '/laudos'
+    | '/notificacoes'
     | '/orcamentos'
     | '/ordens'
     | '/servicos'
@@ -222,6 +234,7 @@ export interface FileRouteTypes {
     | '/_authenticated/financeiro'
     | '/_authenticated/garantias'
     | '/_authenticated/laudos'
+    | '/_authenticated/notificacoes'
     | '/_authenticated/orcamentos'
     | '/_authenticated/ordens'
     | '/_authenticated/servicos'
@@ -322,6 +335,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedLaudosRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/notificacoes': {
+      id: '/_authenticated/notificacoes'
+      path: '/notificacoes'
+      fullPath: '/notificacoes'
+      preLoaderRoute: typeof AuthenticatedNotificacoesRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/orcamentos': {
       id: '/_authenticated/orcamentos'
       path: '/orcamentos'
@@ -369,6 +389,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedFinanceiroRoute: typeof AuthenticatedFinanceiroRoute
   AuthenticatedGarantiasRoute: typeof AuthenticatedGarantiasRoute
   AuthenticatedLaudosRoute: typeof AuthenticatedLaudosRoute
+  AuthenticatedNotificacoesRoute: typeof AuthenticatedNotificacoesRoute
   AuthenticatedOrcamentosRoute: typeof AuthenticatedOrcamentosRoute
   AuthenticatedOrdensRoute: typeof AuthenticatedOrdensRoute
   AuthenticatedServicosRoute: typeof AuthenticatedServicosRoute
@@ -385,6 +406,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedFinanceiroRoute: AuthenticatedFinanceiroRoute,
   AuthenticatedGarantiasRoute: AuthenticatedGarantiasRoute,
   AuthenticatedLaudosRoute: AuthenticatedLaudosRoute,
+  AuthenticatedNotificacoesRoute: AuthenticatedNotificacoesRoute,
   AuthenticatedOrcamentosRoute: AuthenticatedOrcamentosRoute,
   AuthenticatedOrdensRoute: AuthenticatedOrdensRoute,
   AuthenticatedServicosRoute: AuthenticatedServicosRoute,

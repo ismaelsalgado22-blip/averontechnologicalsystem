@@ -11,6 +11,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { useProfile } from "@/hooks/use-auth";
 import { removeFile, signedUrl, uploadFile } from "@/lib/storage";
 import { ImagePlus, Loader2 } from "lucide-react";
+import { NotificationPreferences } from "@/components/notification-preferences";
 
 export const Route = createFileRoute("/_authenticated/configuracoes")({
   head: () => ({
@@ -138,6 +139,8 @@ function SettingsPage() {
           Apenas administradores podem alterar os dados da empresa.
         </p>
       )}
+
+      <NotificationPreferences />
 
       <div className="surface-panel space-y-4 p-5">
         <h2 className="font-display text-base font-semibold">Logomarca da empresa</h2>

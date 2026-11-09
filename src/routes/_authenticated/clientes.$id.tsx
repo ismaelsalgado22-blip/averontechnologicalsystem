@@ -18,6 +18,7 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { BUDGET_STATUS, WO_STATUS, brl, dateBR, dateTimeBR, warrantyState } from "@/lib/format";
 import { DeleteButton } from "@/components/delete-button";
+import { validateContact } from "@/lib/validation";
 
 export const Route = createFileRoute("/_authenticated/clientes/$id")({
   head: () => ({
@@ -70,6 +71,7 @@ function ClientDetail() {
 
   const save = useMutation({
     mutationFn: async () => {
+      validateContact(form);
       const payload = Object.fromEntries(
         Object.entries(form).map(([k, v]) => [k, v === "" ? null : v]),
       );

@@ -22,6 +22,8 @@ import {
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { maskDoc, maskPhone } from "@/lib/format";
 import { DeleteButton } from "@/components/delete-button";
+import { CepInput } from "@/components/cep-input";
+import { validateContact } from "@/lib/validation";
 
 export const Route = createFileRoute("/_authenticated/clientes/")({
   head: () => ({
@@ -132,7 +134,7 @@ export function ClientForm({
           <Input value={value.email} maxLength={160} onChange={(e) => set("email", e.target.value)} />
         </Field>
         <Field label="CEP">
-          <Input value={value.zip_code} maxLength={12} onChange={(e) => set("zip_code", e.target.value)} />
+          <CepInput value={value.zip_code} onChange={(v) => set("zip_code", v)} onAddress={(address) => onChange({ ...value, ...address, address: address.address || value.address, district: address.district || value.district })} />
         </Field>
         <Field label="Endereço">
           <Input value={value.address} maxLength={160} onChange={(e) => set("address", e.target.value)} />
@@ -197,6 +199,7 @@ function ClientsPage() {
     mutationFn: async () => {
       const parsed = schema.safeParse(form);
       if (!parsed.success) throw new Error(parsed.error.issues[0]?.message ?? "Dados inválidos");
+      validateContact(parsed.data);
       const payload = Object.fromEntries(
         Object.entries(parsed.data).map(([k, v]) => [k, v === "" ? null : v]),
       );

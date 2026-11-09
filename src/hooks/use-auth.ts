@@ -27,10 +27,12 @@ export function useProfile() {
     queryKey: ["profile", user?.id],
     enabled: !!user,
     queryFn: async () => {
-      const [{ data: profile }, { data: roles }] = await Promise.all([
-        supabase.from("profiles").select("*").eq("id", user!.id).maybeSingle(),
-        supabase.from("user_roles").select("role").eq("user_id", user!.id),
+      if (!user) throw new Error("Entre novamente");
+      const [{ data: profile, error: profileError }, { data: roles, error: roleError }] = await Promise.all([
+        supabase.from("profiles").select("*").eq("id", user.id).maybeSingle(),
+        supabase.from("user_roles").select("role").eq("user_id", user.id),
       ]);
+      if (profileError || roleError) throw profileError ?? roleError;
       const roleList = (roles ?? []).map((r) => r.role as AppRole);
       return {
         profile,
