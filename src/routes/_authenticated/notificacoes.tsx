@@ -1,0 +1,4 @@
+import { createFileRoute } from '@tanstack/react-router';
+import { PageHeader } from '@/components/page-header';
+import { NotificationList } from '@/components/notification-list';
+export const Route = createFileRoute('/_authenticated/notificacoes')({ head: () => ({ meta: [{ title: 'Central de notificações | Averon' }, { name: 'description', content: 'Histórico de eventos, lembretes e pendências do seu negócio.' }, { property: 'og:title', content: 'Central de notificações | Averon' }, { property: 'og:description', content: 'Acompanhe eventos e notificações da sua operação.' }, { property: 'og:type', content: 'website' }, { name: 'twitter:card', content: 'summary_large_image' }, { name: 'robots', content: 'noindex' }] }), component: () => <div className="space-y-5"><PageHeader title="Notificações"/><NotificationList/></div> });
