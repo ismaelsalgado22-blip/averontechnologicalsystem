@@ -112,7 +112,7 @@ function StockPage() {
       const qty = num(move.quantity);
       if (qty <= 0) throw new Error("Informe uma quantidade válida");
       if (!moveFor) throw new Error('Selecione uma peça');
-      const { error } = await supabase.rpc('adjust_inventory', { product: moveFor.id, quantity: qty, kind: move.kind, reason: move.reason || undefined });
+      const { error } = await supabase.rpc('adjust_inventory', { product: moveFor.id, quantity: qty, kind: move.kind, reason: move.reason || '' });
       if (error) throw error;
     },
     onSuccess: () => {

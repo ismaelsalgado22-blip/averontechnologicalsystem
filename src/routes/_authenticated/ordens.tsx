@@ -137,7 +137,7 @@ function OrdersPage() {
         payload.signed_at = new Date().toISOString();
       }
       const { error } = await supabase.rpc('save_work_order', {
-        order_id: editId,
+        order_id: editId ?? '',
         payload,
         items: items.map(i => ({ ...(i.id ? { id: i.id } : {}), kind: i.product_id ? 'peca' : 'servico', description: i.description, quantity: num(i.quantity), unit_price: num(i.unit_price), product_id: i.product_id || null })),
       });
