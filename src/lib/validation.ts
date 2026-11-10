@@ -6,7 +6,7 @@ export function validDocument(value: string, kind: 'pf' | 'pj') {
   if (kind === 'pf') return d.length === 11 && checksum(d.slice(0,9), [10,9,8,7,6,5,4,3,2]) === Number(d[9]) && checksum(d.slice(0,10), [11,10,9,8,7,6,5,4,3,2]) === Number(d[10]);
   return d.length === 14 && checksum(d.slice(0,12), [5,4,3,2,9,8,7,6,5,4,3,2]) === Number(d[12]) && checksum(d.slice(0,13), [6,5,4,3,2,9,8,7,6,5,4,3,2]) === Number(d[13]);
 }
-export function validateContact(value: { name?: string; document?: string; kind?: string; phone?: string; whatsapp?: string; email?: string }) {
+export function validateContact(value: { name?: string | undefined; document?: string | undefined; kind?: string | undefined; phone?: string | undefined; whatsapp?: string | undefined; email?: string | undefined }) {
   if (!value.name || value.name.trim().length < 3) throw new Error('Informe o nome ou razão social');
   if (!validDocument(value.document ?? '', value.kind === 'pf' ? 'pf' : 'pj')) throw new Error(value.kind === 'pf' ? 'CPF inválido' : 'CNPJ inválido');
   for (const p of [value.phone, value.whatsapp]) if (p?.trim() && ![10,11,12,13].includes(digits(p).length)) throw new Error('Telefone inválido');

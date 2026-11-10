@@ -2,7 +2,8 @@ export const brl = (v: number | null | undefined) =>
   new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(Number(v ?? 0));
 
 export const num = (v: unknown) => {
-  const n = Number(String(v ?? "0").replace(",", "."));
+  const text = String(v ?? "0").trim();
+  const n = Number(text.includes(",") ? text.replace(/\./g, "").replace(",", ".") : text);
   return Number.isFinite(n) ? n : 0;
 };
 
@@ -20,7 +21,7 @@ export const dateTimeBR = (v: string | Date | null | undefined) => {
   return d.toLocaleString("pt-BR", { day: "2-digit", month: "2-digit", year: "numeric", hour: "2-digit", minute: "2-digit" });
 };
 
-export const today = () => new Date().toISOString().slice(0, 10);
+export const today = () => { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`; };
 
 export const addDays = (isoDate: string, days: number) => {
   const d = new Date(`${isoDate}T12:00:00`);

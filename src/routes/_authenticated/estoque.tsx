@@ -111,19 +111,9 @@ function StockPage() {
     mutationFn: async () => {
       const qty = num(move.quantity);
       if (qty <= 0) throw new Error("Informe uma quantidade válida");
-      const delta = move.kind === "entrada" ? qty : -qty;
-      const { error: e1 } = await supabase
-        .from("products")
-        .update({ stock: Number(moveFor.stock) + delta })
-        .eq("id", moveFor.id);
-      if (e1) throw e1;
-      const { error: e2 } = await supabase.from("inventory_movements").insert({
-        product_id: moveFor.id,
-        quantity: qty,
-        kind: move.kind,
-        reason: move.reason || null,
-      });
-      if (e2) throw e2;
+      if (!moveFor) throw new Error('Selecione uma peça');
+      const { error } = await supabase.rpc('adjust_inventory', { product: moveFor.id, quantity: qty, kind: move.kind, reason: move.reason || undefined });
+      if (error) throw error;
     },
     onSuccess: () => {
       toast.success("Movimentação registrada");
