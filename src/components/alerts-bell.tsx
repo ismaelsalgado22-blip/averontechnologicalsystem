@@ -28,7 +28,7 @@ export function AlertsBell() {
       const deliver = () => {
         if (localStorage.getItem(key)) return; localStorage.setItem(key, 'seen');
         if (s.sound && e.sound) void playAlert(e.tone, s.volume).catch(() => {});
-        if (s.visual && e.visible) { toast.info(String(n['title']), { description: String(n['body']) }); if ('Notification' in window && Notification.permission === 'granted') new Notification(String(n['title']), { body: String(n['body']), tag: key, icon: '/favicon.png' }); }
+        if (s.visual && e.visible) { toast.info(String(n['title']), { description: String(n['body']) }); if ('Notification' in window && Notification.permission === 'granted') { try { new Notification(String(n['title']), { body: String(n['body']), tag: key, icon: '/favicon.png' }); } catch { /* Mobile browsers require a messaging worker. */ } } }
       };
       if (navigator.locks) void navigator.locks.request(key, deliver); else deliver();
     }).on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'notifications', filter: `owner_id=eq.${user.id}` }, () => qc.invalidateQueries({ queryKey: ['notifications'] })).subscribe();

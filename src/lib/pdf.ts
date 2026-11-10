@@ -26,8 +26,17 @@ const GRAY: [number, number, number] = [90, 100, 115];
 const M = 14;
 
 type Doc = jsPDF;
+const contexts = new WeakMap<Doc, { company: Company; title: string; subtitle: string; logo: string | undefined }>();
+function bottom(doc: Doc) { return doc.internal.pageSize.getHeight() - 24; }
+function nextPage(doc: Doc) {
+  const ctx = contexts.get(doc); if (!ctx) throw new Error('Documento não inicializado');
+  footer(doc, ctx.company); doc.addPage(); return header(doc, ctx.company, ctx.title, ctx.subtitle, ctx.logo);
+}
+function space(doc: Doc, y: number, height: number) { return y + height > bottom(doc) ? nextPage(doc) : y; }
+
 
 function header(doc: Doc, company: Company, title: string, subtitle: string, logo?: string) {
+  contexts.set(doc, { company, title, subtitle, logo });
   const w = doc.internal.pageSize.getWidth();
   doc.setFillColor(...NAVY);
   doc.rect(0, 0, w, 36, "F");
@@ -109,6 +118,7 @@ function deliver(doc: Doc, filename: string): PdfResult {
 
 
 function sectionTitle(doc: Doc, y: number, text: string) {
+  y = space(doc, y, 22);
   const w = doc.internal.pageSize.getWidth();
   doc.setFillColor(...NAVY);
   doc.rect(M, y, w - M * 2, 6.5, "F");
@@ -122,75 +132,45 @@ function sectionTitle(doc: Doc, y: number, text: string) {
 }
 
 function pair(doc: Doc, y: number, items: [string, string][], cols = 2) {
-  const w = doc.internal.pageSize.getWidth() - M * 2;
-  const colW = w / cols;
-  doc.setFontSize(8.5);
-  let row = 0;
-  items.forEach((it, i) => {
-    const c = i % cols;
-    row = Math.floor(i / cols);
-    const x = M + c * colW;
-    const yy = y + row * 9;
-    doc.setTextColor(...GRAY);
-    doc.text(it[0].toUpperCase(), x, yy);
-    doc.setTextColor(20, 20, 20);
-    doc.setFont("helvetica", "bold");
-    doc.text(doc.splitTextToSize(it[1] || "—", colW - 4), x, yy + 4.2);
-    doc.setFont("helvetica", "normal");
-  });
-  return y + (row + 1) * 9 + 2;
+  const colW = (doc.internal.pageSize.getWidth() - M * 2) / cols;
+  for (let i = 0; i < items.length; i += cols) {
+    const row = items.slice(i, i + cols);
+    doc.setFont('helvetica', 'bold'); doc.setFontSize(8.5);
+    const wrapped = row.map(it => doc.splitTextToSize(it[1] || '—', colW - 4) as string[]);
+    let offset = 0; const total = Math.max(...wrapped.map(lines => lines.length));
+    while (offset < total) {
+      y = space(doc, y, 16); const count = Math.min(total - offset, Math.max(1, Math.floor((bottom(doc) - y - 10) / 4.2)));
+      row.forEach((it,c) => { const x = M + c * colW; doc.setFont('helvetica','normal'); doc.setFontSize(8); doc.setTextColor(...GRAY); doc.text(it[0].toUpperCase() + (offset ? ' (CONT.)' : ''),x,y); doc.setTextColor(20,20,20); doc.setFont('helvetica','bold'); doc.setFontSize(8.5); const lines = wrapped[c]?.slice(offset,offset+count) ?? []; if (lines.length) doc.text(lines,x,y+4.2,{lineHeightFactor:1.4}); });
+      y += count * 4.2 + 8; offset += count;
+      if (offset < total) y = nextPage(doc);
+    }
+  }
+  doc.setFont('helvetica','normal'); return y;
 }
-
 function block(doc: Doc, y: number, label: string, text?: string | null) {
   if (!text) return y;
-  const w = doc.internal.pageSize.getWidth() - M * 2;
-  doc.setFontSize(8);
-  doc.setTextColor(...GRAY);
-  doc.text(label.toUpperCase(), M, y);
-  doc.setTextColor(20, 20, 20);
-  doc.setFontSize(9);
-  const lines = doc.splitTextToSize(text, w);
-  doc.text(lines, M, y + 4.5);
-  return y + 4.5 + lines.length * 4.2 + 3;
+  doc.setFont('helvetica','normal'); doc.setFontSize(9);
+  const lines = doc.splitTextToSize(text, doc.internal.pageSize.getWidth() - M * 2) as string[];
+  let offset = 0;
+  while (offset < lines.length) {
+    y = space(doc,y,18); const count = Math.min(lines.length - offset,Math.max(1,Math.floor((bottom(doc)-y-10)/4.2)));
+    doc.setFontSize(8); doc.setTextColor(...GRAY); doc.text(label.toUpperCase() + (offset ? ' (CONTINUAÇÃO)' : ''), M,y);
+    doc.setFontSize(9); doc.setTextColor(20,20,20); doc.text(lines.slice(offset,offset+count),M,y+4.5,{lineHeightFactor:1.32});
+    y += count*4.2+8; offset+=count; if (offset<lines.length) y=nextPage(doc);
+  }
+  return y;
 }
-
-function itemsTable(
-  doc: Doc,
-  y: number,
-  rows: { description: string; quantity: number; unit_price: number; total: number }[],
-) {
-  const w = doc.internal.pageSize.getWidth() - M * 2;
-  const cols = [M, M + w * 0.6, M + w * 0.72, M + w];
-  doc.setFillColor(235, 240, 248);
-  doc.rect(M, y, w, 7, "F");
-  doc.setFontSize(8);
-  doc.setFont("helvetica", "bold");
-  doc.text("DESCRIÇÃO", cols[0]! + 2, y + 4.8);
-  doc.text("QTD", cols[1]!, y + 4.8);
-  doc.text("V. UNIT.", cols[2]!, y + 4.8);
-  doc.text("TOTAL", cols[3]! - 2, y + 4.8, { align: "right" });
-  doc.setFont("helvetica", "normal");
-  let yy = y + 7;
-  rows.forEach((r, i) => {
-    const lines = doc.splitTextToSize(r.description, w * 0.56);
-    const hRow = Math.max(6.5, lines.length * 4.2 + 2.5);
-    if (i % 2 === 1) {
-      doc.setFillColor(247, 249, 252);
-      doc.rect(M, yy, w, hRow, "F");
-    }
-    doc.setFontSize(8.5);
-    doc.text(lines, cols[0]! + 2, yy + 4.5);
-    doc.text(String(Number(r.quantity)), cols[1]!, yy + 4.5);
-    doc.text(brl(r.unit_price), cols[2]!, yy + 4.5);
-    doc.text(brl(r.total), cols[3]! - 2, yy + 4.5, { align: "right" });
-    yy += hRow;
-  });
-  doc.setDrawColor(210, 216, 226);
-  doc.rect(M, y, w, yy - y);
-  return yy + 4;
+function itemsTable(doc: Doc,y: number,rows: {description:string;quantity:number;unit_price:number;total:number}[]) {
+  const w = doc.internal.pageSize.getWidth()-M*2; const xq=M+w*.6,xu=M+w*.72,xt=M+w;
+  const tableHead = () => { y=space(doc,y,18); doc.setFillColor(235,240,248); doc.rect(M,y,w,7,'F'); doc.setFontSize(8); doc.setFont('helvetica','bold'); doc.text('DESCRIÇÃO',M+2,y+4.8); doc.text('QTD',xq,y+4.8); doc.text('V. UNIT.',xu,y+4.8); doc.text('TOTAL',xt-2,y+4.8,{align:'right'}); doc.setFont('helvetica','normal'); y+=7; };
+  tableHead();
+  rows.forEach((r,i) => { doc.setFontSize(8.5); const lines=doc.splitTextToSize(r.description,w*.56) as string[]; let offset=0;
+    while(offset<lines.length) { if (y+10>bottom(doc)) {y=nextPage(doc);tableHead();} const count=Math.min(lines.length-offset,Math.max(1,Math.floor((bottom(doc)-y-3)/4.2))); const h=Math.max(7,count*4.2+3); if(i%2) {doc.setFillColor(247,249,252);doc.rect(M,y,w,h,'F');} doc.setFontSize(8.5);doc.text(lines.slice(offset,offset+count),M+2,y+4.5,{lineHeightFactor:1.4}); if(!offset) {doc.text(String(r.quantity),xq,y+4.5);doc.text(brl(r.unit_price),xu,y+4.5);doc.text(brl(r.total),xt-2,y+4.5,{align:'right'});} y+=h;offset+=count;if(offset<lines.length){y=nextPage(doc);tableHead();} }
+  });return y+4;
 }
 
 function totalsBox(doc: Doc, y: number, lines: [string, string][], highlight: [string, string]) {
+  y = space(doc, y, lines.length * 5.5 + 20);
   const w = doc.internal.pageSize.getWidth() - M * 2;
   const boxW = w * 0.45;
   const x = M + w - boxW;
@@ -290,7 +270,7 @@ export async function budgetPdf(opts: {
   y = block(doc, y, "Observações", budget.notes ?? company.default_notes);
 
   const h = doc.internal.pageSize.getHeight();
-  const sy = Math.min(y + 8, h - 40);
+  const sy = space(doc, y + 8, 26);
   doc.setDrawColor(...GRAY);
   doc.line(M, sy + 10, M + 80, sy + 10);
   doc.setFontSize(8);
@@ -314,6 +294,8 @@ export async function workOrderPdf(opts: {
   const doc = new jsPDF();
   let y = header(doc, company, "Ordem de Serviço", `${order.number}  •  ${dateBR(order.service_date)}`, logo);
 
+  y = sectionTitle(doc, y, "Dados do cliente");
+  y = pair(doc, y, [...clientLines(client), ["CEP", client?.zip_code ?? "—"], ["Complemento", client?.complement ?? "—"], ["Contato responsável", client?.contact_person ?? "—"]]);
   y = sectionTitle(doc, y, "Atendimento");
   y = pair(doc, y, [
     ["Cliente", client?.name ?? "—"],
@@ -352,13 +334,14 @@ export async function workOrderPdf(opts: {
   if (items.length) {
     y = sectionTitle(doc, y, "Peças e materiais utilizados");
     y = itemsTable(doc, y, items);
-    y = totalsBox(doc, y, [], ["TOTAL DO SERVIÇO", brl(order.total)]);
+
   }
 
+  y = totalsBox(doc, y, [], ["TOTAL DO SERVIÇO", brl(order.total)]);
   y = block(doc, y, "Observações", order.notes ?? company.default_notes);
 
   const h = doc.internal.pageSize.getHeight();
-  let sy = Math.min(y + 6, h - 45);
+  let sy = space(doc, y + 6, order.signature ? 38 : 20);
   if (order.signature) {
     try {
       doc.addImage(order.signature, "PNG", M, sy, 60, 22);
@@ -457,7 +440,7 @@ export async function reportPdf(opts: {
   y = block(doc, y, "Serviço recomendado", report.recommended_service);
 
   const h = doc.internal.pageSize.getHeight();
-  const sy = Math.min(y + 10, h - 32);
+  const sy = space(doc, y + 10, 18);
   doc.setDrawColor(...GRAY);
   doc.line(M, sy, M + 80, sy);
   doc.setFontSize(8);
@@ -526,7 +509,7 @@ export async function warrantyPdf(opts: {
   try {
     const qr = await QRCode.toDataURL(validateUrl, { margin: 1, width: 240 });
     const h = doc.internal.pageSize.getHeight();
-    const qy = Math.min(y + 4, h - 52);
+    const qy = space(doc, y + 4, 42);
     doc.addImage(qr, "PNG", w - M - 30, qy, 30, 30);
     doc.setFontSize(7.5);
     doc.setTextColor(...GRAY);

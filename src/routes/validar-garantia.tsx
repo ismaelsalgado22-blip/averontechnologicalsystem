@@ -7,6 +7,7 @@ import { StatusPill } from "@/components/page-header";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { dateBR, warrantyState } from "@/lib/format";
+import { toast } from 'sonner';
 
 export const Route = createFileRoute("/validar-garantia")({
   head: () => ({
@@ -37,12 +38,9 @@ function ValidatePage() {
     const term = value.trim().toUpperCase();
     if (!term) return;
     setLoading(true);
-    const { data } = await supabase
-      .from("warranties")
-      .select("number, service_performed, service_date, start_date, end_date, days, conditions, exclusions")
-      .eq("number", term)
-      .maybeSingle();
-    setResult(data ?? null);
+    const { data, error } = await supabase.rpc('validate_warranty', { certificate_number: term });
+    if (error) { setLoading(false); setResult(undefined); toast.error('Não foi possível consultar a garantia. Tente novamente.'); return; }
+    setResult(data?.[0] ?? null);
     setLoading(false);
   };
 

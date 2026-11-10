@@ -113,40 +113,11 @@ function BudgetsPage() {
     mutationFn: async () => {
       if (!form.client_id) throw new Error("Selecione o cliente");
       if (!items.length) throw new Error("Adicione pelo menos um item ao orçamento");
-      const { data, error } = await supabase
-        .from("budgets")
-        .insert({
-          client_id: form.client_id,
-          equipment_id: form.equipment_id || null,
-          issue_date: form.issue_date,
-          valid_until: form.valid_until || null,
-          problem_description: form.problem_description || null,
-          discount: num(form.discount),
-          travel_fee: num(form.travel_fee),
-          labor_total: laborTotal,
-          items_total: itemsTotal,
-          total,
-          payment_conditions: form.payment_conditions || null,
-          deadline: form.deadline || null,
-          notes: form.notes || null,
-          status: "rascunho",
-        })
-        .select("id")
-        .single();
+      const { error } = await supabase.rpc('save_budget', {
+        payload: { client_id: form.client_id, equipment_id: form.equipment_id || null, issue_date: form.issue_date, valid_until: form.valid_until || null, problem_description: form.problem_description || null, discount: num(form.discount), travel_fee: num(form.travel_fee), labor_total: laborTotal, items_total: itemsTotal, total, payment_conditions: form.payment_conditions || null, deadline: form.deadline || null, notes: form.notes || null },
+        items: items.map(i => ({ kind: i.kind, description: i.description, quantity: num(i.quantity), unit_price: num(i.unit_price), product_id: i.product_id || null, service_id: i.service_id || null })),
+      });
       if (error) throw error;
-      const { error: e2 } = await supabase.from("budget_items").insert(
-        items.map((i) => ({
-          budget_id: data.id,
-          kind: i.kind,
-          description: i.description,
-          quantity: num(i.quantity),
-          unit_price: num(i.unit_price),
-          total: num(i.quantity) * num(i.unit_price),
-          product_id: i.product_id || null,
-          service_id: i.service_id || null,
-        })),
-      );
-      if (e2) throw e2;
     },
     onSuccess: () => {
       toast.success("Orçamento criado");
@@ -173,35 +144,8 @@ function BudgetsPage() {
 
   const convert = useMutation({
     mutationFn: async (budget: any) => {
-      const { data: bItems } = await supabase.from("budget_items").select("*").eq("budget_id", budget.id);
-      const { data: order, error } = await supabase
-        .from("work_orders")
-        .insert({
-          client_id: budget.client_id,
-          equipment_id: budget.equipment_id,
-          budget_id: budget.id,
-          service_date: today(),
-          reported_problem: budget.problem_description,
-          status: "aberta",
-          total: budget.total,
-        })
-        .select("id")
-        .single();
+      const { error } = await supabase.rpc('convert_budget', { budget: budget.id });
       if (error) throw error;
-      const parts = (bItems ?? []).filter((i: any) => i.kind === "peca");
-      if (parts.length) {
-        await supabase.from("work_order_items").insert(
-          parts.map((i: any) => ({
-            work_order_id: order.id,
-            kind: i.kind,
-            description: i.description,
-            quantity: i.quantity,
-            unit_price: i.unit_price,
-            total: i.total,
-            product_id: i.product_id,
-          })),
-        );
-      }
     },
     onSuccess: () => {
       toast.success("Ordem de serviço gerada a partir do orçamento");

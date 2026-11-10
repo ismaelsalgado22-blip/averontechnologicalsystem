@@ -15,7 +15,12 @@ export function parseSettings(value: unknown): NotificationSettings {
   const defaults = defaultSettings();
   if (!value || typeof value !== 'object') return defaults;
   const v = value as Partial<NotificationSettings>;
-  return { enabled: typeof v.enabled === 'boolean' ? v.enabled : defaults.enabled, sound: typeof v.sound === 'boolean' ? v.sound : defaults.sound, visual: typeof v.visual === 'boolean' ? v.visual : defaults.visual, volume: typeof v.volume === 'number' ? Math.max(0, Math.min(100, v.volume)) : defaults.volume, events: Object.fromEntries(Object.keys(EVENTS).map(key => { const e = v.events?.[key]; return [key, { ...defaults.events[key], ...(e ? { sound: typeof e.sound === 'boolean' ? e.sound : true, visible: typeof e.visible === 'boolean' ? e.visible : true, tone: e.tone in SOUNDS ? e.tone : 'sino', priority: ['baixa','normal','alta'].includes(e.priority) ? e.priority : 'normal' } : {}) }]; })) };
+  const events: Record<string, EventSettings> = {};
+  for (const key of Object.keys(EVENTS)) {
+    const e = v.events?.[key];
+    events[key] = { sound: typeof e?.sound === 'boolean' ? e.sound : true, visible: typeof e?.visible === 'boolean' ? e.visible : true, tone: e?.tone && e.tone in SOUNDS ? e.tone : defaults.events[key]?.tone ?? 'sino', priority: e?.priority && ['baixa','normal','alta'].includes(e.priority) ? e.priority : 'normal' };
+  }
+  return { enabled: typeof v.enabled === 'boolean' ? v.enabled : defaults.enabled, sound: typeof v.sound === 'boolean' ? v.sound : defaults.sound, visual: typeof v.visual === 'boolean' ? v.visual : defaults.visual, volume: typeof v.volume === 'number' && Number.isFinite(v.volume) ? Math.max(0, Math.min(100, v.volume)) : defaults.volume, events };
 }
 let audio: AudioContext | undefined;
 export async function playAlert(tone: keyof typeof SOUNDS, volume: number) {

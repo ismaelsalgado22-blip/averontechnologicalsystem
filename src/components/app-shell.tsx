@@ -23,6 +23,7 @@ import { useProfile } from "@/hooks/use-auth";
 import { BrandLogo } from "@/components/brand-logo";
 import { Button } from "@/components/ui/button";
 import { AlertsBell } from "@/components/alerts-bell";
+import { SubscriptionGate } from "@/components/subscription-gate";
 import { cn } from "@/lib/utils";
 
 const NAV = [
@@ -100,7 +101,7 @@ export function AppShell({ children }: { children: ReactNode }) {
   );
 
   return (
-    <div className="min-h-screen bg-background">
+    <SubscriptionGate><div className="min-h-screen bg-background">
       <aside className="fixed inset-y-0 left-0 z-40 hidden h-dvh w-64 flex-col border-r border-sidebar-border bg-sidebar lg:flex">
         <div className="border-b border-sidebar-border px-4 py-4">
           <BrandLogo />
@@ -140,6 +141,6 @@ export function AppShell({ children }: { children: ReactNode }) {
         <div className="sticky top-0 z-30 hidden justify-end border-b border-border bg-background/85 px-6 py-2 backdrop-blur lg:flex"><AlertsBell /></div>
         <main className="mx-auto w-full max-w-7xl space-y-6 px-4 py-6 sm:px-6 lg:py-8">{children}</main>
       </div>
-    </div>
+    </div></SubscriptionGate>
   );
 }

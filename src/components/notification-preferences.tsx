@@ -14,8 +14,8 @@ export function NotificationPreferences() {
   const event = (key: string, patch: Partial<EventSettings>) => update({ events: { ...data.events, [key]: { ...(data.events[key] ?? defaultSettings().events[key] as EventSettings), ...patch } } });
   const test = (tone: keyof typeof SOUNDS) => playAlert(tone, data.volume).catch(() => toast.error('O navegador não permitiu reproduzir o som'));
   const permission = async () => {
-    if (!('Notification' in window)) return toast.error('Este navegador não oferece notificações');
-    if (window.top !== window.self) return toast.info('Abra o Averon em uma aba própria para autorizar notificações');
+    if (!('Notification' in window)) { toast.error('Este navegador não oferece notificações'); return; }
+    if (window.top !== window.self) { toast.info('Abra o Averon em uma aba própria para autorizar notificações'); return; }
     const result = await Notification.requestPermission();
     toast.info(result === 'granted' ? 'Notificações do navegador autorizadas' : 'Notificações não autorizadas. Confira as permissões do site no navegador.');
   };
