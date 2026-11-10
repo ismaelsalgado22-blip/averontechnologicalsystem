@@ -1420,6 +1420,10 @@ export type Database = {
       refresh_due_notifications: { Args: never; Returns: undefined }
       save_budget: { Args: { items: Json; payload: Json }; Returns: string }
       save_work_order: {
+        Args: { items: Json; order_id?: string; payload: Json }
+        Returns: string
+      }
+      save_work_order_internal: {
         Args: { items: Json; order_id: string; payload: Json }
         Returns: string
       }

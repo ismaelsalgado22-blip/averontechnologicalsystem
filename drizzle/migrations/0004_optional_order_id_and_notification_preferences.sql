@@ -1,0 +1,6 @@
+ALTER FUNCTION public.save_work_order(uuid,jsonb,jsonb) RENAME TO save_work_order_internal;
+REVOKE ALL ON FUNCTION public.save_work_order_internal(uuid,jsonb,jsonb) FROM PUBLIC; GRANT EXECUTE ON FUNCTION public.save_work_order_internal(uuid,jsonb,jsonb) TO authenticated;
+CREATE FUNCTION public.save_work_order(payload jsonb,items jsonb,order_id uuid DEFAULT NULL) RETURNS uuid LANGUAGE sql SECURITY INVOKER SET search_path=public AS $$ SELECT public.save_work_order_internal(order_id,payload,items); $$;
+GRANT EXECUTE ON FUNCTION public.save_work_order(jsonb,jsonb,uuid) TO authenticated; REVOKE ALL ON FUNCTION public.save_work_order(jsonb,jsonb,uuid) FROM PUBLIC;
+CREATE OR REPLACE FUNCTION public.apply_notification_preference() RETURNS trigger LANGUAGE plpgsql SECURITY DEFINER SET search_path=public AS $$ DECLARE prefs jsonb; p text; BEGIN SELECT settings INTO prefs FROM public.notification_preferences WHERE user_id=NEW.owner_id; p:=prefs->'events'->NEW.event->>'priority'; IF p IN ('baixa','normal','alta') THEN NEW.priority:=p; END IF; RETURN NEW; END $$;
+CREATE TRIGGER notification_priority BEFORE INSERT ON public.notifications FOR EACH ROW EXECUTE FUNCTION public.apply_notification_preference();

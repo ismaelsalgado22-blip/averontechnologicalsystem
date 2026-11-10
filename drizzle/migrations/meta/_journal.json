@@ -29,6 +29,13 @@
       "when": 1794187934937,
       "tag": "0003_atomic_documents_and_stock",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1794277301919,
+      "tag": "0004_optional_order_id_and_notification_preferences",
+      "breakpoints": true
     }
   ]
 }
