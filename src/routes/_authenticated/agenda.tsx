@@ -20,6 +20,8 @@ import {
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { dateBR, today } from "@/lib/format";
 import { DeleteButton } from "@/components/delete-button";
+import { localDateTime } from "@/lib/validation";
+import { CepInput } from "@/components/cep-input";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 export const Route = createFileRoute("/_authenticated/agenda")({
@@ -55,6 +57,7 @@ const emptyForm = {
   address: "",
   status: "agendado",
   reported_problem: "",
+  cep: "", number: "", district: "", city: "", state: "", complement: "",
   contact_name: "",
   contact_phone: "",
   notes: "",
@@ -62,6 +65,8 @@ const emptyForm = {
 
 function SchedulePage() {
   const qc = useQueryClient();
+  const [filter, setFilter] = useState("todos");
+  const [dateFilter, setDateFilter] = useState("");
   const [open, setOpen] = useState(false);
   const [form, setForm] = useState(emptyForm);
   const [source, setSource] = useState<"appointments" | "guest_appointments">("appointments");
@@ -72,7 +77,7 @@ function SchedulePage() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("appointments")
-        .select("*, clients(name, phone, whatsapp, address, city), equipment(type, brand)")
+        .select("*, clients(name, phone, whatsapp, address, number, district, city, state, complement, zip_code), equipment(type, brand)")
         .order("scheduled_at");
       if (error) throw error;
       const { data: guests, error: guestError } = await supabase.from("guest_appointments").select("*").order("scheduled_at");
@@ -84,9 +89,9 @@ function SchedulePage() {
     },
   });
   const { data: clients } = useQuery({
-    queryKey: ["clients"],
+    queryKey: ["clients", "agenda"],
     queryFn: async () =>
-      (await supabase.from("clients").select("id, name, phone, whatsapp, address, city").order("name")).data ?? [],
+      (await supabase.from("clients").select("*").order("name")).data ?? [],
   });
   const { data: equipment } = useQuery({
     queryKey: ["equipment", "all"],
@@ -104,7 +109,7 @@ function SchedulePage() {
         technician_name: form.technician_name || null,
         scheduled_at: scheduled.toISOString(),
         duration_minutes: Number(form.duration_minutes) || 60,
-        address: form.address || null,
+        address: [form.address, form.number, form.district, form.city, form.state, form.complement, form.cep ? `CEP ${form.cep}` : ""].filter(Boolean).join(", ") || null,
         status: form.status,
         reported_problem: form.reported_problem.trim() || null,
         notes: form.notes || null,
@@ -144,11 +149,13 @@ function SchedulePage() {
   const groups = useMemo(() => {
     const map = new Map<string, any[]>();
     (appointments ?? []).forEach((a: any) => {
-      const day = String(a.scheduled_at).slice(0, 10);
+      const day = localDateTime(a.scheduled_at).date;
+      if (filter !== "todos" && a.status !== filter) return;
+      if (dateFilter && day !== dateFilter) return;
       map.set(day, [...(map.get(day) ?? []), a]);
     });
     return [...map.entries()].sort(([a], [b]) => a.localeCompare(b));
-  }, [appointments]);
+  }, [appointments, filter, dateFilter]);
 
   const set = (k: keyof typeof emptyForm, v: string) => setForm((f) => ({ ...f, [k]: v }));
   const clientEquip = ((equipment as any[]) ?? []).filter((e: any) => e.client_id === form.client_id);
@@ -173,15 +180,16 @@ function SchedulePage() {
         }
       />
 
+      <div className="flex flex-wrap gap-2"><Input aria-label="Filtrar por data" type="date" className="w-auto" value={dateFilter} onChange={e => setDateFilter(e.target.value)}/>{dateFilter && <Button variant="ghost" onClick={() => setDateFilter("")}>Todas as datas</Button>}<Select value={filter} onValueChange={setFilter}><SelectTrigger className="w-44" aria-label="Filtrar por status"><SelectValue/></SelectTrigger><SelectContent><SelectItem value="todos">Todos os status</SelectItem>{Object.entries(STATUS).map(([key,v]) => <SelectItem key={key} value={key}>{v.label}</SelectItem>)}</SelectContent></Select></div>
       {groups.length === 0 ? (
         <EmptyState title="Agenda vazia" description="Agende a primeira visita técnica." />
       ) : (
         <div className="space-y-5">
           {groups.map(([day, list]) => (
             <div key={day} className="space-y-2">
-              <h2 className="flex items-center gap-2 kpi-label">
+              <h2 className={`flex items-center gap-2 text-xl font-bold ${day === today() ? "text-destructive" : day > today() ? "text-success" : "text-muted-foreground"}`}>
                 <CalendarClock className="size-3.5" />
-                {dateBR(day)}
+                {dateBR(day)} {day === today() && <span className="text-xs">HOJE</span>}
               </h2>
               <div className="space-y-2">
                 {list.map((a: any) => (
@@ -189,7 +197,7 @@ function SchedulePage() {
                     <div className="min-w-0">
                       <div className="flex items-center gap-2">
                         <span className="font-display text-sm font-bold">
-                          {String(a.scheduled_at).slice(11, 16)}
+                          {localDateTime(a.scheduled_at).time}
                         </span>
                         <StatusPill label={STATUS[a.status]?.label ?? a.status} tone={STATUS[a.status]?.tone ?? ""} />
                       </div>
@@ -208,6 +216,8 @@ function SchedulePage() {
                         </div>
                     </div>
                     <div className="flex flex-wrap items-center gap-2">
+                      {(a.address || a.clients?.address) && <><Button size="sm" variant="outline" asChild><a target="_blank" rel="noopener noreferrer" href={`https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(a.address || [a.clients?.address,a.clients?.number,a.clients?.district,a.clients?.city,a.clients?.state].filter(Boolean).join(', '))}`}>Maps</a></Button><Button size="sm" variant="outline" asChild><a target="_blank" rel="noopener noreferrer" href={`https://waze.com/ul?q=${encodeURIComponent(a.address || [a.clients?.address,a.clients?.number,a.clients?.district,a.clients?.city,a.clients?.state].filter(Boolean).join(', '))}&navigate=yes`}>Waze</a></Button></>}
+
                       <Button variant="outline" size="sm" onClick={() => {
                         const local = new Date(a.scheduled_at);
                         const pad = (n: number) => String(n).padStart(2, "0");
@@ -233,8 +243,8 @@ function SchedulePage() {
                         template="agendamento"
                         vars={{
                           nome: a.clients?.name,
-                          data: dateBR(a.scheduled_at),
-                          horario: String(a.scheduled_at).slice(11, 16),
+                          data: dateBR(localDateTime(a.scheduled_at).date),
+                          horario: localDateTime(a.scheduled_at).time,
                         }}
                       />
                       <DeleteButton
@@ -279,7 +289,7 @@ function SchedulePage() {
                       ...f,
                       client_id: v,
                       equipment_id: "",
-                      address: [c?.address, c?.city].filter(Boolean).join(", "),
+                      address: c?.address ?? "", number: c?.number ?? "", district: c?.district ?? "", city: c?.city ?? "", state: c?.state ?? "", complement: c?.complement ?? "", cep: c?.zip_code ?? "",
                     }));
                   }}
                 >
@@ -348,6 +358,7 @@ function SchedulePage() {
                 </Select>
               </Field>
             </div>
+            <div className="grid gap-3 sm:grid-cols-2"><Field label="CEP"><CepInput value={form.cep} onChange={v => set("cep",v)} onAddress={v => setForm(f => ({ ...f, ...v, address: v.address || f.address, district: v.district || f.district }))}/></Field>{([['number','Número'],['district','Bairro'],['city','Cidade'],['state','UF'],['complement','Complemento']] as const).map(([key,label]) => <Field key={key} label={label}><Input aria-label={label} value={form[key]} onChange={e => set(key,e.target.value)}/></Field>)}</div>
             <Field label="Endereço do atendimento">
               <Input value={form.address} maxLength={200} onChange={(e) => set("address", e.target.value)} />
             </Field>

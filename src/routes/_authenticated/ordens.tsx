@@ -136,45 +136,12 @@ function OrdersPage() {
         payload.signature = signature;
         payload.signed_at = new Date().toISOString();
       }
-      if (editId) {
-        const { error } = await supabase.from("work_orders").update(payload).eq("id", editId);
-        if (error) throw error;
-        for (const i of items) {
-          const row = {
-            work_order_id: editId,
-            kind: i.product_id ? "peca" : "servico",
-            description: i.description,
-            quantity: num(i.quantity),
-            unit_price: num(i.unit_price),
-            total: num(i.quantity) * num(i.unit_price),
-            product_id: i.product_id || null,
-          };
-          if (i.id) {
-            const { error: eu } = await supabase.from("work_order_items").update(row).eq("id", i.id);
-            if (eu) throw eu;
-          } else {
-            const { error: ei } = await supabase.from("work_order_items").insert(row);
-            if (ei) throw ei;
-          }
-        }
-        return;
-      }
-      const { data, error } = await supabase.from("work_orders").insert(payload).select("id").single();
+      const { error } = await supabase.rpc('save_work_order', {
+        order_id: editId,
+        payload,
+        items: items.map(i => ({ ...(i.id ? { id: i.id } : {}), kind: i.product_id ? 'peca' : 'servico', description: i.description, quantity: num(i.quantity), unit_price: num(i.unit_price), product_id: i.product_id || null })),
+      });
       if (error) throw error;
-      if (items.length) {
-        const { error: e2 } = await supabase.from("work_order_items").insert(
-          items.map((i) => ({
-            work_order_id: data.id,
-            kind: i.product_id ? "peca" : "servico",
-            description: i.description,
-            quantity: num(i.quantity),
-            unit_price: num(i.unit_price),
-            total: num(i.quantity) * num(i.unit_price),
-            product_id: i.product_id || null,
-          })),
-        );
-        if (e2) throw e2;
-      }
     },
     onSuccess: () => {
       toast.success(editId ? "Ordem atualizada" : "Ordem de serviço criada");
@@ -272,7 +239,10 @@ function OrdersPage() {
       .from("work_order_items")
       .select("*")
       .eq("work_order_id", o.id)
-      .then(({ data }) =>
+      .then(({ data, error }) => {
+        if (error) { toast.error("Não foi possível carregar os itens"); return; }
+        const sum = (data ?? []).reduce((a, i) => a + Number(i.quantity) * Number(i.unit_price), 0);
+        setManualTotal(Math.abs(Number(o.total) - sum) > .005 ? String(o.total) : "");
         setItems(
           (data ?? []).map((i: any) => ({
             id: i.id,
@@ -281,8 +251,8 @@ function OrdersPage() {
             unit_price: String(i.unit_price),
             product_id: i.product_id,
           })),
-        ),
-      );
+        );
+      });
     setEditId(o.id);
     setOpen(true);
   };
